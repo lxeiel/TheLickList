@@ -50,8 +50,9 @@ family can view the list read-only via a public link, with no login.
 
 ### `/admin` (password-protected)
 
-- Form to add a restaurant: name, Google Maps link, cuisine tags, price
-  range, status (wishlist/tried), rating, notes, photos.
+- Form to add a restaurant: name, Google Maps link, other links (website,
+  Instagram, etc. — each with a type and URL, any number of them), cuisine
+  tags, price range, status (wishlist/tried), rating, notes, photos.
 - List of existing restaurants with edit links.
 - Under each restaurant, a form to add/edit dishes: name, rating, notes,
   photos.
@@ -65,6 +66,7 @@ Restaurant
   maps_url      text              -- original pasted link, kept for reference/re-parsing
   lat           float, nullable   -- null if the link couldn't be parsed
   lng           float, nullable
+  links         jsonb             -- [{ type: 'website' | 'instagram' | 'other', url: text }, ...]
   cuisine_tags  text[]
   price_range   text              -- e.g. "$", "$$", "$$$"
   status        enum('wishlist', 'tried')
