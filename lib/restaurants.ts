@@ -1,4 +1,4 @@
-import { getServiceClient } from "./supabase";
+import { getServiceClient, getAnonClient } from "./supabase";
 import { parseMapsUrl } from "./maps";
 
 export type RestaurantLink = { type: "website" | "instagram" | "other"; url: string };
@@ -52,6 +52,19 @@ export function validateRestaurantInput(input: RestaurantInput): string | null {
 
 export async function listRestaurants(): Promise<Restaurant[]> {
   const { data, error } = await getServiceClient()
+    .from("restaurant")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return data as Restaurant[];
+}
+
+export async function listPublicRestaurants(): Promise<Restaurant[]> {
+  const { data, error } = await getAnonClient()
     .from("restaurant")
     .select("*")
     .order("created_at", { ascending: false });
