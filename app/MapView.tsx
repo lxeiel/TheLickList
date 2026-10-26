@@ -27,8 +27,15 @@ export default function MapView({
   );
   const selected = located.find((r) => r.id === selectedId) ?? null;
 
+  const locatedIds = located.map((r) => r.id).join(",");
+
   useEffect(() => {
-    if (!loaded || located.length === 0) return;
+    // Re-fit whenever the set of pinned restaurants changes (e.g. a filter
+    // or search narrows/widens it), not just once on load — otherwise a
+    // filtered-down set can leave pins off-screen with no way back short of
+    // a reload. Skip while something's selected so this doesn't fight the
+    // flyTo-on-selection effect below.
+    if (!loaded || located.length === 0 || selected) return;
 
     const lats = located.map((r) => r.lat);
     const lngs = located.map((r) => r.lng);
@@ -37,12 +44,12 @@ export default function MapView({
         [Math.min(...lngs), Math.min(...lats)],
         [Math.max(...lngs), Math.max(...lats)],
       ],
-      { padding: 40, duration: 0 },
+      // A single point (or several at the same point) would otherwise fit
+      // to the map's max zoom, which is too close to read.
+      { padding: 40, duration: 0, maxZoom: 14 },
     );
-    // Only on initial load — later selection changes are handled by the
-    // flyTo-on-selection effect below, not by re-fitting the whole set.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded]);
+  }, [loaded, locatedIds, selected]);
 
   useEffect(() => {
     if (!loaded || !selected) return;
@@ -77,16 +84,22 @@ export default function MapView({
           onClose={onDeselect}
           closeOnClick={false}
         >
-          <strong>{selected.name}</strong>
-          <br />
-          {selected.status}
-          {selected.rating != null && ` — ${selected.rating}★`}
-          {selected.cuisine_tags.length > 0 && (
-            <>
-              <br />
-              {selected.cuisine_tags.join(", ")}
-            </>
-          )}
+          {/* The popup's background is always white regardless of the page's
+              dark-mode theme, so its text color must be pinned too — it
+              can't inherit the page's (light, in dark mode) foreground
+              color without becoming unreadable. */}
+          <div style={{ color: "#171717" }}>
+            <strong>{selected.name}</strong>
+            <br />
+            {selected.status}
+            {selected.rating != null && ` — ${selected.rating}★`}
+            {selected.cuisine_tags.length > 0 && (
+              <>
+                <br />
+                {selected.cuisine_tags.join(", ")}
+              </>
+            )}
+          </div>
         </Popup>
       )}
     </Map>

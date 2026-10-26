@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MapView from "@/app/MapView";
 import RestaurantList from "@/app/RestaurantList";
 import type { Restaurant, RestaurantStatus } from "@/lib/restaurants";
@@ -18,6 +18,15 @@ export default function HomeClient({ restaurants }: { restaurants: Restaurant[] 
         r.name.toLowerCase().includes(query) ||
         r.cuisine_tags.some((tag) => tag.toLowerCase().includes(query))),
   );
+  // If the selected restaurant gets filtered out, actually clear the
+  // selection state (not just what's passed down) — otherwise widening the
+  // filter again later resurrects a stale selection and flies back to a
+  // restaurant the user never re-selected.
+  useEffect(() => {
+    if (selectedId && !filtered.some((r) => r.id === selectedId)) {
+      setSelectedId(null);
+    }
+  });
 
   return (
     <main>
