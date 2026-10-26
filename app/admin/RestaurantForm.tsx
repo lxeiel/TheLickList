@@ -4,6 +4,8 @@ import { useState, type FormEvent } from "react";
 import { unstable_rethrow } from "next/navigation";
 import type { Restaurant, RestaurantInput, RestaurantLink, RestaurantStatus } from "@/lib/restaurants";
 
+const SINGAPORE_AREAS = ["Central", "East", "North", "Northeast", "West"];
+
 export function RestaurantForm({
   initial,
   onSubmit,
@@ -21,6 +23,14 @@ export function RestaurantForm({
   const [status, setStatus] = useState<RestaurantStatus>(initial?.status ?? "wishlist");
   const [rating, setRating] = useState(initial?.rating != null ? String(initial.rating) : "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
+  const initialAreaIsStandard =
+    !!initial?.area && SINGAPORE_AREAS.includes(initial.area);
+  const [areaSelect, setAreaSelect] = useState(
+    initial?.area == null ? "" : initialAreaIsStandard ? initial.area : "Other",
+  );
+  const [areaOther, setAreaOther] = useState(
+    initial?.area != null && !initialAreaIsStandard ? initial.area : "",
+  );
   const [error, setError] = useState<string | undefined>();
   const [pending, setPending] = useState(false);
 
@@ -52,6 +62,7 @@ export function RestaurantForm({
       status,
       rating: rating === "" ? null : Number(rating),
       notes: notes || null,
+      area: areaSelect === "Other" ? areaOther.trim() || null : areaSelect || null,
     };
 
     try {
@@ -125,6 +136,29 @@ export function RestaurantForm({
           <option value="$$$$">$$$$</option>
         </select>
       </label>
+
+      <label>
+        Area
+        <select value={areaSelect} onChange={(e) => setAreaSelect(e.target.value)}>
+          <option value="">(none)</option>
+          {SINGAPORE_AREAS.map((a) => (
+            <option key={a} value={a}>
+              {a}
+            </option>
+          ))}
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      {areaSelect === "Other" && (
+        <label>
+          Area (custom)
+          <input
+            value={areaOther}
+            onChange={(e) => setAreaOther(e.target.value)}
+            placeholder="e.g. Tokyo"
+          />
+        </label>
+      )}
 
       <label>
         Status

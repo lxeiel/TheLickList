@@ -23,6 +23,7 @@ export default async function AdminPage() {
           <li key={restaurant.id}>
             <Link href={`/admin/restaurants/${restaurant.id}`}>{restaurant.name}</Link> —{" "}
             {restaurant.status}
+            {restaurant.area && ` — ${restaurant.area}`}
             {restaurant.lat == null && " — no location set"}
           </li>
         ))}

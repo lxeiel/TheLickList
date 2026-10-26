@@ -16,7 +16,8 @@ export default function HomeClient({ restaurants }: { restaurants: Restaurant[] 
       (status === "all" || r.status === status) &&
       (query === "" ||
         r.name.toLowerCase().includes(query) ||
-        r.cuisine_tags.some((tag) => tag.toLowerCase().includes(query))),
+        r.cuisine_tags.some((tag) => tag.toLowerCase().includes(query)) ||
+        (r.area?.toLowerCase().includes(query) ?? false)),
   );
   // If the selected restaurant gets filtered out, actually clear the
   // selection state (not just what's passed down) — otherwise widening the
@@ -44,7 +45,7 @@ export default function HomeClient({ restaurants }: { restaurants: Restaurant[] 
         </button>
         <input
           type="text"
-          placeholder="Search name or cuisine..."
+          placeholder="Search name, cuisine, or area..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

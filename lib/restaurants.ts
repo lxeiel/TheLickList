@@ -17,6 +17,7 @@ export type Restaurant = {
   rating: number | null;
   notes: string | null;
   photo_urls: string[];
+  area: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -30,6 +31,7 @@ export type RestaurantInput = {
   status: RestaurantStatus;
   rating: number | null;
   notes: string | null;
+  area: string | null;
 };
 
 export function validateRestaurantInput(input: RestaurantInput): string | null {
@@ -106,6 +108,7 @@ export async function createRestaurant(input: RestaurantInput): Promise<Restaura
       status: input.status,
       rating: input.rating,
       notes: input.notes,
+      area: input.area,
     })
     .select("*")
     .single();
@@ -143,6 +146,7 @@ export async function updateRestaurant(
       status: input.status,
       rating: input.rating,
       notes: input.notes,
+      area: input.area,
     })
     .eq("id", id)
     .select("*")

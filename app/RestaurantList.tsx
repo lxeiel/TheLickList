@@ -58,6 +58,7 @@ export default function RestaurantList({
           }}
         >
           <strong>{restaurant.name}</strong> — {restaurant.status}
+          {restaurant.area && ` — ${restaurant.area}`}
           {restaurant.rating != null && ` — ${restaurant.rating}★`}
           {restaurant.cuisine_tags.length > 0 && ` — ${restaurant.cuisine_tags.join(", ")}`}
           {restaurant.lat == null && " — no location set"}
