@@ -13,12 +13,17 @@ export async function checkSupabaseConnection(): Promise<{
   }
 
   try {
-    const res = await fetch(`${url}/rest/v1/`, {
-      headers: { apikey: anonKey },
+    // A query against a table that doesn't exist still proves the API key
+    // was accepted (PostgREST returns 404/PGRST205 for "table not found"
+    // only after authenticating the request) — unlike the bare /rest/v1/
+    // root, which some gateway versions reject for non-secret keys
+    // regardless of validity.
+    const res = await fetch(`${url}/rest/v1/_connection_check?select=*`, {
+      headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
     });
 
-    if (!res.ok) {
-      return { ok: false, detail: `Supabase responded with status ${res.status}` };
+    if (res.status === 401) {
+      return { ok: false, detail: "Supabase rejected the API key (401)" };
     }
 
     return { ok: true, detail: "Connected" };
