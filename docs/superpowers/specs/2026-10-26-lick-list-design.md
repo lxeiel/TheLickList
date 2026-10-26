@@ -12,7 +12,8 @@ family can view the list read-only via a public link, with no login.
 - Lex can add a restaurant (via a pasted Google Maps link, tags, price,
   status, rating, notes, photos) from a simple admin page behind a password.
 - Anyone with the site URL can view the list and map read-only, filtered by
-  Tried / Want to Try / Both, with no account needed.
+  Tried / Want to Try / Both and searchable by name/cuisine tags, with no
+  account needed.
 - Deployed on Vercel, data stored in Supabase (Postgres + Storage), all on
   free tiers.
 
@@ -37,18 +38,30 @@ family can view the list read-only via a public link, with no login.
 - **Map**: Mapbox GL JS via `react-map-gl`, chosen over Google Maps (requires
   a billing-enabled account) and Leaflet/OSM (dated default styling) for its
   free tier without a mandatory card on file and its themeable vector
-  rendering.
+  rendering. The Mapbox public access token (`NEXT_PUBLIC_MAPBOX_TOKEN`) is
+  client-safe by design — Mapbox tokens are restricted by URL referrer, not
+  secrecy, unlike the Supabase keys above.
 
 ## Pages
 
 ### `/` (public)
 
-- Mapbox map with a pin per restaurant that has coordinates.
-- A scrollable list of restaurants alongside/below the map.
-- One filter control — Tried / Want to Try / Both — drives both the map pins
-  and the list from the same filtered data set.
-- Pin-click interaction (what clicking a pin shows/does) is designed when
-  Phase 3 starts — see Phasing.
+- Fetches all restaurants server-side via the anon Supabase client
+  (`getAnonClient()`, built in Phase 1, unused until now); renders the map
+  and list from that single fetch.
+- Mapbox map on top, with a pin per restaurant that has coordinates;
+  restaurants without a resolved location (Error handling) have no pin but
+  still appear in the list.
+- A scrollable list of restaurants below the map.
+- Above both: a status toggle (Tried / Want to Try / Both) and a separate
+  text search input (matches restaurant name or cuisine tags, case-
+  insensitive substring). Both apply client-side to the already-fetched
+  data — no refetch — and combine with AND (e.g. status "Tried" + search
+  "ramen" shows only tried restaurants matching "ramen").
+- Clicking a pin opens a Mapbox popup (name, status, rating, cuisine tags)
+  and scrolls/highlights that restaurant's row in the list. Clicking a list
+  row flies the map to and opens the popup for that row's pin (only when
+  the row has one).
 
 ### `/admin/login` (public)
 
@@ -122,9 +135,10 @@ service-role key, which bypasses RLS.
    {filename}`; their resulting public URLs are stored on the record.
 4. The row is written to Postgres via the server action, using the
    service-role key (see Architecture).
-5. The public page (`/`) fetches restaurants server-side on every request —
-   no client-side database calls, no exposed credentials — and renders the
-   map and list from that same data, filtered by the selected status.
+5. The public page (`/`) fetches restaurants server-side on every request,
+   via the anon client (no client-side database calls, no exposed
+   credentials) — and renders the map and list from that same data, with
+   status and search filtering applied client-side (Pages → `/`).
 
 ## Error handling
 
@@ -152,12 +166,13 @@ the app grows in scope or contributors.
 2. Data model (Restaurant, Dish tables) + admin auth + add/edit restaurants:
    the full restaurant form (name, maps link, links, cuisine tags, price,
    status, rating, notes) — no map on the public page yet, no photos, no
-   dish UI. *(Current implementation target.)*
-3. Mapbox map + status filter on the homepage, wired to live data. Pin-click
-   interaction (what a clicked pin shows) is designed when this phase
-   starts, not before.
+   dish UI. *(Complete.)*
+3. Mapbox map + status/search filtering on the homepage, wired to live
+   data; pin-click/list-row interaction (Pages → `/`). *(Current
+   implementation target.)*
 4. Dishes (UI for the table created in Phase 2), photo uploads (restaurant
-   and dish), any cuisine/price tag UI polish (e.g. filtering by tag).
+   and dish), any further cuisine/price tag UI polish beyond Phase 3's
+   search.
 
 Phase 1 is deliberately minimal: it proves the deployment pipeline (Vercel
 + Supabase) works end to end before any real feature is built on top of it.
