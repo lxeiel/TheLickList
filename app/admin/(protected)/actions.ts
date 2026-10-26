@@ -1,15 +1,24 @@
 "use server";
 
-import { createRestaurant, type RestaurantInput } from "@/lib/restaurants";
+import { createRestaurant, validateRestaurantInput, type RestaurantInput } from "@/lib/restaurants";
+import { requireAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export async function createRestaurantAction(
   input: RestaurantInput,
 ): Promise<{ error?: string }> {
-  if (!input.name.trim()) {
-    return { error: "Name is required" };
+  await requireAdmin();
+
+  const validationError = validateRestaurantInput(input);
+  if (validationError) {
+    return { error: validationError };
   }
 
-  await createRestaurant(input);
+  try {
+    await createRestaurant(input);
+  } catch {
+    return { error: "Save failed" };
+  }
+
   redirect("/admin");
 }

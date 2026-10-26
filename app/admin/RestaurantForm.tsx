@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { unstable_rethrow } from "next/navigation";
 import type { Restaurant, RestaurantInput, RestaurantLink, RestaurantStatus } from "@/lib/restaurants";
 
 export function RestaurantForm({
@@ -53,9 +54,19 @@ export function RestaurantForm({
       notes: notes || null,
     };
 
-    const result = await onSubmit(input);
-    setPending(false);
-    setError(result?.error);
+    try {
+      const result = await onSubmit(input);
+      setError(result?.error);
+    } catch (err) {
+      // A successful submit ends with the action calling redirect(), which
+      // surfaces here as a thrown error — rethrow it so Next's own
+      // navigation handling still takes over; only a real failure falls
+      // through to the generic message below.
+      unstable_rethrow(err);
+      setError("Save failed");
+    } finally {
+      setPending(false);
+    }
   }
 
   return (

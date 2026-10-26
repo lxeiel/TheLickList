@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { listRestaurants } from "@/lib/restaurants";
 import { RestaurantForm } from "@/app/admin/RestaurantForm";
+import { requireAdmin } from "@/lib/auth";
 import { createRestaurantAction } from "./actions";
 
 export const instant = false;
 
 export default async function AdminPage() {
+  await requireAdmin();
   const restaurants = await listRestaurants();
 
   return (
@@ -21,6 +23,7 @@ export default async function AdminPage() {
           <li key={restaurant.id}>
             <Link href={`/admin/restaurants/${restaurant.id}`}>{restaurant.name}</Link> —{" "}
             {restaurant.status}
+            {restaurant.lat == null && " — no location set"}
           </li>
         ))}
       </ul>
