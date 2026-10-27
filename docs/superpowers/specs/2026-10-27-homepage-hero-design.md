@@ -1,7 +1,7 @@
 # Homepage hero, logo and centred navbar — design (not yet built)
 
 Status: design agreed in conversation on 2026-10-27; final approval pending. Build later.
-Mockups: `.superpowers/brainstorm/54283-1793094154/content/` (`logo-c-widths-v3.html`, `second-section-inline.html`; git-ignored).
+Mockups (git-ignored): logo + navbar in `.superpowers/brainstorm/54283-1793094154/content/logo-c-widths-v3.html`; menu section in `.superpowers/brainstorm/90741-1793109124/content/menu-section-v3.html`. Accent is now deep emerald (`#0B6B4F` / `#59C0A2`).
 
 ## Logo (direction C)
 - Hero: "The" small (0.3em, weight 600) above "Lick" / "List" stacked in Geist 900, letter-spacing −0.055em, line-height 0.84, so the two "Li" line up.
@@ -18,11 +18,16 @@ Mockups: `.superpowers/brainstorm/54283-1793094154/content/` (`logo-c-widths-v3.
 
 ## Homepage `/`, top to bottom
 1. **Logo hero** — full viewport, no navbar, big logo centred, round ↓ "See the map" button at the bottom.
-2. **About section** (navbar visible):
-   - "Hi, I'm Lex" + placeholder intro for Lex to rewrite.
-   - "How the map works" — one paragraph + key: ● **Licked** been there, eaten that · ○ **Gotta Lick** on the wishlist · Scores are out of 10.
-   - Numbers as two big lines, words as large as numbers: "**42** Licked" / "**18** Gotta Lick" — numbers `--accent`, words ink, `clamp(48px, 10vw, 88px)`, weight 900. Counts computed live from restaurants (status tried / wishlist); empty list shows 0.
-   - ↓ "See the map" button.
+2. **Menu section** (navbar visible) — an index/"menu" grid modelled on Lex's reference (a portfolio index page): plain uppercase column headings, plain lists, one typeface, no cards or boxes. Mockup: `menu-section-v3.html`.
+   - Desktop: 5-column grid (`repeat(5, 1fr)`, column gap 28px).
+     - **About** — columns 1–3. Heading "ABOUT", then one intro paragraph (placeholder for Lex to rewrite) at ~22px / 1.35 so lines stay under ~80 characters.
+     - **By the numbers** — columns 1–3, directly under About. "**42** Licked" / "**18** Gotta Lick" as two big lines, words as large as numbers: numbers `--accent`, words ink, `clamp(44px, 6vw, 80px)`, weight 900. Counts live from restaurants (status tried / wishlist); empty list shows 0.
+     - **The list** — columns 4–5, spanning both rows. Names uppercase, laid out in two text columns: Gotta Lick spots (newest first) then the most recent Licked spots crossed off (`line-through`, 2px, muted), **12 lines total**. Each name links to that spot on the map (`/?spot=<id>#map`). "SEE THE FULL LIST" link to `/list` underneath.
+       - Crossed-off = most recently added/updated Licked spots; the database doesn't record whether a spot was ever on the wishlist (no schema change).
+     - **How it works** and **Contact** — side by side under The list (columns 4 and 5). How it works: ● **Licked**, been there, eaten that · ○ **Gotta Lick**, on the wishlist · Scores are out of 10. Contact: Instagram, Email (Lex to supply the links).
+   - No photo column (dropped).
+   - Phone: one column, in order About, The list, How it works, Contact, By the numbers.
+   - ↓ "See the map" button at the bottom of the section.
 3. **Map** — existing MapPage at full viewport height, `id="map"`.
 
 ## Behaviour
