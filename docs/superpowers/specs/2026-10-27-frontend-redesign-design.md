@@ -38,9 +38,9 @@ first-class.
 
 ## Visual system
 
-Style: minimal. Neutral surfaces, one cobalt accent, 1px hairlines, no
+Style: minimal. Neutral surfaces, one deep emerald accent, 1px hairlines, no
 decorative shadows. Personality comes from the copy ("Licked" / "Gotta Lick")
-and the cobalt period in the wordmark, not from ornament.
+and the accent-coloured period in the wordmark, not from ornament.
 
 ### Color tokens
 
@@ -56,7 +56,7 @@ tokens, never raw hex.
 | `--line` | Decorative dividers only | `#E9E2D3` | `#2B2B2B` |
 | `--line-strong` | Borders of controls (inputs, dropdowns, icon buttons) | `#948B79` | `#6B6B6B` |
 | `--hover` | Selected row, segmented-control track, hover fill | `#F3EDDF` | `#232323` |
-| `--accent` | Cobalt: status marks, pins, primary button, focus ring | `#2E4FD0` | `#7D95FF` |
+| `--accent` | Deep emerald: status marks, pins, primary button, focus ring | `#0B6B4F` | `#59C0A2` |
 | `--on-accent` | Text on the primary button | `#FBF7EE` | `#161616` |
 | `--map-land` / `--map-water` / `--map-park` / `--map-road` | Map recolor | `#F3EEE2` / `#DEE5E3` / `#E6EAD9` / `#FFFDF8` | `#1C1C1C` / `#121417` / `#1A1D1A` / `#2A2A2A` |
 
@@ -66,10 +66,10 @@ Measured contrast (against `--bg` unless noted):
 |---|---|---|---|
 | `--ink` | 17.2:1 | 15.5:1 | 4.5:1 text |
 | `--muted` | 5.0:1 (4.6:1 on `--hover`) | 5.6:1 (4.9:1 on `--hover`) | 4.5:1 text |
-| `--accent` | 6.2:1 | 6.6:1 | 4.5:1 text |
-| `--on-accent` on `--accent` | 6.2:1 | 6.6:1 | 4.5:1 text |
+| `--accent` | 6.1:1 | 8.2:1 | 4.5:1 text |
+| `--on-accent` on `--accent` | 6.1:1 | 8.2:1 | 4.5:1 text |
 | `--line-strong` | 3.2:1 | 3.1:1 (on `--surface`) | 3:1 UI boundary |
-| `--accent` on map land/water/park | ≥5.2:1 | ≥6.2:1 | 3:1 graphics |
+| `--accent` on map land/water/park | ≥5.1:1 | ≥7.7:1 | 3:1 graphics |
 
 `--line` (1.2:1) is used only where the boundary carries no meaning (row
 dividers, section rules).
@@ -147,7 +147,7 @@ Icons used: `List` (hamburger), `X` (close), `Moon` / `Sun` (theme),
 
 ### Desktop nav bar (≥ 768px)
 
-Left: wordmark "The Lick List" with a cobalt period. Then nav links **Map ·
+Left: wordmark "The Lick List" with an accent-coloured period. Then nav links **Map ·
 List · About** (the current page gets `--hover` background, `--ink` text, and
 `aria-current="page"`). Far right: the theme button.
 
@@ -158,7 +158,7 @@ both 44×44px tap targets.
 
 - The hamburger opens a full-screen menu below the top bar: Map / List /
   About in 20px weight-600 text, one per row, the current page marked with a
-  cobalt dot. The icon becomes `X`.
+  accent dot. The icon becomes `X`.
 - The button has `aria-expanded` and `aria-controls`. Opening moves focus to
   the first link; Esc or `X` closes and returns focus to the hamburger;
   choosing a page closes the menu.
@@ -469,3 +469,6 @@ No schema change in this spec.
     across reloads; no theme flash on load.
   - Error states: missing Mapbox token; empty data.
 - **Contrast** re-measured for every token pair after implementation.
+
+
+> **Colour update (2026-10-27):** the accent changed from cobalt (`#2E4FD0` / `#7D95FF`) to deep emerald (`#0B6B4F` day, 6.1:1 on cream / `#59C0A2` night, 8.2:1 on charcoal). `lib/tokens.test.ts` re-checks every contrast pair; all pass.
