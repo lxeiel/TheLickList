@@ -14,7 +14,10 @@ export function parseSort(params: URLSearchParams): Sort {
   const raw = params.get("sort");
   const key = isKey(raw) ? raw : "added";
   const dir = params.get("dir");
-  return { key, dir: isKey(raw) && isDir(dir) ? dir : NATURAL_DIR[key] };
+  // No `sort` means the default key ("added"), and writeSort omits it — so a
+  // lone `dir` still applies. Only an unknown `sort` discards `dir`.
+  const dirApplies = raw == null || isKey(raw);
+  return { key, dir: dirApplies && isDir(dir) ? dir : NATURAL_DIR[key] };
 }
 
 export function writeSort(params: URLSearchParams, sort: Sort): URLSearchParams {

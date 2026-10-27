@@ -48,6 +48,17 @@ test("writeSort omits defaults", () => {
   expect(writeSort(new URLSearchParams(), { key: "name", dir: "asc" }).toString()).toBe("sort=name");
 });
 
+test.each([
+  ["added", "asc"],
+  ["added", "desc"],
+  ["rating", "asc"],
+  ["rating", "desc"],
+  ["name", "asc"],
+  ["name", "desc"],
+] as const)("writeSort → parseSort round-trips %s %s", (key, dir) => {
+  expect(parseSort(writeSort(new URLSearchParams(), { key, dir }))).toEqual({ key, dir });
+});
+
 test("toggleSort flips same key, resets on new key", () => {
   expect(toggleSort({ key: "rating", dir: "desc" }, "rating")).toEqual({ key: "rating", dir: "asc" });
   expect(toggleSort({ key: "rating", dir: "asc" }, "name")).toEqual({ key: "name", dir: "asc" });
