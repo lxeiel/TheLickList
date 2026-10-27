@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Sheet.module.css";
 
@@ -8,6 +8,8 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const LEAVE_MS = 160;
+
+const noopSubscribe = () => () => {};
 
 // A modal overlay: a drawer from the right, a sheet from the bottom, or
 // "responsive" (drawer at ≥768px, sheet below). Focus moves in on open, is
@@ -58,7 +60,11 @@ export default function Sheet({
     wasOpen.current = open;
   }, [open]);
 
-  if (!rendered) return null;
+  // The portal targets document.body, which doesn't exist during the server
+  // render (e.g. opening a /list?spot= link), so only render once mounted.
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
+
+  if (!rendered || !mounted) return null;
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Escape") {
