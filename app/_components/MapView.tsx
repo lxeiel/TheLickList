@@ -10,7 +10,12 @@ import { readMapColors, recolorMap } from "./mapTheme";
 import StatusMark, { STATUS_LABEL } from "./StatusMark";
 import styles from "./MapView.module.css";
 
-const FALLBACK_VIEW = { longitude: 103.82, latitude: 1.35, zoom: 10.5 };
+// Every visit opens on this view of Singapore. Framed as an area rather than
+// a centre + zoom so it looks the same on a phone and a wide screen.
+const HOME_BOUNDS: [[number, number], [number, number]] = [
+  [103.62, 1.22],
+  [104.03, 1.47],
+];
 const SELECT_ZOOM = 14;
 
 type Located = Restaurant & { lat: number; lng: number };
@@ -29,6 +34,7 @@ export default function MapView({
   reducedMotion,
   onUnavailable,
   pinsFocusable = true,
+  fitOnLoad = false,
 }: {
   restaurants: Restaurant[];
   selectedId: string | null;
@@ -39,6 +45,8 @@ export default function MapView({
   reducedMotion: boolean;
   onUnavailable: () => void;
   pinsFocusable?: boolean;
+  /** Fit to the pins on load instead of opening on the home view. */
+  fitOnLoad?: boolean;
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -64,12 +72,18 @@ export default function MapView({
     return () => observer.disconnect();
   }, [loaded]);
 
+  // The map opens on the home view, then re-fits to the pins whenever a
+  // filter or search changes which ones are shown, so a filtered-down set is
+  // never left off-screen. A link that arrives already filtered fits on load
+  // instead (fitOnLoad). Deselecting doesn't re-fit, so closing a detail
+  // leaves the map where it was.
+  const fittedIds = useRef<string | null>(null);
   useEffect(() => {
-    // Re-fit whenever the set of pinned restaurants changes (a filter or
-    // search narrows/widens it), not just once on load — otherwise a
-    // filtered-down set can leave pins off-screen. Skip while something's
-    // selected so this doesn't fight the selection move below.
-    if (!loaded || located.length === 0 || selected) return;
+    if (!loaded) return;
+    const firstRun = fittedIds.current === null;
+    if (!firstRun && fittedIds.current === locatedIds) return;
+    fittedIds.current = locatedIds;
+    if ((firstRun && !fitOnLoad) || located.length === 0 || selected) return;
     const lats = located.map((r) => r.lat);
     const lngs = located.map((r) => r.lng);
     mapRef.current?.fitBounds(
@@ -81,7 +95,7 @@ export default function MapView({
       { padding: { top: 48, left: 48, right: 48, bottom: 48 + bottomPadding }, duration: 0, maxZoom: SELECT_ZOOM },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, locatedIds, selected, bottomPadding]);
+  }, [loaded, locatedIds]);
 
   useEffect(() => {
     if (!loaded || !selected) return;
@@ -104,7 +118,7 @@ export default function MapView({
     <Map
       ref={mapRef}
       mapboxAccessToken={token}
-      initialViewState={FALLBACK_VIEW}
+      initialViewState={{ bounds: HOME_BOUNDS, fitBoundsOptions: { padding: 16 } }}
       mapStyle={theme === "dark" ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/light-v11"}
       onLoad={(e) => {
         const map = e.target;

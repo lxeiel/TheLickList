@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
+import { activeFilterCount, applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
@@ -49,6 +49,8 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const options = useMemo(() => deriveOptions(restaurants), [restaurants]);
   const filtered = useMemo(() => applyFilters(restaurants, filters), [restaurants, filters]);
   const selected = findSpot(filtered, spot);
+  const hasActiveFilters =
+    filters.status !== "all" || filters.q !== "" || activeFilterCount(filters) > 0;
 
   // A selection made from the map should be visible even if the sheet was
   // collapsed.
@@ -195,6 +197,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             // On phones the sheet covers part of the map, so keyboard focus
             // could land on a hidden pin; the list rows do the same job.
             pinsFocusable={!isPhone}
+            // A plain visit opens on the home view of Singapore; a link that
+            // arrives already filtered opens on its results.
+            fitOnLoad={hasActiveFilters}
           />
         </div>
 
