@@ -173,7 +173,14 @@ export function RestaurantForm({
 
       <label>
         Rating
-        <input type="number" value={rating} onChange={(e) => setRating(e.target.value)} />
+        <input
+          type="number"
+          min={1}
+          max={10}
+          step={1}
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+        />
       </label>
 
       <label>

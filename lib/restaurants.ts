@@ -41,8 +41,11 @@ export function validateRestaurantInput(input: RestaurantInput): string | null {
   if (input.status !== "wishlist" && input.status !== "tried") {
     return "Invalid status";
   }
-  if (input.rating != null && !Number.isInteger(input.rating)) {
-    return "Rating must be a whole number";
+  if (
+    input.rating != null &&
+    (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 10)
+  ) {
+    return "Rating must be a whole number from 1 to 10";
   }
   for (const link of input.links ?? []) {
     if (link.url && !/^https?:\/\//i.test(link.url)) {
