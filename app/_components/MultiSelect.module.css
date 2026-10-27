@@ -44,6 +44,11 @@
   animation: pop-in 150ms var(--ease-out);
 }
 
+.panel[data-align="end"] {
+  left: auto;
+  right: 0;
+}
+
 @keyframes pop-in {
   from {
     opacity: 0;

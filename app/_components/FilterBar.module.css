@@ -1,45 +1,41 @@
 .bar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
+/* Big status tabs, then the search line filling the rest, then Filters +. */
 .row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
+  gap: clamp(20px, 2.4vw, 36px);
 }
 
-.menus,
-.desktopOnly,
-.phoneOnly {
+.searchRow {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-end;
+  gap: clamp(16px, 2vw, 32px);
 }
 
-.phoneOnly {
-  display: none;
-}
-
-/* Status: segmented control. */
+/* Status: heavy uppercase tabs, the active one underlined in the accent. */
 .segmented {
   display: flex;
-  padding: 3px;
-  border-radius: var(--radius-sm);
-  background: var(--hover);
+  gap: clamp(16px, 1.8vw, 28px);
 }
 
 .segment {
-  min-height: 30px;
-  padding: 0 12px;
-  border-radius: 4px;
+  padding: 4px 0;
+  border-bottom: 3px solid transparent;
   color: var(--muted);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
   white-space: nowrap;
-  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+  transition: color 150ms var(--ease-out), border-color 150ms var(--ease-out);
 }
 
 .segment:hover {
@@ -47,57 +43,70 @@
 }
 
 .segment[aria-checked="true"] {
-  background: var(--surface);
+  border-color: var(--accent);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* Search. */
+/* Search: one long underlined line. */
 .search {
   position: relative;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  flex: 0 1 260px;
-  min-width: 180px;
 }
 
 .searchIcon {
   position: absolute;
-  left: 10px;
+  left: 0;
   color: var(--muted);
   pointer-events: none;
 }
 
 .search input {
   width: 100%;
-  min-height: 36px;
-  padding: 0 12px 0 32px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  font-size: 14px;
+  min-height: 40px;
+  padding: 6px 0 6px 26px;
+  border: 0;
+  border-bottom: 2px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+  font-size: 17px;
+  transition: border-color 150ms var(--ease-out);
+}
+
+.search input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.search input:focus-visible {
+  outline-offset: 4px;
 }
 
 .search input::placeholder {
   color: var(--muted);
 }
 
-/* Phone filters button (desktop uses the Dropdown's own button). */
-.filtersButton {
+/* "FILTERS +": text, not a box. */
+.filtersText {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  min-height: 40px;
+  padding: 0 2px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
 }
 
-.filtersButton[data-active] {
-  border-color: var(--accent);
+.filtersText:hover {
+  color: var(--accent);
+}
+
+.filtersCount {
   color: var(--accent);
 }
 
@@ -123,8 +132,13 @@
   font-weight: 500;
 }
 
+/* Phone-only sort (desktop sorts with the table's headers). */
+.sortSelect {
+  display: none;
+}
+
 .sortSelect select {
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 8px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
@@ -132,55 +146,58 @@
   font-size: 16px;
 }
 
-/* Active filter chips. */
+/* Active filters: plain removable words. */
 .chips {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px 16px;
 }
 
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
   min-height: 28px;
-  padding: 0 8px 0 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
+}
+
+.chip:hover {
+  text-decoration: line-through;
 }
 
 .clearAll {
   min-height: 28px;
-  padding: 0 4px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: underline;
 }
 
 @media (max-width: 767px) {
+  /* Tabs on their own row; search, Filters + (and sort) below. */
   .row {
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
   }
 
-  /* Whole track is tappable: no padding gap, segments 44px tall. */
   .segmented {
-    width: 100%;
-    padding: 0;
+    justify-content: space-between;
   }
 
   .segment {
-    flex: 1;
     min-height: 44px;
-    border-radius: var(--radius-sm);
+    font-size: 20px;
+  }
+
+  /* Search gets a full row; Filters + (and sort) wrap beneath it. */
+  .searchRow {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 4px;
   }
 
   .search {
-    flex: 1 1 auto;
-    min-width: 0;
+    flex-basis: 100%;
   }
 
   .search input {
@@ -188,24 +205,19 @@
     font-size: 16px;
   }
 
-  .desktopOnly {
-    display: none;
+  .filtersText {
+    min-height: 44px;
   }
 
-  .phoneOnly {
-    display: flex;
+  .sortSelect {
+    display: block;
   }
 
-  .menus {
-    flex: 0 0 auto;
+  .sortSelect select {
+    min-height: 44px;
   }
 
-  .bar[data-variant="list"] .menus {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  /* 44px hit area around the small chip. */
+  /* 44px hit area around the small filter words. */
   .chip,
   .clearAll {
     position: relative;
@@ -215,6 +227,6 @@
   .clearAll::after {
     content: "";
     position: absolute;
-    inset: -8px -2px;
+    inset: -8px -4px;
   }
 }

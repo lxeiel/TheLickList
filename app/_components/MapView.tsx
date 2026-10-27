@@ -54,6 +54,16 @@ export default function MapView({
     if (unavailable) onUnavailable();
   }, [unavailable, onUnavailable]);
 
+  // Keep the map filling its box as the list panel opens and closes beside it.
+  useEffect(() => {
+    if (!loaded) return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const observer = new ResizeObserver(() => map.resize());
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
+  }, [loaded]);
+
   useEffect(() => {
     // Re-fit whenever the set of pinned restaurants changes (a filter or
     // search narrows/widens it), not just once on load — otherwise a

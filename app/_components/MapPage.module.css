@@ -11,11 +11,19 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* Desktop: the list docked on the left, the map filling the rest. Closing
+   the list hands its column to the map. */
 .body {
+  --list-w: clamp(320px, 32vw, 440px);
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 55fr) minmax(320px, 45fr);
+  grid-template-columns: var(--list-w) minmax(0, 1fr);
+  transition: grid-template-columns 220ms var(--ease-out);
+}
+
+.body[data-list="closed"] {
+  grid-template-columns: 0 minmax(0, 1fr);
 }
 
 .map {
@@ -28,10 +36,40 @@
 .pane {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
+  overflow: hidden;
   padding-top: 12px;
-  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
   background: var(--bg);
+}
+
+.body[data-list="closed"] .pane {
+  border-right: 0;
+}
+
+/* The tab on the list's edge (the map's left edge) that hides/shows it. */
+.listToggle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 56px;
+  transform: translateY(-50%);
+  border: 1px solid var(--line);
+  border-left: 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow-overlay);
+  transition: background-color 150ms var(--ease-out);
+}
+
+.listToggle:hover {
+  background: var(--hover);
 }
 
 .pane > :global(*) {
@@ -55,6 +93,10 @@
     padding: 8px 16px;
   }
 
+  .listToggle {
+    display: none;
+  }
+
   .body {
     position: relative;
     display: block;
@@ -67,12 +109,14 @@
 
   .pane {
     position: absolute;
+    z-index: 2;
     left: 0;
     right: 0;
     bottom: 0;
+    overflow: visible;
     padding-top: 0;
     padding-bottom: env(safe-area-inset-bottom);
-    border-left: 0;
+    border-right: 0;
     border-top: 1px solid var(--line);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     box-shadow: var(--shadow-overlay);

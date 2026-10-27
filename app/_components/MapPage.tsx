@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
 import DetailHeader from "./DetailHeader";
@@ -28,6 +29,23 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const [collapsed, setCollapsed] = useState(false);
   const [mapUnavailable, setMapUnavailable] = useState(false);
 
+  // Desktop list panel: docked on the left, collapsible. It tucks itself away
+  // while the map section is scrolled out of view (up into the homepage's
+  // hero sections) and comes back on return, unless the visitor closed it.
+  const [listClosedByUser, setListClosedByUser] = useState(false);
+  const [mapOutOfView, setMapOutOfView] = useState(false);
+  useEffect(() => {
+    const section = document.getElementById("map");
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setMapOutOfView(entry.intersectionRatio < 0.5),
+      { threshold: [0, 0.5, 1] },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+  const listOpen = !listClosedByUser && !mapOutOfView;
+
   const options = useMemo(() => deriveOptions(restaurants), [restaurants]);
   const filtered = useMemo(() => applyFilters(restaurants, filters), [restaurants, filters]);
   const selected = findSpot(filtered, spot);
@@ -37,7 +55,10 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const [shownId, setShownId] = useState(selected?.id ?? null);
   if ((selected?.id ?? null) !== shownId) {
     setShownId(selected?.id ?? null);
-    if (selected) setCollapsed(false);
+    if (selected) {
+      setCollapsed(false);
+      setListClosedByUser(false);
+    }
   }
 
   // A shared link to a restaurant that no longer exists, or one the current
@@ -113,24 +134,15 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
         <FilterBar variant="map" filters={filters} options={options} onChange={setFilters} />
       </div>
 
-      <div className={styles.body}>
-        <div className={styles.map}>
-          <MapView
-            restaurants={filtered}
-            selectedId={selected?.id ?? null}
-            onSelect={selectSpot}
-            onDeselect={deselect}
-            theme={theme}
-            bottomPadding={bottomPadding}
-            reducedMotion={reducedMotion}
-            onUnavailable={onUnavailable}
-            // On phones the sheet covers part of the map, so keyboard focus
-            // could land on a hidden pin; the list rows do the same job.
-            pinsFocusable={!isPhone}
-          />
-        </div>
-
-        <section ref={pane} id="content" className={styles.pane} data-sheet={sheet} aria-label="Restaurants">
+      <div className={styles.body} data-list={listOpen ? "open" : "closed"}>
+        <section
+          ref={pane}
+          id="content"
+          className={styles.pane}
+          data-sheet={sheet}
+          aria-label="Restaurants"
+          inert={!isPhone && !listOpen}
+        >
           {!mapUnavailable && (
             <button
               type="button"
@@ -157,6 +169,35 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             />
           )}
         </section>
+
+        <div className={styles.map}>
+          {!isPhone && (
+            <button
+              type="button"
+              className={styles.listToggle}
+              aria-controls="content"
+              aria-expanded={listOpen}
+              aria-label={listOpen ? "Hide list" : "Show list"}
+              onClick={() => setListClosedByUser(listOpen)}
+            >
+              {listOpen ? <CaretLeft size={16} aria-hidden /> : <CaretRight size={16} aria-hidden />}
+            </button>
+          )}
+          <MapView
+            restaurants={filtered}
+            selectedId={selected?.id ?? null}
+            onSelect={selectSpot}
+            onDeselect={deselect}
+            theme={theme}
+            bottomPadding={bottomPadding}
+            reducedMotion={reducedMotion}
+            onUnavailable={onUnavailable}
+            // On phones the sheet covers part of the map, so keyboard focus
+            // could land on a hidden pin; the list rows do the same job.
+            pinsFocusable={!isPhone}
+          />
+        </div>
+
       </div>
     </div>
   );

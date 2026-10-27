@@ -12,11 +12,19 @@ export function Dropdown({
   icon,
   count = 0,
   children,
+  trigger,
+  buttonClassName,
+  align = "start",
 }: {
   label: string;
   icon?: ReactNode;
   count?: number;
   children: ReactNode;
+  /** Replaces the default boxed button content (label, count, caret). */
+  trigger?: ReactNode;
+  buttonClassName?: string;
+  /** Which edge of the button the popover lines up with. */
+  align?: "start" | "end";
 }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -47,19 +55,23 @@ export function Dropdown({
       <button
         ref={button}
         type="button"
-        className={styles.button}
+        className={buttonClassName ?? styles.button}
         data-active={count > 0 || undefined}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen(!open)}
       >
-        {icon}
-        {label}
-        {count > 0 && <span> · {count}</span>}
-        <CaretDown size={14} aria-hidden />
+        {trigger ?? (
+          <>
+            {icon}
+            {label}
+            {count > 0 && <span> · {count}</span>}
+            <CaretDown size={14} aria-hidden />
+          </>
+        )}
       </button>
       {open && (
-        <div id={panelId} className={styles.panel}>
+        <div id={panelId} className={styles.panel} data-align={align}>
           {children}
         </div>
       )}
