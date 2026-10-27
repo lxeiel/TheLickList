@@ -69,10 +69,17 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
   // Local text keeps typing instant; the URL is written after a pause.
   const [text, setText] = useState(filters.q);
   const [syncedQ, setSyncedQ] = useState(filters.q);
+  // What this input last wrote to the URL. Our own write comes back through
+  // useSearchParams a render later (Next applies it in a transition), so it
+  // must not be mistaken for an outside change — resetting the text then
+  // would blank the box and throw the caret to the end.
+  const written = useRef<string | null>(null);
   if (filters.q !== syncedQ) {
-    // Changed from outside (Clear all, back button): follow it.
     setSyncedQ(filters.q);
-    setText(filters.q);
+    // Our own write arriving: consume it once. Anything else changed from
+    // outside (Clear all, back/forward): follow it.
+    if (filters.q === written.current) written.current = null;
+    else setText(filters.q);
   }
 
   const latest = useRef({ filters, onChange });
@@ -83,7 +90,7 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
   useEffect(() => {
     if (text === latest.current.filters.q) return;
     const timer = setTimeout(() => {
-      setSyncedQ(text);
+      written.current = text;
       latest.current.onChange({ ...latest.current.filters, q: text });
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
