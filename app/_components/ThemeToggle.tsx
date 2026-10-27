@@ -5,13 +5,28 @@ import { Moon, Sun } from "@phosphor-icons/react";
 import { applyThemePreference, useTheme } from "./useTheme";
 import styles from "./ThemeToggle.module.css";
 
-export default function ThemeToggle() {
+// "icon": the ☾/☀ button in the navbar. "row": a full-width "Night mode"
+// row for the phone menu, showing whether it's on.
+export default function ThemeToggle({ variant = "icon" }: { variant?: "icon" | "row" }) {
   const { theme, setTheme } = useTheme();
   const next = theme === "dark" ? "light" : "dark";
 
   useLayoutEffect(() => {
     if (!document.documentElement.dataset.theme) applyThemePreference();
   }, []);
+
+  if (variant === "row") {
+    return (
+      <button type="button" className={styles.row} aria-pressed={theme === "dark"} onClick={() => setTheme(next)}>
+        Night mode
+        <span className={styles.rowState}>
+          {theme === "dark" ? "On" : "Off"}
+          <Moon className={styles.moon} size={20} aria-hidden />
+          <Sun className={styles.sun} size={20} aria-hidden />
+        </span>
+      </button>
+    );
+  }
 
   return (
     <button

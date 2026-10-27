@@ -70,6 +70,26 @@
   display: none;
 }
 
+.barTheme {
+  display: contents;
+}
+
+/* Only phones get the night-mode row in the menu (wider screens keep the
+   ☾ button in the bar). */
+.menuTheme {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .barTheme {
+    display: none;
+  }
+
+  .menuTheme {
+    display: block;
+  }
+}
+
 /* Below 900px the links fold into the menu; the logo stays centred. */
 @media (max-width: 899px) {
   .bar {

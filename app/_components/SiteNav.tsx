@@ -98,7 +98,9 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
             </Link>
           ))}
         </nav>
-        <ThemeToggle />
+        <span className={styles.barTheme}>
+          <ThemeToggle />
+        </span>
         <button
           ref={menuButton}
           type="button"
@@ -130,6 +132,9 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
               {current === page && <span className={styles.currentDot} aria-hidden />}
             </Link>
           ))}
+          <div className={styles.menuTheme}>
+            <ThemeToggle variant="row" />
+          </div>
         </nav>
       )}
     </header>
