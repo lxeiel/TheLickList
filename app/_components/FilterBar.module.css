@@ -166,13 +166,16 @@
     gap: 8px;
   }
 
+  /* Whole track is tappable: no padding gap, segments 44px tall. */
   .segmented {
     width: 100%;
+    padding: 0;
   }
 
   .segment {
     flex: 1;
-    min-height: 38px;
+    min-height: 44px;
+    border-radius: var(--radius-sm);
   }
 
   .search {

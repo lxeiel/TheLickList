@@ -1,0 +1,90 @@
+.admin {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.admin :global(h1) {
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.admin :global(h2) {
+  margin: 32px 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.admin :global(form) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin :global(label) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin :global(fieldset) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.admin :global(input),
+.admin :global(select),
+.admin :global(textarea) {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.admin :global(textarea) {
+  min-height: 96px;
+}
+
+.admin :global(button) {
+  align-self: flex-start;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-weight: 500;
+}
+
+.admin :global(button[type="submit"]) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.admin :global(button:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin :global(ul) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.admin :global(a) {
+  color: var(--accent);
+  text-decoration: underline;
+}

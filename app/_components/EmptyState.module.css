@@ -22,3 +22,9 @@
 .clear:hover {
   background: var(--hover);
 }
+
+@media (max-width: 767px) {
+  .clear {
+    min-height: 44px;
+  }
+}
