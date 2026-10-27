@@ -1,0 +1,66 @@
+/* The full stop: the accent "Licked" dot, sized to the type. */
+.dot {
+  display: inline-block;
+  width: 0.17em;
+  height: 0.17em;
+  margin-left: 0.05em;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.hero {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  font-size: clamp(84px, 15vw, 168px);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.84;
+  color: var(--ink);
+}
+
+.the {
+  margin: 0 0 0.12em 0.04em;
+  font-size: 0.3em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.heroSig {
+  position: absolute;
+  right: -0.02em;
+  bottom: -0.78em;
+  font-family: var(--font-signature), cursive;
+  font-size: 0.24em;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--accent);
+  transform: rotate(-7deg);
+}
+
+/* Nav size: the signature sits inside the logo's own box, so neighbouring
+   links can never slide under it. */
+.nav {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1;
+}
+
+.navWord {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.navSig {
+  margin: 3px -4px 0 0;
+  font-family: var(--font-signature), cursive;
+  font-size: 9px;
+  color: var(--accent);
+  transform: rotate(-7deg);
+}

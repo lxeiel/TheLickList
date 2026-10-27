@@ -88,6 +88,16 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
 
   const onUnavailable = useCallback(() => setMapUnavailable(true), []);
 
+  // A shared link that picks a restaurant or filters opens at the map, not
+  // the homepage's hero. (A "#map" link is scrolled there by the browser.)
+  useEffect(() => {
+    const url = new URLSearchParams(window.location.search);
+    const hasState = ["spot", "status", "q", "cuisine", "area", "price"].some((key) => url.has(key));
+    if (hasState && window.location.hash !== "#map") {
+      document.getElementById("map")?.scrollIntoView({ behavior: "auto" });
+    }
+  }, []);
+
   const sheet: SheetState = mapUnavailable ? "full" : collapsed ? "collapsed" : selected ? "detail" : "list";
   const bottomPadding = isPhone
     ? Math.round(
@@ -98,7 +108,7 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
     : 0;
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <div className={styles.filters}>
         <FilterBar variant="map" filters={filters} options={options} onChange={setFilters} />
       </div>
@@ -148,6 +158,6 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

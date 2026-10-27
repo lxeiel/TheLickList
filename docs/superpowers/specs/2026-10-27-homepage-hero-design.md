@@ -1,6 +1,6 @@
-# Homepage hero, logo and centred navbar — design (not yet built)
+# Homepage hero, logo and centred navbar — design
 
-Status: design agreed in conversation on 2026-10-27; final approval pending. Build later.
+Status: built on 2026-10-27 (branch `homepage-hero`). Contact links live in `lib/site.ts` and stay hidden until filled in. The hero's ↓ goes straight to the map, as specified; the menu section sits between them for scrolling.
 Mockups (git-ignored): logo + navbar in `.superpowers/brainstorm/54283-1793094154/content/logo-c-widths-v3.html`; menu section in `.superpowers/brainstorm/90741-1793109124/content/menu-section-v3.html`. Accent is now deep emerald (`#0B6B4F` / `#59C0A2`).
 
 ## Logo (direction C)

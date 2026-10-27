@@ -1,0 +1,19 @@
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 24px 16px 120px;
+}
+
+.title {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.down {
+  position: absolute;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+}

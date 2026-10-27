@@ -1,0 +1,5 @@
+/* The navbar floats over the homepage, so the map section leaves room for it
+   and together they fill exactly one screen. */
+.map {
+  padding-top: var(--nav-h);
+}

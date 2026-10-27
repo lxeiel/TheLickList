@@ -1,0 +1,162 @@
+.section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100dvh;
+  padding: calc(var(--nav-h) + 32px) 24px 24px;
+  border-top: 1px solid var(--line);
+}
+
+/* Five columns: About + numbers across 1–3, the list (with How it works and
+   Contact under it) across 4–5. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: 28px;
+  row-gap: 48px;
+  align-items: start;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.heading {
+  margin-bottom: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.about {
+  grid-column: 1 / span 3;
+}
+
+.intro {
+  max-width: 34em;
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.numbers {
+  grid-column: 1 / span 3;
+}
+
+.line {
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.num {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  grid-column: 4 / span 2;
+  grid-row: 1 / span 2;
+}
+
+.list ul {
+  list-style: none;
+}
+
+.names {
+  columns: 2;
+  column-gap: 28px;
+}
+
+.names li {
+  break-inside: avoid;
+  text-transform: uppercase;
+}
+
+.names a:hover,
+.more:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.crossed {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.names a.crossed:hover {
+  text-decoration: line-through;
+  color: var(--ink);
+}
+
+.more {
+  display: inline-block;
+  margin-top: 18px;
+  text-transform: uppercase;
+}
+
+.sub {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 28px;
+  margin-top: 40px;
+}
+
+.key li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.key b {
+  font-weight: 600;
+}
+
+.down {
+  display: flex;
+  justify-content: center;
+  padding-top: 32px;
+}
+
+@media (max-width: 899px) {
+  .grid {
+    grid-template-columns: 1fr;
+    row-gap: 40px;
+  }
+
+  .about,
+  .numbers,
+  .list {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .intro {
+    font-size: 19px;
+  }
+
+  .sub {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding: calc(var(--nav-h) + 24px) 16px 24px;
+  }
+
+  .grid {
+    font-size: 16px;
+  }
+
+  /* Too narrow for two columns of names: long ones would wrap and spill
+     between the wishlist and the crossed-off half. */
+  .names {
+    columns: 1;
+  }
+}
