@@ -1,0 +1,25 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.count {
+  padding: 0 12px 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Scrolls inside its own box so the page (and the map) never moves. */
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.list li + li {
+  border-top: 1px solid var(--line);
+}
