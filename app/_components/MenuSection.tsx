@@ -2,6 +2,7 @@ import Link from "next/link";
 import { buildMenuList, countByStatus } from "@/lib/menu";
 import type { Restaurant } from "@/lib/restaurants";
 import { CONTACT_LINKS } from "@/lib/site";
+import ScrollDownButton from "./ScrollDownButton";
 import StatusMark from "./StatusMark";
 import styles from "./MenuSection.module.css";
 
@@ -47,41 +48,48 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
           <Link href="/list" className={styles.more}>
             See the full list
           </Link>
+        </div>
 
-          <div className={styles.sub}>
+        <div className={styles.how}>
+          <div>
+            <h2 className={styles.heading}>How it works</h2>
+            <ul className={styles.key}>
+              <li>
+                <StatusMark status="tried" size="md" />
+                <span>
+                  <b>Licked</b>, been there, eaten that
+                </span>
+              </li>
+              <li>
+                <StatusMark status="wishlist" size="md" />
+                <span>
+                  <b>Gotta Lick</b>, on the wishlist
+                </span>
+              </li>
+              <li>
+                <span className={styles.scoreMark} aria-hidden>
+                  9/10
+                </span>
+                <span>
+                  <b>Scores</b>, out of 10
+                </span>
+              </li>
+            </ul>
+          </div>
+          {contact.length > 0 && (
             <div>
-              <h2 className={styles.heading}>How it works</h2>
-              <ul className={styles.key}>
-                <li>
-                  <StatusMark status="tried" size="md" />
-                  <span>
-                    <b>Licked</b>, been there, eaten that
-                  </span>
-                </li>
-                <li>
-                  <StatusMark status="wishlist" size="md" />
-                  <span>
-                    <b>Gotta Lick</b>, on the wishlist
-                  </span>
-                </li>
-                <li>Scores are out of 10</li>
+              <h2 className={styles.heading}>Contact</h2>
+              <ul>
+                {contact.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href} target="_blank" rel="noopener noreferrer">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
-            {contact.length > 0 && (
-              <div>
-                <h2 className={styles.heading}>Contact</h2>
-                <ul>
-                  {contact.map((link) => (
-                    <li key={link.label}>
-                      <a href={link.href} target="_blank" rel="noopener noreferrer">
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         <div className={styles.numbers}>
@@ -93,6 +101,10 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
             <span className={styles.num}>{counts.wishlist}</span> Gotta Lick
           </p>
         </div>
+      </div>
+
+      <div className={styles.down}>
+        <ScrollDownButton target="map" label="Scroll to the map" />
       </div>
     </section>
   );
