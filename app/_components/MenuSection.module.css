@@ -111,10 +111,11 @@
   text-transform: uppercase;
 }
 
-/* The legend: three marked items in a row. */
+/* The legend, two by two: the status marks on top, scores and price
+   beneath them. */
 .key {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: clamp(20px, 2vw, 40px);
   row-gap: 12px;
 }
@@ -156,11 +157,6 @@
   .how {
     grid-column: 1;
     grid-row: auto;
-  }
-
-  /* Licked and Gotta Lick side by side; the score item wraps under them. */
-  .key {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .intro {

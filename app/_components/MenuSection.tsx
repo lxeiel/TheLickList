@@ -74,6 +74,14 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
                   <b>Scores</b>, out of 10
                 </span>
               </li>
+              <li>
+                <span className={styles.scoreMark} aria-hidden>
+                  $$
+                </span>
+                <span>
+                  <b>Price</b>, runs from $ to $$$
+                </span>
+              </li>
             </ul>
           </div>
           {contact.length > 0 && (
