@@ -29,22 +29,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const [collapsed, setCollapsed] = useState(false);
   const [mapUnavailable, setMapUnavailable] = useState(false);
 
-  // Desktop list panel: docked on the left, collapsible. It tucks itself away
-  // while the map section is scrolled out of view (up into the homepage's
-  // hero sections) and comes back on return, unless the visitor closed it.
+  // Desktop list panel: docked on the left; the visitor can collapse it.
   const [listClosedByUser, setListClosedByUser] = useState(false);
-  const [mapOutOfView, setMapOutOfView] = useState(false);
-  useEffect(() => {
-    const section = document.getElementById("map");
-    if (!section) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setMapOutOfView(entry.intersectionRatio < 0.5),
-      { threshold: [0, 0.5, 1] },
-    );
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
-  const listOpen = !listClosedByUser && !mapOutOfView;
+  const listOpen = !listClosedByUser;
 
   const options = useMemo(() => deriveOptions(restaurants), [restaurants]);
   const filtered = useMemo(() => applyFilters(restaurants, filters), [restaurants, filters]);
