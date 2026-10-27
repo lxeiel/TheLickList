@@ -11,7 +11,7 @@ export default function Hero() {
         <Logo size="hero" />
       </h1>
       <div className={styles.down}>
-        <ScrollDownButton target="map" label="See the map" />
+        <ScrollDownButton target="menu" label="Scroll down" />
       </div>
     </section>
   );

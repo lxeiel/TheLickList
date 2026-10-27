@@ -2,7 +2,6 @@ import Link from "next/link";
 import { buildMenuList, countByStatus } from "@/lib/menu";
 import type { Restaurant } from "@/lib/restaurants";
 import { CONTACT_LINKS } from "@/lib/site";
-import ScrollDownButton from "./ScrollDownButton";
 import StatusMark from "./StatusMark";
 import styles from "./MenuSection.module.css";
 
@@ -94,10 +93,6 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
             <span className={styles.num}>{counts.wishlist}</span> Gotta Lick
           </p>
         </div>
-      </div>
-
-      <div className={styles.down}>
-        <ScrollDownButton target="map" label="See the map" />
       </div>
     </section>
   );
