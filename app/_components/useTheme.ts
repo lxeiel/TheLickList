@@ -14,6 +14,25 @@ function subscribe(onChange: () => void) {
 const getSnapshot = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
 const getServerSnapshot = (): Theme => "light";
 
+// Same decision as the inline theme script. Re-applied after mount because in
+// development Strict Mode's remount resets <html> attributes, clearing the
+// one the script set.
+export function applyThemePreference() {
+  let stored: string | null = null;
+  try {
+    stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  } catch {
+    // Storage blocked: fall back to the device setting.
+  }
+  const theme =
+    stored === "light" || stored === "dark"
+      ? stored
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+  document.documentElement.dataset.theme = theme;
+}
+
 export function useTheme(): { theme: Theme; setTheme: (theme: Theme) => void } {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 

@@ -1,12 +1,17 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import { Moon, Sun } from "@phosphor-icons/react";
-import { useTheme } from "./useTheme";
+import { applyThemePreference, useTheme } from "./useTheme";
 import styles from "./ThemeToggle.module.css";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const next = theme === "dark" ? "light" : "dark";
+
+  useLayoutEffect(() => {
+    if (!document.documentElement.dataset.theme) applyThemePreference();
+  }, []);
 
   return (
     <button

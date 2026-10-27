@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
+import InlineScript from "@/app/_components/InlineScript";
+import SiteNav, { SiteNavFallback } from "@/app/_components/SiteNav";
 import { themeScript } from "@/lib/theme";
 import "./globals.css";
 
@@ -24,9 +27,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // attribute legitimately differs from the server render.
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <InlineScript html={themeScript} />
       </head>
-      <body>{children}</body>
+      <body>
+        <a href="#content" className="skip-link">
+          Skip to content
+        </a>
+        {/* useSearchParams in SiteNav needs a Suspense boundary. */}
+        <Suspense fallback={<SiteNavFallback />}>
+          <SiteNav />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }
