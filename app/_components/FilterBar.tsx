@@ -73,12 +73,12 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
   // useSearchParams a render later (Next applies it in a transition), so it
   // must not be mistaken for an outside change — resetting the text then
   // would blank the box and throw the caret to the end.
-  const written = useRef<string | null>(null);
+  const [written, setWritten] = useState<string | null>(null);
   if (filters.q !== syncedQ) {
     setSyncedQ(filters.q);
     // Our own write arriving: consume it once. Anything else changed from
     // outside (Clear all, back/forward): follow it.
-    if (filters.q === written.current) written.current = null;
+    if (filters.q === written) setWritten(null);
     else setText(filters.q);
   }
 
@@ -90,7 +90,7 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
   useEffect(() => {
     if (text === latest.current.filters.q) return;
     const timer = setTimeout(() => {
-      written.current = text;
+      setWritten(text);
       latest.current.onChange({ ...latest.current.filters, q: text });
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
