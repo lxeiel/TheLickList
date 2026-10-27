@@ -1,0 +1,122 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  animation: fade-in 220ms var(--ease-out);
+}
+
+.panel {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  box-shadow: var(--shadow-overlay);
+}
+
+/* Drawer from the right. */
+.drawer {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  animation: drawer-in 220ms var(--ease-out);
+}
+
+/* Sheet from the bottom. */
+.sheet {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  animation: sheet-in 220ms var(--ease-out);
+}
+
+.sheet[data-height="85%"] {
+  height: 85dvh;
+}
+
+@media (min-width: 768px) {
+  .responsive {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    animation: drawer-in 220ms var(--ease-out);
+  }
+}
+
+@media (max-width: 767px) {
+  .responsive {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 85dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: sheet-in 220ms var(--ease-out);
+  }
+
+  .responsive[data-height="85%"] {
+    height: 85dvh;
+  }
+}
+
+/* Leaving: faster, accelerating out. */
+.root[data-state="closed"] .scrim {
+  opacity: 0;
+  transition: opacity 160ms var(--ease-in);
+}
+
+.root[data-state="closed"] .drawer {
+  transform: translateX(100%);
+  transition: transform 160ms var(--ease-in);
+}
+
+.root[data-state="closed"] .sheet {
+  transform: translateY(100%);
+  transition: transform 160ms var(--ease-in);
+}
+
+@media (min-width: 768px) {
+  .root[data-state="closed"] .responsive {
+    transform: translateX(100%);
+    transition: transform 160ms var(--ease-in);
+  }
+}
+
+@media (max-width: 767px) {
+  .root[data-state="closed"] .responsive {
+    transform: translateY(100%);
+    transition: transform 160ms var(--ease-in);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}

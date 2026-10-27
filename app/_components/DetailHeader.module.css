@@ -1,0 +1,33 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.back,
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  transition: background-color 150ms var(--ease-out);
+}
+
+.back {
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.close {
+  width: 44px;
+}
+
+.back:hover,
+.close:hover {
+  background: var(--hover);
+}
