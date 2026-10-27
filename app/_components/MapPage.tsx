@@ -46,6 +46,19 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
     if (spot && !selected) clearSpot();
   }, [spot, selected, clearSpot]);
 
+  // Opening a restaurant from a list row unmounts that row (the detail
+  // replaces the list), which would drop focus to <body>. Move it to the
+  // detail's back button instead; a pin keeps focus, since it stays put.
+  const pane = useRef<HTMLElement>(null);
+  const lastSelectedId = useRef<string | null>(null);
+  useEffect(() => {
+    const previous = lastSelectedId.current;
+    lastSelectedId.current = selected?.id ?? null;
+    if (!selected || previous === selected.id) return;
+    if (document.activeElement?.closest("[data-pin]")) return;
+    pane.current?.querySelector<HTMLElement>("[data-detail-back]")?.focus();
+  }, [selected]);
+
   // After closing the detail, hand focus back to the row (or pin) it came from.
   const returnFocusTo = useRef<string | null>(null);
   useEffect(() => {
@@ -107,7 +120,7 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
           />
         </div>
 
-        <section id="content" className={styles.pane} data-sheet={sheet} aria-label="Restaurants">
+        <section ref={pane} id="content" className={styles.pane} data-sheet={sheet} aria-label="Restaurants">
           {!mapUnavailable && (
             <button
               type="button"
