@@ -101,6 +101,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             bottomPadding={bottomPadding}
             reducedMotion={reducedMotion}
             onUnavailable={onUnavailable}
+            // On phones the sheet covers part of the map, so keyboard focus
+            // could land on a hidden pin; the list rows do the same job.
+            pinsFocusable={!isPhone}
           />
         </div>
 

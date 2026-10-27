@@ -96,11 +96,19 @@
   }
 
   .handle {
+    position: relative;
     display: grid;
     place-items: center;
     flex-shrink: 0;
     width: 100%;
-    height: 24px;
+    height: 28px;
+  }
+
+  /* 44px tall hit area without pushing the sheet's content down. */
+  .handle::after {
+    content: "";
+    position: absolute;
+    inset: -8px 0;
   }
 
   .handle span {

@@ -28,6 +28,7 @@ export default function MapView({
   bottomPadding,
   reducedMotion,
   onUnavailable,
+  pinsFocusable = true,
 }: {
   restaurants: Restaurant[];
   selectedId: string | null;
@@ -37,6 +38,7 @@ export default function MapView({
   bottomPadding: number;
   reducedMotion: boolean;
   onUnavailable: () => void;
+  pinsFocusable?: boolean;
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -126,6 +128,7 @@ export default function MapView({
             className={styles.pin}
             data-selected={r.id === selectedId || undefined}
             aria-label={pinLabel(r)}
+            tabIndex={pinsFocusable ? undefined : -1}
             onClick={() => onSelect(r.id)}
           >
             <StatusMark status={r.status} size="pin" />
