@@ -2,9 +2,9 @@ import styles from "./ListSkeleton.module.css";
 
 // Placeholder while restaurants load: the nav comes from the layout, the map
 // area keeps its size on desktop so nothing jumps when it arrives.
-export default function ListSkeleton() {
+export default function ListSkeleton({ variant = "map" }: { variant?: "map" | "list" }) {
   return (
-    <div className={styles.page} aria-busy="true" aria-label="Loading">
+    <div className={styles.page} data-variant={variant} aria-busy="true" aria-label="Loading">
       <div className={styles.bar} />
       <div className={styles.body}>
         <div className={styles.map} />

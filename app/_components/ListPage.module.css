@@ -1,0 +1,50 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.count {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.phone {
+  display: none;
+  list-style: none;
+}
+
+.phone li + li {
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 767px) {
+  .page {
+    gap: 12px;
+    padding: 16px 16px 32px;
+  }
+
+  .desktop {
+    display: none;
+  }
+
+  .phone {
+    display: block;
+    margin: 0 -12px;
+  }
+}

@@ -1,0 +1,77 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th {
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  vertical-align: baseline;
+}
+
+.table tbody tr {
+  cursor: pointer;
+  transition: background-color 150ms var(--ease-out);
+}
+
+.table tbody tr:hover,
+.table tbody tr[data-selected] {
+  background: var(--hover);
+}
+
+.right {
+  text-align: right !important;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+.sortButton:hover,
+th[aria-sort] .sortButton {
+  color: var(--ink);
+}
+
+.name {
+  color: var(--ink) !important;
+}
+
+.nameButton {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.score {
+  color: var(--ink) !important;
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.added {
+  white-space: nowrap;
+}

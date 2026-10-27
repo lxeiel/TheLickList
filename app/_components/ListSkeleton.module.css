@@ -19,6 +19,18 @@
   background: var(--hover);
 }
 
+.page[data-variant="list"] .body {
+  grid-template-columns: 1fr;
+}
+
+.page[data-variant="list"] .map {
+  display: none;
+}
+
+.page[data-variant="list"] .rows {
+  border-left: 0;
+}
+
 .rows {
   list-style: none;
   padding: 24px;
