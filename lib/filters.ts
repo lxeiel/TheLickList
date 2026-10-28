@@ -58,7 +58,8 @@ export function applyFilters(restaurants: Restaurant[], filters: Filters): Resta
     return (
       lower(r.name).includes(q) ||
       r.cuisine_tags.some((tag) => lower(tag).includes(q)) ||
-      (r.area != null && lower(r.area).includes(q))
+      (r.area != null && lower(r.area).includes(q)) ||
+      r.foods.some((food) => lower(food.name).includes(q))
     );
   });
 }

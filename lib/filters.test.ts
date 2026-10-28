@@ -36,7 +36,7 @@ const fixture: Restaurant[] = [
   restaurant({ id: "a", name: "Ramen House", status: "tried", cuisine_tags: ["Ramen"], area: "Central", price_range: "$$" }),
   restaurant({ id: "b", name: "Hill Street Tai Hwa", status: "tried", cuisine_tags: ["Hawker", "Noodles"], area: "Central", price_range: "$" }),
   restaurant({ id: "c", name: "Tsuta", status: "wishlist", cuisine_tags: ["ramen"], area: "Tokyo", price_range: "$$$" }),
-  restaurant({ id: "d", name: "Mystery Spot", status: "tried" }), // no tags, area or price
+  restaurant({ id: "d", name: "Mystery Spot", status: "tried", foods: [{ name: "Curry Laksa", must_try: true }] }), // no tags, area or price
   restaurant({ id: "e", name: "Corner Cafe", status: "wishlist", cuisine_tags: ["Cafe"], area: "Ramen Street" }),
 ];
 
@@ -69,6 +69,11 @@ describe("parseFilters / writeFilters", () => {
 });
 
 describe("applyFilters", () => {
+  test("q matches food names", () => {
+    expect(ids(applyFilters(fixture, { ...EMPTY_FILTERS, q: "laksa" }))).toEqual(["d"]);
+    expect(ids(applyFilters(fixture, { ...EMPTY_FILTERS, status: "wishlist", q: "laksa" }))).toEqual([]);
+  });
+
   test("no filters returns everything", () => {
     expect(ids(applyFilters(fixture, EMPTY_FILTERS))).toEqual(["a", "b", "c", "d", "e"]);
   });
