@@ -88,3 +88,98 @@
   color: var(--accent);
   text-decoration: underline;
 }
+
+/* Restaurants page: title and count, the Add button on the right, and the
+   form opening full-width beneath them. */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header :global(h1) {
+  margin: 0;
+}
+
+.count {
+  margin-left: 4px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.admin .addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+}
+
+.addPanel {
+  flex-basis: 100%;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.empty {
+  color: var(--muted);
+}
+
+.admin .list {
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin .row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 150ms var(--ease-out);
+}
+
+.admin .row:hover {
+  background: var(--hover);
+}
+
+.rowText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rowName {
+  font-weight: 600;
+}
+
+.rowDetails {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flag {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rowArrow {
+  flex-shrink: 0;
+  color: var(--muted);
+}
