@@ -81,7 +81,22 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
 
   return (
     <header className={styles.bar} data-home={isHome || undefined} data-hidden={hidden || undefined} inert={hidden}>
-      <Link href="/" className={styles.logo}>
+      <Link
+        href="/"
+        className={styles.logo}
+        onClick={(e) => {
+          // Already on the homepage: a Link to the same page keeps the scroll
+          // position (Next's default), so scroll back up to the hero ourselves.
+          if (pathname !== "/") return;
+          e.preventDefault();
+          setOpen(false);
+          const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+          if (window.location.hash) {
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          }
+        }}
+      >
         <Logo size="nav" />
       </Link>
 
