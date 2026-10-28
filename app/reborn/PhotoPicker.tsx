@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type Dispatch } from "react";
+import { useRef, useState, type Dispatch } from "react";
 import { ArrowLeft, ArrowRight, Plus, X } from "@phosphor-icons/react";
+import { createLimiter } from "@/lib/limit";
 import { MAX_PHOTOS } from "@/lib/photos";
 import type { PhotoAction, PhotoItem } from "@/lib/photoUploads";
 import { createPhotoUploadAction } from "./(protected)/actions";
@@ -23,6 +24,9 @@ export function PhotoPicker({
   const input = useRef<HTMLInputElement>(null);
   // The original files, kept so a failed upload can be retried.
   const files = useRef(new Map<string, File>());
+  // Two at a time: decoding a dozen full-size phone photos at once can run a
+  // phone out of memory and take the whole form down with it.
+  const [queue] = useState(() => createLimiter(2));
 
   async function upload(key: string) {
     const file = files.current.get(key);
@@ -51,7 +55,7 @@ export function PhotoPicker({
       const key = crypto.randomUUID();
       files.current.set(key, file);
       dispatch({ type: "add", key, preview: URL.createObjectURL(file) });
-      void upload(key);
+      void queue(() => upload(key));
     }
     if (input.current) input.current.value = "";
   }
@@ -73,7 +77,7 @@ export function PhotoPicker({
                     type="button"
                     onClick={() => {
                       dispatch({ type: "retry", key: item.key });
-                      void upload(item.key);
+                      void queue(() => upload(item.key));
                     }}
                   >
                     Retry
