@@ -128,7 +128,7 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
-.viewerButton:disabled {
+.viewerButton[aria-disabled="true"] {
   opacity: 0.3;
 }
 

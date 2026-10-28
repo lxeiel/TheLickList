@@ -83,7 +83,9 @@ export default function PhotoViewer({
             type="button"
             className={`${styles.viewerButton} ${styles.prev}`}
             onClick={() => go(-1)}
-            disabled={index === 0}
+            // aria-disabled, not disabled: a disabled button drops focus to
+            // the page, and the ← → keys stop reaching the viewer.
+            aria-disabled={index === 0}
             aria-label="Previous photo"
           >
             <CaretLeft size={22} aria-hidden />
@@ -92,7 +94,7 @@ export default function PhotoViewer({
             type="button"
             className={`${styles.viewerButton} ${styles.next}`}
             onClick={() => go(1)}
-            disabled={index === urls.length - 1}
+            aria-disabled={index === urls.length - 1}
             aria-label="Next photo"
           >
             <CaretRight size={22} aria-hidden />
