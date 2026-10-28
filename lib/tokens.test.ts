@@ -39,6 +39,8 @@ describe.each(Object.entries(themes))("%s theme", (_, t) => {
     ["--muted", "--hover", 4.5],
     ["--accent", "--bg", 4.5],
     ["--on-accent", "--accent", 4.5],
+    ["--danger", "--bg", 4.5],
+    ["--danger", "--surface", 4.5],
     ["--line-strong", "--bg", 3],
     ["--line-strong", "--surface", 3],
     ["--accent", "--map-land", 3],

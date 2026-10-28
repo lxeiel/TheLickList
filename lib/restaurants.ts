@@ -161,3 +161,21 @@ export async function updateRestaurant(
 
   return data as Restaurant;
 }
+
+// The admin's "Licked it" button: moves a wishlist spot to Licked without
+// touching anything else (the score is added later, from the edit form).
+export async function markLicked(id: string): Promise<void> {
+  const { error } = await getServiceClient().from("restaurant").update({ status: "tried" }).eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function deleteRestaurant(id: string): Promise<void> {
+  const { error } = await getServiceClient().from("restaurant").delete().eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}

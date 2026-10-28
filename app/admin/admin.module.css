@@ -1,5 +1,5 @@
 .admin {
-  max-width: 720px;
+  max-width: 1040px;
   margin: 0 auto;
   padding: 24px 16px 48px;
 }
@@ -89,15 +89,15 @@
   text-decoration: underline;
 }
 
-/* Restaurants page: title and count, the Add button on the right, and the
-   form opening full-width beneath them. */
+/* Restaurants page: title and count with the Add button, then Licked and
+   Gotta Lick side by side (stacked on phones). */
 .header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .header :global(h1) {
@@ -117,35 +117,99 @@
   align-self: center;
 }
 
-.addPanel {
-  flex-basis: 100%;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: var(--surface);
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin .columnHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.columnCount {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* One long underlined line, like the public filter bar's search. */
+.admin .search {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--muted);
+}
+
+.admin .search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+
+.admin .search input:focus-visible {
+  outline: none;
+}
+
+.admin .search:focus-within {
+  border-bottom-color: var(--accent);
 }
 
 .empty {
+  padding: 12px 0;
   color: var(--muted);
+  font-size: 14px;
 }
 
 .admin .list {
   gap: 0;
-  border-top: 1px solid var(--line);
 }
 
 .admin .row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 8px;
+  gap: 8px;
   border-bottom: 1px solid var(--line);
+}
+
+/* The row itself opens the edit popup; Licked it sits beside it. */
+.admin .rowMain {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--ink);
-  text-decoration: none;
+  font-weight: 400;
+  text-align: left;
   transition: background-color 150ms var(--ease-out);
 }
 
-.admin .row:hover {
+.admin .rowMain:hover {
   background: var(--hover);
 }
 
@@ -182,6 +246,134 @@
 .rowArrow {
   flex-shrink: 0;
   color: var(--muted);
+}
+
+.admin .lickButton {
+  flex-shrink: 0;
+  align-self: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-color: var(--accent);
+  color: var(--accent);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.admin .lickButton:hover {
+  background: var(--hover);
+}
+
+@media (max-width: 767px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+/* Add / edit popup: centred on wider screens, full-screen on phones. */
+.admin .dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  /* The site reset zeroes margins; a modal dialog centres itself with auto. */
+  margin: auto;
+  padding: 20px 24px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow-overlay);
+  overscroll-behavior: contain;
+}
+
+.admin .dialog::backdrop {
+  background: var(--scrim);
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.admin .dialogHeader :global(h2) {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.admin .iconButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.admin .iconButton:hover {
+  background: var(--hover);
+}
+
+@media (max-width: 767px) {
+  .admin .dialog {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+/* Form: Status, Price and Score share a row; Save and the popup's buttons
+   sit together at the bottom. */
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.linkRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.formError {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.admin .deleteButton {
+  margin-left: auto;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.confirmDelete {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: 14px;
+}
+
+.confirmDelete .deleteButton {
+  margin-left: 0;
 }
 
 /* A slim bar on every logged-in admin page: back to the list, and log out. */

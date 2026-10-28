@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow } from "next/navigation";
 import type { Restaurant, RestaurantInput, RestaurantLink, RestaurantStatus } from "@/lib/restaurants";
+import { STATUS_LABEL } from "@/app/_components/StatusMark";
+import styles from "./admin.module.css";
 
 const SINGAPORE_AREAS = ["Central", "East", "North", "Northeast", "West"];
 
 export function RestaurantForm({
   initial,
   onSubmit,
+  actions,
 }: {
   initial?: Restaurant;
   onSubmit: (input: RestaurantInput) => Promise<{ error?: string }>;
+  /** Extra buttons shown beside Save (the popup's Cancel and Delete). */
+  actions?: ReactNode;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
   const [mapsUrl, setMapsUrl] = useState(initial?.maps_url ?? "");
@@ -92,10 +97,74 @@ export function RestaurantForm({
         <input value={mapsUrl} onChange={(e) => setMapsUrl(e.target.value)} required />
       </label>
 
+      <div className={styles.fieldRow}>
+        <label>
+          Status
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as RestaurantStatus)}
+          >
+            <option value="wishlist">{STATUS_LABEL.wishlist}</option>
+            <option value="tried">{STATUS_LABEL.tried}</option>
+          </select>
+        </label>
+
+        <label>
+          Price
+          <select value={priceRange ?? ""} onChange={(e) => setPriceRange(e.target.value)}>
+            <option value="">(none)</option>
+            <option value="$">$</option>
+            <option value="$$">$$</option>
+            <option value="$$$">$$$</option>
+            <option value="$$$$">$$$$</option>
+          </select>
+        </label>
+
+        <label>
+          Score (1–10)
+          <input
+            type="number"
+            min={1}
+            max={10}
+            step={1}
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
+          />
+        </label>
+      </div>
+
+      <label>
+        Cuisine tags (comma-separated)
+        <input value={cuisineTagsText} onChange={(e) => setCuisineTagsText(e.target.value)} />
+      </label>
+
+      <label>
+        Area
+        <select value={areaSelect} onChange={(e) => setAreaSelect(e.target.value)}>
+          <option value="">(none)</option>
+          {SINGAPORE_AREAS.map((a) => (
+            <option key={a} value={a}>
+              {a}
+            </option>
+          ))}
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      {areaSelect === "Other" && (
+        <label>
+          Area (custom)
+          <input
+            value={areaOther}
+            onChange={(e) => setAreaOther(e.target.value)}
+            placeholder="e.g. Tokyo"
+          />
+        </label>
+      )}
+
       <fieldset>
         <legend>Links</legend>
         {links.map((link, i) => (
-          <div key={i}>
+          <div key={i} className={styles.linkRow}>
             <select
               value={link.type}
               onChange={(e) =>
@@ -122,76 +191,21 @@ export function RestaurantForm({
       </fieldset>
 
       <label>
-        Cuisine tags (comma-separated)
-        <input value={cuisineTagsText} onChange={(e) => setCuisineTagsText(e.target.value)} />
-      </label>
-
-      <label>
-        Price range
-        <select value={priceRange ?? ""} onChange={(e) => setPriceRange(e.target.value)}>
-          <option value="">(none)</option>
-          <option value="$">$</option>
-          <option value="$$">$$</option>
-          <option value="$$$">$$$</option>
-          <option value="$$$$">$$$$</option>
-        </select>
-      </label>
-
-      <label>
-        Area
-        <select value={areaSelect} onChange={(e) => setAreaSelect(e.target.value)}>
-          <option value="">(none)</option>
-          {SINGAPORE_AREAS.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-          <option value="Other">Other</option>
-        </select>
-      </label>
-      {areaSelect === "Other" && (
-        <label>
-          Area (custom)
-          <input
-            value={areaOther}
-            onChange={(e) => setAreaOther(e.target.value)}
-            placeholder="e.g. Tokyo"
-          />
-        </label>
-      )}
-
-      <label>
-        Status
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as RestaurantStatus)}
-        >
-          <option value="wishlist">Want to try</option>
-          <option value="tried">Tried</option>
-        </select>
-      </label>
-
-      <label>
-        Rating
-        <input
-          type="number"
-          min={1}
-          max={10}
-          step={1}
-          value={rating}
-          onChange={(e) => setRating(e.target.value)}
-        />
-      </label>
-
-      <label>
         Notes
         <textarea value={notes ?? ""} onChange={(e) => setNotes(e.target.value)} />
       </label>
 
-      <button type="submit" disabled={pending}>
-        Save
-      </button>
-      {error && <p>{error}</p>}
+      {error && (
+        <p role="alert" className={styles.formError}>
+          {error}
+        </p>
+      )}
+      <div className={styles.formActions}>
+        <button type="submit" disabled={pending}>
+          {pending ? "Saving…" : "Save"}
+        </button>
+        {actions}
+      </div>
     </form>
   );
 }
