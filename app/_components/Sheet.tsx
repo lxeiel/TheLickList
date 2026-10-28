@@ -67,6 +67,9 @@ export default function Sheet({
   if (!rendered || !mounted) return null;
 
   function onKeyDown(e: React.KeyboardEvent) {
+    // A native <dialog> inside the sheet (the photo viewer) closes itself on
+    // Esc; the sheet stays open behind it.
+    if ((e.target as Element).closest("dialog")) return;
     if (e.key === "Escape") {
       e.stopPropagation();
       onClose();
