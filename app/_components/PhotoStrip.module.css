@@ -82,6 +82,9 @@
 
 .slide {
   display: grid;
+  /* One cell exactly the size of the slide, so the photo's 100% max sizes
+     mean "the screen", not "the photo's own height". */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   flex: 0 0 100%;
   place-items: center;
   padding: 56px 16px 24px;
