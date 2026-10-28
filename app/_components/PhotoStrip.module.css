@@ -1,0 +1,161 @@
+/* Strip: square photos in a sideways row that reaches the panel's right edge,
+   so the next one peeks in. */
+.strip {
+  display: flex;
+  gap: 8px;
+  align-self: stretch;
+  margin-right: -16px;
+  padding: 2px 16px 6px 2px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 2px;
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
+
+.strip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tile {
+  flex: 0 0 auto;
+  width: 120px;
+  height: 120px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--hover);
+  scroll-snap-align: start;
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 200ms var(--ease-out);
+}
+
+.tile:hover img {
+  transform: scale(1.03);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Viewer: full screen over a dark backdrop, one photo per snap. */
+.viewer {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(10, 10, 10, 0.94);
+  color: #fafafa;
+  overscroll-behavior: contain;
+}
+
+.viewer::backdrop {
+  background: rgba(10, 10, 10, 0.6);
+}
+
+.track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  display: grid;
+  flex: 0 0 100%;
+  place-items: center;
+  padding: 56px 16px 24px;
+  scroll-snap-align: center;
+}
+
+.slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.viewerBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 8px 0 16px;
+}
+
+.count {
+  margin-right: auto;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.viewerButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fafafa;
+  transition: background-color 150ms var(--ease-out);
+}
+
+.viewerButton:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.viewerButton:disabled {
+  opacity: 0.3;
+}
+
+.viewerButton:focus-visible {
+  outline: 2px solid #fafafa;
+  outline-offset: 2px;
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prev {
+  left: 12px;
+}
+
+.next {
+  right: 12px;
+}
+
+/* Touch screens swipe; the side arrows would only cover the photo. */
+@media (hover: none) {
+  .prev,
+  .next {
+    display: none;
+  }
+}

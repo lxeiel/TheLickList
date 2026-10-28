@@ -88,8 +88,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
     if (!selected) return;
     function onKey(e: KeyboardEvent) {
       if (e.key !== "Escape" || e.defaultPrevented) return;
-      // Leave Esc to open menus, popovers and sheets.
-      if ((e.target as Element).closest?.('[role="dialog"], [aria-expanded="true"]')) return;
+      // Leave Esc to open menus, popovers, sheets and native <dialog>s (the
+      // photo viewer), which close themselves.
+      if ((e.target as Element).closest?.('dialog, [role="dialog"], [aria-expanded="true"]')) return;
       deselect();
     }
     document.addEventListener("keydown", onKey);

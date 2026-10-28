@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "@phosphor-icons/react";
 import { formatAdded, formatScore } from "@/lib/format";
+import { sortFoodsForDisplay } from "@/lib/foods";
 import type { Restaurant, RestaurantLink } from "@/lib/restaurants";
+import PhotoStrip from "./PhotoStrip";
 import StatusMark from "./StatusMark";
 import styles from "./RestaurantDetail.module.css";
 
@@ -43,7 +45,23 @@ export default function RestaurantDetail({
         </p>
       )}
 
+      <PhotoStrip urls={r.photo_urls} name={r.name} />
+
       {r.notes && <p className={styles.notes}>{r.notes}</p>}
+
+      {r.foods.length > 0 && (
+        <section className={styles.foods} aria-label="Food tried">
+          <h3 className={styles.label}>Food tried</h3>
+          <ul>
+            {sortFoodsForDisplay(r.foods).map((food, i) => (
+              <li key={i}>
+                {food.name}
+                {food.must_try && <span className={styles.mustTry}>Must try</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {(r.maps_url || links.length > 0) && (
         <div className={styles.actions}>
