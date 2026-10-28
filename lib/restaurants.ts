@@ -1,5 +1,7 @@
 import { getServiceClient, getAnonClient } from "./supabase";
 import { parseMapsUrl } from "./maps";
+import { MAX_FOOD_NAME, MAX_FOODS, normalizeFoods, type FoodItem } from "./foods";
+import { isOwnPhotoUrl, MAX_PHOTOS } from "./photos";
 
 export type RestaurantLink = { type: "website" | "instagram" | "other"; url: string };
 export type RestaurantStatus = "wishlist" | "tried";
@@ -17,6 +19,7 @@ export type Restaurant = {
   rating: number | null;
   notes: string | null;
   photo_urls: string[];
+  foods: FoodItem[];
   area: string | null;
   created_at: string;
   updated_at: string;
@@ -32,6 +35,8 @@ export type RestaurantInput = {
   rating: number | null;
   notes: string | null;
   area: string | null;
+  foods: FoodItem[];
+  photo_urls: string[];
 };
 
 export function validateRestaurantInput(input: RestaurantInput): string | null {
@@ -51,6 +56,21 @@ export function validateRestaurantInput(input: RestaurantInput): string | null {
     if (link.url && !/^https?:\/\//i.test(link.url)) {
       return "Links must be http or https URLs";
     }
+  }
+  // Counted after blank rows and surrounding spaces are dropped, as saved.
+  const foods = normalizeFoods(input.foods ?? []);
+  if (foods.length > MAX_FOODS) {
+    return `Too many foods (max ${MAX_FOODS})`;
+  }
+  if (foods.some((food) => food.name.length > MAX_FOOD_NAME)) {
+    return `Food names must be ${MAX_FOOD_NAME} characters or fewer`;
+  }
+  const photos = input.photo_urls ?? [];
+  if (photos.length > MAX_PHOTOS) {
+    return `Too many photos (max ${MAX_PHOTOS})`;
+  }
+  if (!photos.every(isOwnPhotoUrl)) {
+    return "Photos must be uploaded here";
   }
   return null;
 }
@@ -112,6 +132,8 @@ export async function createRestaurant(input: RestaurantInput): Promise<Restaura
       rating: input.rating,
       notes: input.notes,
       area: input.area,
+      foods: normalizeFoods(input.foods),
+      photo_urls: input.photo_urls,
     })
     .select("*")
     .single();
@@ -150,6 +172,8 @@ export async function updateRestaurant(
       rating: input.rating,
       notes: input.notes,
       area: input.area,
+      foods: normalizeFoods(input.foods),
+      photo_urls: input.photo_urls,
     })
     .eq("id", id)
     .select("*")

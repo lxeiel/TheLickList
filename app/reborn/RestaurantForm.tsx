@@ -68,6 +68,8 @@ export function RestaurantForm({
       rating: rating === "" ? null : Number(rating),
       notes: notes || null,
       area: areaSelect === "Other" ? areaOther.trim() || null : areaSelect || null,
+      foods: initial?.foods ?? [],
+      photo_urls: initial?.photo_urls ?? [],
     };
 
     try {

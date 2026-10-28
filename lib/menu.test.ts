@@ -19,6 +19,7 @@ function r(status: Restaurant["status"], day: number, updatedDay = day): Restaur
     rating: null,
     notes: null,
     photo_urls: [],
+    foods: [],
     area: null,
     created_at: d(day),
     updated_at: d(updatedDay),
