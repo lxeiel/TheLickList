@@ -10,10 +10,10 @@ export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
   const session = await getIronSession<SessionData>(nextProxyCookies(request, response), sessionOptions);
   if (session.isAdmin === true) return response;
-  return NextResponse.redirect(new URL("/admin/login", request.url));
+  return NextResponse.redirect(new URL("/reborn/login", request.url));
 }
 
-// Everything under /admin except the login page itself.
+// Everything under /reborn except the login page itself.
 export const config = {
-  matcher: ["/admin", "/admin/((?!login).*)"],
+  matcher: ["/reborn", "/reborn/((?!login).*)"],
 };

@@ -15,27 +15,27 @@ async function request(session?: object) {
   if (session) {
     headers.set("cookie", `lick-list-session=${await sealData(session, { password: TEST_SECRET })}`);
   }
-  return new NextRequest("http://localhost/admin", { headers });
+  return new NextRequest("http://localhost/reborn", { headers });
 }
 
 describe("admin proxy", () => {
   it("sends a visitor with no session to the login page", async () => {
     const res = await proxy(await request());
     expect(res.status).toBe(307);
-    expect(res.headers.get("location")).toBe("http://localhost/admin/login");
+    expect(res.headers.get("location")).toBe("http://localhost/reborn/login");
   });
 
   it("sends a visitor with a non-admin session to the login page", async () => {
     const res = await proxy(await request({}));
-    expect(res.headers.get("location")).toBe("http://localhost/admin/login");
+    expect(res.headers.get("location")).toBe("http://localhost/reborn/login");
   });
 
   it("rejects a cookie sealed with a different secret", async () => {
     const headers = new Headers({
       cookie: `lick-list-session=${await sealData({ isAdmin: true }, { password: "x".repeat(40) })}`,
     });
-    const res = await proxy(new NextRequest("http://localhost/admin", { headers }));
-    expect(res.headers.get("location")).toBe("http://localhost/admin/login");
+    const res = await proxy(new NextRequest("http://localhost/reborn", { headers }));
+    expect(res.headers.get("location")).toBe("http://localhost/reborn/login");
   });
 
   it("lets a logged-in admin through", async () => {

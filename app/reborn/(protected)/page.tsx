@@ -1,5 +1,5 @@
 import { listRestaurants } from "@/lib/restaurants";
-import { AdminBoard } from "@/app/admin/AdminBoard";
+import { AdminBoard } from "@/app/reborn/AdminBoard";
 import { requireAdmin } from "@/lib/auth";
 
 export const instant = false;

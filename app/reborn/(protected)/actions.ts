@@ -79,5 +79,5 @@ export async function deleteRestaurantAction(id: string): Promise<{ error?: stri
 
 export async function logoutAction(): Promise<void> {
   await logout();
-  redirect("/admin/login");
+  redirect("/reborn/login");
 }

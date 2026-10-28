@@ -33,6 +33,6 @@ export async function logout(): Promise<void> {
 export async function requireAdmin(): Promise<void> {
   const session = await getSession();
   if (session.isAdmin !== true) {
-    redirect("/admin/login");
+    redirect("/reborn/login");
   }
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import styles from "@/app/admin/admin.module.css";
+import styles from "@/app/reborn/admin.module.css";
 import { logoutAction } from "./actions";
 
 // Admin routes read the session cookie to gate access, so they can never be
@@ -16,7 +16,7 @@ export default async function ProtectedAdminLayout({
   return (
     <>
       <div className={styles.adminBar}>
-        <Link href="/admin" className={styles.adminHome}>
+        <Link href="/reborn" className={styles.adminHome}>
           Admin
         </Link>
         <form action={logoutAction}>
