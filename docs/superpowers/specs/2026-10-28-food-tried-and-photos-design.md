@@ -1,6 +1,6 @@
 # Food tried and food pics (Phase 4) — design
 
-Status: approved in conversation on 2026-10-28; awaiting Lex's review of this written spec.
+Status: built on 2026-10-28 (branch `phase4-food-photos`). Migration 0003 has been run.
 
 Phase 4 of the original spec ([2026-10-26-lick-list-design.md](2026-10-26-lick-list-design.md)) planned a Dish table with per-dish scores, notes and photos, plus restaurant photos. Lex simplified it:
 
