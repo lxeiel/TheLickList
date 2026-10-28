@@ -11,6 +11,7 @@ import {
   type RestaurantInput,
 } from "@/lib/restaurants";
 import { logout, requireAdmin } from "@/lib/auth";
+import { createPhotoUpload } from "@/lib/photoStorage";
 
 // The admin edits in a popup over the list, so these return a result (the
 // popup closes on success) and refresh the list rather than redirecting.
@@ -75,6 +76,20 @@ export async function deleteRestaurantAction(id: string): Promise<{ error?: stri
 
   refresh();
   return {};
+}
+
+// A one-time upload link for one food pic; the browser uploads straight to
+// it. Admin-only: actions can be called from any page, not just /reborn.
+export async function createPhotoUploadAction(
+  restaurantId: string | null,
+): Promise<{ uploadUrl: string; publicUrl: string } | { error: string }> {
+  await requireAdmin();
+
+  try {
+    return await createPhotoUpload(restaurantId);
+  } catch {
+    return { error: "Couldn't start the upload" };
+  }
 }
 
 export async function logoutAction(): Promise<void> {

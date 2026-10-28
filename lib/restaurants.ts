@@ -1,7 +1,8 @@
 import { getServiceClient, getAnonClient } from "./supabase";
 import { parseMapsUrl } from "./maps";
 import { MAX_FOOD_NAME, MAX_FOODS, normalizeFoods, type FoodItem } from "./foods";
-import { isOwnPhotoUrl, MAX_PHOTOS } from "./photos";
+import { isOwnPhotoUrl, MAX_PHOTOS, removedPhotoUrls } from "./photos";
+import { deletePhotoFiles } from "./photoStorage";
 
 export type RestaurantLink = { type: "website" | "instagram" | "other"; url: string };
 export type RestaurantStatus = "wishlist" | "tried";
@@ -183,6 +184,9 @@ export async function updateRestaurant(
     throw error;
   }
 
+  // Only once the new photo list is saved: photos dropped from it go too.
+  await deletePhotoFiles(removedPhotoUrls(existing?.photo_urls ?? [], input.photo_urls));
+
   return data as Restaurant;
 }
 
@@ -196,10 +200,14 @@ export async function markLicked(id: string): Promise<void> {
   }
 }
 
+// Deletes the restaurant, then its photo files.
 export async function deleteRestaurant(id: string): Promise<void> {
+  const existing = await getRestaurant(id);
   const { error } = await getServiceClient().from("restaurant").delete().eq("id", id);
 
   if (error) {
     throw error;
   }
+
+  await deletePhotoFiles(existing?.photo_urls ?? []);
 }
