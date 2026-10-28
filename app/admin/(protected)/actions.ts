@@ -1,7 +1,7 @@
 "use server";
 
 import { createRestaurant, validateRestaurantInput, type RestaurantInput } from "@/lib/restaurants";
-import { requireAdmin } from "@/lib/auth";
+import { logout, requireAdmin } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export async function createRestaurantAction(
@@ -21,4 +21,9 @@ export async function createRestaurantAction(
   }
 
   redirect("/admin");
+}
+
+export async function logoutAction(): Promise<void> {
+  await logout();
+  redirect("/admin/login");
 }

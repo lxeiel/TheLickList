@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 
 export type SessionData = { isAdmin?: boolean };
 
-const sessionOptions = {
+// Shared with proxy.ts, which checks the same cookie before admin pages load.
+export const sessionOptions = {
   password: process.env.SESSION_SECRET!,
   cookieName: "lick-list-session",
 };
