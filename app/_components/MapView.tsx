@@ -24,7 +24,24 @@ function pinLabel(r: Restaurant): string {
   return [r.name, STATUS_LABEL[r.status], scoreLabel(r)].filter(Boolean).join(", ");
 }
 
-export default function MapView({
+type MapViewProps = Parameters<typeof LiveMap>[0];
+
+// Next keeps a page you've left alive but hidden (React's <Activity>), and
+// react-map-gl can't survive that: hiding destroys the Mapbox map, then on
+// return the pins try to attach to the destroyed map and crash before the map
+// rebuilds. So the map only exists while the page is shown, and comes back
+// fresh each time.
+export default function MapView(props: MapViewProps) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShown(true);
+    return () => setShown(false);
+  }, []);
+  return shown ? <LiveMap {...props} /> : null;
+}
+
+function LiveMap({
   restaurants,
   selectedId,
   onSelect,
