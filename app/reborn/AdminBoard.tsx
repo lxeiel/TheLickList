@@ -108,6 +108,8 @@ function Column({
               restaurant.cuisine_tags.join(", "),
               restaurant.price_range,
               formatScore(restaurant),
+              restaurant.photo_urls.length > 0 &&
+                `${restaurant.photo_urls.length} photo${restaurant.photo_urls.length === 1 ? "" : "s"}`,
             ].filter(Boolean);
             return (
               <li key={restaurant.id} className={styles.row}>

@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useReducer, useState, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow } from "next/navigation";
 import type { Restaurant, RestaurantInput, RestaurantLink, RestaurantStatus } from "@/lib/restaurants";
+import type { FoodItem } from "@/lib/foods";
+import { initialPhotos, photoReducer, savedUrls, uploadingCount } from "@/lib/photoUploads";
 import { STATUS_LABEL } from "@/app/_components/StatusMark";
+import { FoodRows } from "./FoodRows";
+import { PhotoPicker } from "./PhotoPicker";
 import styles from "./admin.module.css";
 
 const SINGAPORE_AREAS = ["Central", "East", "North", "Northeast", "West"];
@@ -36,6 +40,9 @@ export function RestaurantForm({
   const [areaOther, setAreaOther] = useState(
     initial?.area != null && !initialAreaIsStandard ? initial.area : "",
   );
+  const [foods, setFoods] = useState<FoodItem[]>(initial?.foods ?? []);
+  const [photos, dispatchPhotos] = useReducer(photoReducer, initial?.photo_urls ?? [], initialPhotos);
+  const uploading = uploadingCount(photos);
   const [error, setError] = useState<string | undefined>();
   const [pending, setPending] = useState(false);
 
@@ -68,8 +75,8 @@ export function RestaurantForm({
       rating: rating === "" ? null : Number(rating),
       notes: notes || null,
       area: areaSelect === "Other" ? areaOther.trim() || null : areaSelect || null,
-      foods: initial?.foods ?? [],
-      photo_urls: initial?.photo_urls ?? [],
+      foods,
+      photo_urls: savedUrls(photos),
     };
 
     try {
@@ -197,14 +204,23 @@ export function RestaurantForm({
         <textarea value={notes ?? ""} onChange={(e) => setNotes(e.target.value)} />
       </label>
 
+      <FoodRows foods={foods} onChange={setFoods} />
+
+      <PhotoPicker restaurantId={initial?.id ?? null} items={photos} dispatch={dispatchPhotos} />
+
       {error && (
         <p role="alert" className={styles.formError}>
           {error}
         </p>
       )}
       <div className={styles.formActions}>
-        <button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Save"}
+        {/* Save waits for uploads, so a photo still in flight isn't lost. */}
+        <button type="submit" disabled={pending || uploading > 0}>
+          {uploading > 0
+            ? `Uploading ${uploading} photo${uploading === 1 ? "" : "s"}…`
+            : pending
+              ? "Saving…"
+              : "Save"}
         </button>
         {actions}
       </div>
