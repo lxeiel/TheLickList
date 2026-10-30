@@ -9,12 +9,11 @@ import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import styles from "./SiteNav.module.css";
 
-type Page = "map" | "list" | "about";
+type Page = "map" | "list";
 
 function currentPage(pathname: string): Page | null {
   if (pathname === "/") return "map";
   if (pathname.startsWith("/list")) return "list";
-  if (pathname.startsWith("/about")) return "about";
   return null;
 }
 
@@ -76,7 +75,6 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
   const links: { page: Page; label: string }[] = [
     { page: "map", label: "Map" },
     { page: "list", label: "List" },
-    { page: "about", label: "About" },
   ];
 
   return (
@@ -160,10 +158,10 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
 // string; useSearchParams requires a Suspense boundary (see layout.tsx).
 export default function SiteNav() {
   const params = useSearchParams();
-  return <NavBar hrefs={{ map: `${mapHref(params)}#map`, list: listHref(params), about: "/about" }} />;
+  return <NavBar hrefs={{ map: `${mapHref(params)}#map`, list: listHref(params) }} />;
 }
 
 // Same bar with plain links, shown until the query string is available.
 export function SiteNavFallback() {
-  return <NavBar hrefs={{ map: "/#map", list: "/list", about: "/about" }} />;
+  return <NavBar hrefs={{ map: "/#map", list: "/list" }} />;
 }
