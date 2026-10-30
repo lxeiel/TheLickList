@@ -28,7 +28,7 @@ export default function AboutPage() {
           <span className={styles.meaning}>on the wishlist</span>
         </li>
         <li>Scores are out of 10.</li>
-        <li>Price runs from $ to $$$.</li>
+        <li>Price runs from $ to $$$$.</li>
       </ul>
     </main>
   );

@@ -9,7 +9,6 @@ export default function LoginPage() {
 
   return (
     <main>
-      <h1>Admin Login</h1>
       <form
         action={(formData: FormData) => {
           startTransition(async () => {
@@ -20,7 +19,7 @@ export default function LoginPage() {
       >
         <input type="password" name="password" required />
         <button type="submit" disabled={pending}>
-          Log in
+          Fly to the Moon!
         </button>
         {error && <p>{error}</p>}
       </form>
