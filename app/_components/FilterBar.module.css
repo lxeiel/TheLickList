@@ -230,3 +230,26 @@
     inset: -8px -4px;
   }
 }
+
+/* Inside the Filters menu: Score on top, the other groups side by side. */
+.filterGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterColumns {
+  display: flex;
+  gap: 24px;
+}
+
+@media (max-width: 767px) {
+  .filterGroups,
+  .filterColumns {
+    gap: 24px;
+  }
+
+  .filterColumns {
+    flex-direction: column;
+  }
+}

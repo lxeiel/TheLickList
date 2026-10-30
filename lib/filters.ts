@@ -8,11 +8,15 @@ export type Filters = {
   cuisine: string[];
   area: string[];
   price: string[];
+  /** Only Licked spots scored at least this (7, 8 or 9); null for any. */
+  minScore: number | null;
 };
 
-export const EMPTY_FILTERS: Filters = { status: "all", q: "", cuisine: [], area: [], price: [] };
+export const MIN_SCORES = [7, 8, 9] as const;
 
-export const FILTER_KEYS = ["status", "q", "cuisine", "area", "price"] as const;
+export const EMPTY_FILTERS: Filters = { status: "all", q: "", cuisine: [], area: [], price: [], minScore: null };
+
+export const FILTER_KEYS = ["status", "q", "cuisine", "area", "price", "score"] as const;
 
 export type FilterOptions = { cuisine: string[]; area: string[]; price: string[] };
 
@@ -24,6 +28,7 @@ export function parseFilters(params: URLSearchParams): Filters {
     cuisine: params.getAll("cuisine"),
     area: params.getAll("area"),
     price: params.getAll("price"),
+    minScore: MIN_SCORES.find((score) => String(score) === params.get("score")) ?? null,
   };
 }
 
@@ -37,6 +42,7 @@ export function writeFilters(params: URLSearchParams, filters: Filters): URLSear
   for (const value of filters.cuisine) out.append("cuisine", value);
   for (const value of filters.area) out.append("area", value);
   for (const value of filters.price) out.append("price", value);
+  if (filters.minScore != null) out.set("score", String(filters.minScore));
   return out;
 }
 
@@ -49,6 +55,10 @@ export function applyFilters(restaurants: Restaurant[], filters: Filters): Resta
 
   return restaurants.filter((r) => {
     if (filters.status !== "all" && r.status !== filters.status) return false;
+    // Gotta Lick and unrated spots have no score, so a minimum hides them.
+    if (filters.minScore != null && (r.status !== "tried" || r.rating == null || r.rating < filters.minScore)) {
+      return false;
+    }
     if (cuisine.length > 0 && !r.cuisine_tags.some((tag) => cuisine.includes(lower(tag)))) return false;
     if (area.length > 0 && (r.area == null || !area.includes(lower(r.area)))) return false;
     if (filters.price.length > 0 && (r.price_range == null || !filters.price.includes(r.price_range))) {
@@ -87,7 +97,7 @@ export function deriveOptions(restaurants: Restaurant[]): FilterOptions {
 }
 
 export function activeFilterCount(filters: Filters): number {
-  return filters.cuisine.length + filters.area.length + filters.price.length;
+  return filters.cuisine.length + filters.area.length + filters.price.length + (filters.minScore != null ? 1 : 0);
 }
 
 export function findSpot(restaurants: Restaurant[], id: string | null): Restaurant | null {
@@ -104,17 +114,22 @@ function onlyFilters(params: URLSearchParams): URLSearchParams {
   return writeFilters(new URLSearchParams(), parseFilters(params));
 }
 
+// The sort (sort/dir) travels with the filters between the map list and the
+// List page.
+function withSort(out: URLSearchParams, params: URLSearchParams): URLSearchParams {
+  for (const key of ["sort", "dir"]) {
+    const value = params.get(key);
+    if (value) out.set(key, value);
+  }
+  return out;
+}
+
 export function mapHref(params: URLSearchParams, spotId?: string): string {
-  const out = onlyFilters(params);
+  const out = withSort(onlyFilters(params), params);
   if (spotId) out.set("spot", spotId);
   return withQuery("/", out);
 }
 
 export function listHref(params: URLSearchParams): string {
-  const out = onlyFilters(params);
-  for (const key of ["sort", "dir"]) {
-    const value = params.get(key);
-    if (value) out.set(key, value);
-  }
-  return withQuery("/list", out);
+  return withQuery("/list", withSort(onlyFilters(params), params));
 }

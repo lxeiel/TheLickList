@@ -46,7 +46,7 @@ describe("parseFilters / writeFilters", () => {
   test("parseFilters reads repeatable params", () => {
     expect(
       parseFilters(new URLSearchParams("status=tried&q=noodle&cuisine=Ramen&cuisine=Noodles&area=Central&price=$")),
-    ).toEqual({ status: "tried", q: "noodle", cuisine: ["Ramen", "Noodles"], area: ["Central"], price: ["$"] });
+    ).toEqual({ status: "tried", q: "noodle", cuisine: ["Ramen", "Noodles"], area: ["Central"], price: ["$"], minScore: null });
   });
 
   test("parseFilters ignores unknown values", () => {
@@ -116,7 +116,7 @@ describe("deriveOptions", () => {
 });
 
 test("activeFilterCount counts menu selections only", () => {
-  expect(activeFilterCount({ status: "tried", q: "x", cuisine: ["A", "B"], area: ["C"], price: [] })).toBe(3);
+  expect(activeFilterCount({ status: "tried", q: "x", cuisine: ["A", "B"], area: ["C"], price: [], minScore: null })).toBe(3);
 });
 
 test("findSpot returns null when absent or filtered out", () => {
@@ -128,9 +128,37 @@ test("findSpot returns null when absent or filtered out", () => {
 
 test("mapHref and listHref carry the right params", () => {
   const p = new URLSearchParams("status=tried&area=Central&sort=rating&dir=asc&spot=abc");
-  expect(mapHref(p)).toBe("/?status=tried&area=Central");
-  expect(mapHref(p, "xyz")).toBe("/?status=tried&area=Central&spot=xyz");
+  // The sort travels between the map list and the List page.
+  expect(mapHref(p)).toBe("/?status=tried&area=Central&sort=rating&dir=asc");
+  expect(mapHref(p, "xyz")).toBe("/?status=tried&area=Central&sort=rating&dir=asc&spot=xyz");
   expect(listHref(p)).toBe("/list?status=tried&area=Central&sort=rating&dir=asc");
   expect(mapHref(new URLSearchParams())).toBe("/");
   expect(listHref(new URLSearchParams("spot=abc"))).toBe("/list");
+});
+
+describe("minimum score", () => {
+  const scored = [
+    restaurant({ id: "s9", name: "Nine", status: "tried", rating: 9 }),
+    restaurant({ id: "s8", name: "Eight", status: "tried", rating: 8 }),
+    restaurant({ id: "s6", name: "Six", status: "tried", rating: 6 }),
+    restaurant({ id: "su", name: "Unrated", status: "tried", rating: null }),
+    restaurant({ id: "sw", name: "Wish", status: "wishlist", rating: 10 }),
+  ];
+
+  test("keeps only Licked spots scored at or above the minimum", () => {
+    expect(ids(applyFilters(scored, { ...EMPTY_FILTERS, minScore: 8 }))).toEqual(["s9", "s8"]);
+    expect(ids(applyFilters(scored, EMPTY_FILTERS))).toEqual(["s9", "s8", "s6", "su", "sw"]);
+  });
+
+  test("reads and writes ?score=, ignoring values other than 7, 8 and 9", () => {
+    expect(parseFilters(new URLSearchParams("score=8")).minScore).toBe(8);
+    expect(parseFilters(new URLSearchParams("score=5")).minScore).toBeNull();
+    expect(parseFilters(new URLSearchParams("score=abc")).minScore).toBeNull();
+    expect(writeFilters(new URLSearchParams(), { ...EMPTY_FILTERS, minScore: 9 }).toString()).toBe("score=9");
+    expect(writeFilters(new URLSearchParams("score=9"), EMPTY_FILTERS).toString()).toBe("");
+  });
+
+  test("counts as one active filter", () => {
+    expect(activeFilterCount({ ...EMPTY_FILTERS, minScore: 7, price: ["$"] })).toBe(2);
+  });
 });

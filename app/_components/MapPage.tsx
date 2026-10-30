@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { activeFilterCount, applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
+import { sortRestaurants } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
 import MapView from "./MapView";
@@ -22,7 +23,7 @@ const SHEET_FRACTION: Record<SheetState, number> = { list: 0.5, detail: 0.6, col
 const COLLAPSED_MIN_PX = 120;
 
 export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) {
-  const { filters, spot, setFilters, selectSpot, clearSpot } = useUrlState();
+  const { filters, sort, spot, setFilters, setSort, selectSpot, clearSpot } = useUrlState();
   const { theme } = useTheme();
   const isPhone = useMediaQuery(PHONE_QUERY);
   const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
@@ -35,6 +36,8 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
 
   const options = useMemo(() => deriveOptions(restaurants), [restaurants]);
   const filtered = useMemo(() => applyFilters(restaurants, filters), [restaurants, filters]);
+  // The sort only orders the list; the map shows the same pins either way.
+  const listed = useMemo(() => sortRestaurants(filtered, sort), [filtered, sort]);
   const selected = findSpot(filtered, spot);
   const hasActiveFilters =
     filters.status !== "all" || filters.q !== "" || activeFilterCount(filters) > 0;
@@ -153,11 +156,13 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             </div>
           ) : (
             <RestaurantList
-              restaurants={filtered}
+              restaurants={listed}
               selectedId={null}
               onSelect={selectSpot}
               total={restaurants.length}
               onClearFilters={() => setFilters(EMPTY_FILTERS)}
+              sort={sort}
+              onSortChange={setSort}
             />
           )}
         </section>

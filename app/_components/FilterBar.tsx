@@ -9,9 +9,10 @@ import {
   type Filters,
   type StatusFilter,
 } from "@/lib/filters";
-import type { Sort } from "@/lib/sort";
+import { NATURAL_DIR, SORT_OPTIONS, type Sort, type SortKey } from "@/lib/sort";
 import CheckboxGroup from "./CheckboxGroup";
 import { Dropdown } from "./MultiSelect";
+import ScoreGroup from "./ScoreGroup";
 import Sheet from "./Sheet";
 import { PHONE_QUERY, useMediaQuery } from "./useMediaQuery";
 import styles from "./FilterBar.module.css";
@@ -20,12 +21,6 @@ const STATUSES: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "tried", label: "Licked" },
   { value: "wishlist", label: "Gotta Lick" },
-];
-
-const SORTS: { value: string; label: string; sort: Sort }[] = [
-  { value: "added", label: "Newest added", sort: { key: "added", dir: "desc" } },
-  { value: "rating", label: "Highest rated", sort: { key: "rating", dir: "desc" } },
-  { value: "name", label: "A–Z", sort: { key: "name", dir: "asc" } },
 ];
 
 const SEARCH_DEBOUNCE_MS = 200;
@@ -111,12 +106,17 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
 }
 
 function FilterGroups({ filters, options, onChange }: { filters: Filters; options: FilterOptions; onChange: (next: Filters) => void }) {
+  // Score is a short row of pills across the top; the longer lists sit
+  // side by side beneath it (stacked on phones).
   return (
-    <>
-      <CheckboxGroup legend="Cuisine" options={options.cuisine} selected={filters.cuisine} onChange={(cuisine) => onChange({ ...filters, cuisine })} />
-      <CheckboxGroup legend="Area" options={options.area} selected={filters.area} onChange={(area) => onChange({ ...filters, area })} />
-      <CheckboxGroup legend="Price" options={options.price} selected={filters.price} onChange={(price) => onChange({ ...filters, price })} />
-    </>
+    <div className={styles.filterGroups}>
+      <ScoreGroup value={filters.minScore} onChange={(minScore) => onChange({ ...filters, minScore })} />
+      <div className={styles.filterColumns}>
+        <CheckboxGroup legend="Cuisine" options={options.cuisine} selected={filters.cuisine} onChange={(cuisine) => onChange({ ...filters, cuisine })} />
+        <CheckboxGroup legend="Area" options={options.area} selected={filters.area} onChange={(area) => onChange({ ...filters, area })} />
+        <CheckboxGroup legend="Price" options={options.price} selected={filters.price} onChange={(price) => onChange({ ...filters, price })} />
+      </div>
+    </div>
   );
 }
 
@@ -166,6 +166,16 @@ function Chips({ filters, onChange }: { filters: Filters; onChange: (next: Filte
   );
   return (
     <div className={styles.chips}>
+      {filters.minScore != null && (
+        <button
+          type="button"
+          className={styles.chip}
+          aria-label={`Remove filter: score ${filters.minScore} and up`}
+          onClick={() => onChange({ ...filters, minScore: null })}
+        >
+          {filters.minScore}+ score ×
+        </button>
+      )}
       {chips.map(({ key, value }) => (
         <button
           key={`${key}:${value}`}
@@ -199,7 +209,7 @@ export default function FilterBar({
   sort?: Sort;
   onSortChange?: (next: Sort) => void;
 }) {
-  const sortValue = sort ? (SORTS.find((s) => s.sort.key === sort.key)?.value ?? "added") : "added";
+  const sortValue = sort?.key ?? "added";
 
   return (
     <div className={styles.bar} data-variant={variant}>
@@ -213,9 +223,12 @@ export default function FilterBar({
               <span className="visually-hidden">Sort</span>
               <select
                 value={sortValue}
-                onChange={(e) => onSortChange(SORTS.find((s) => s.value === e.target.value)!.sort)}
+                onChange={(e) => {
+                  const key = e.target.value as SortKey;
+                  onSortChange({ key, dir: NATURAL_DIR[key] });
+                }}
               >
-                {SORTS.map((s) => (
+                {SORT_OPTIONS.map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
                   </option>

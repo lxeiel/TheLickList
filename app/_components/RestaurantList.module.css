@@ -5,10 +5,35 @@
   flex: 1;
 }
 
-.count {
+/* The count, with the map list's sort menu on the right. */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0 12px 8px;
+}
+
+.count {
   color: var(--muted);
   font-size: 13px;
+}
+
+.sort select {
+  min-height: 32px;
+  padding: 0 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+@media (max-width: 767px) {
+  .sort select {
+    min-height: 40px;
+    font-size: 16px;
+  }
 }
 
 /* Scrolls inside its own box so the page (and the map) never moves. */

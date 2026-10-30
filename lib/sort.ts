@@ -4,6 +4,13 @@ export type SortKey = "added" | "rating" | "name";
 export type SortDir = "asc" | "desc";
 export type Sort = { key: SortKey; dir: SortDir };
 
+// The sort menu's choices (List page on phones, and the map list).
+export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "added", label: "Newest added" },
+  { value: "rating", label: "Highest score" },
+  { value: "name", label: "A–Z" },
+];
+
 export const NATURAL_DIR: Record<SortKey, SortDir> = { added: "desc", rating: "desc", name: "asc" };
 
 const isKey = (value: string | null): value is SortKey =>
