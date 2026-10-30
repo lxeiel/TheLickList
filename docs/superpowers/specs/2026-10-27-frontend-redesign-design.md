@@ -18,7 +18,7 @@ first-class.
 
 ### Out of scope
 
-- **Stats / Highlights page.** Spec 2. No nav link until it ships.
+- **Stats / Highlights page.** Dropped on 2026-10-30; not planned.
 - **Admin redesign.** `/admin/*` inherits the new fonts, colors and base
   styles from `globals.css` but gets no layout work. The only admin change is
   limiting rating to 1–10 (see Data).
