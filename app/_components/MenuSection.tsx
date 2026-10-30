@@ -100,6 +100,14 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
                   <b>Price</b>, runs from $ to $$$$
                 </span>
               </li>
+              <li className={styles.keyWide}>
+                <span className={styles.scoreMark} aria-hidden>
+                  +
+                </span>
+                <span>
+                  <b>Multiple locations</b>, I pin one, U search for the rest
+                </span>
+              </li>
             </ul>
           </div>
         </div>

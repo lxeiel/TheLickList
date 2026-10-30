@@ -128,6 +128,11 @@
   gap: 8px;
 }
 
+/* A fifth, longer line spans both columns rather than leaving a gap. */
+.keyWide {
+  grid-column: 1 / -1;
+}
+
 .scoreMark {
   flex-shrink: 0;
   font-family: var(--font-geist-mono), monospace;
