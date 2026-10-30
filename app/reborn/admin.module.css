@@ -338,10 +338,24 @@
   gap: 12px;
 }
 
+/* Links: type, address, optional button name, Remove. */
 .linkRow {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 10rem) auto;
   gap: 8px;
+}
+
+/* Phones: type and Remove on top, then the address and the button name
+   each on a full-width line. */
+@media (max-width: 599px) {
+  .linkRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .linkRow > input {
+    grid-column: 1 / -1;
+    order: 1;
+  }
 }
 
 .formActions {

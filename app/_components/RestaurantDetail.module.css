@@ -41,12 +41,41 @@
   opacity: 0.6;
 }
 
+/* Notes: a quiet box; long notes are cut to four lines until "Read more". */
+.notesBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  align-self: stretch;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
 .notes {
   max-width: 70ch;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.55;
   overflow-wrap: anywhere;
   white-space: pre-line;
+}
+
+.notes[data-clamped] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.readMore {
+  padding: 0;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .actions {
@@ -108,9 +137,9 @@
 }
 
 .label {
-  color: var(--muted);
+  color: var(--ink);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -129,6 +158,22 @@
   align-items: center;
   gap: 8px;
   overflow-wrap: anywhere;
+}
+
+/* Bullets echo the map's marks: a filled emerald dot for Must try, an empty
+   ring for the rest. The "Must try" tag still says it in words. */
+.foods li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--muted);
+  border-radius: 50%;
+}
+
+.foods li[data-must-try]::before {
+  border-color: var(--accent);
+  background: var(--accent);
 }
 
 .mustTry {

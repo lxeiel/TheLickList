@@ -57,3 +57,12 @@ test("rejects 13 photos and foreign photo URLs", () => {
     "Photos must be uploaded here",
   );
 });
+
+test("rejects a link button name over 30 characters", () => {
+  expect(
+    validateRestaurantInput({ ...valid, links: [{ type: "other", url: "https://a.sg", label: "x".repeat(31) }] }),
+  ).toBe("Button names must be 30 characters or fewer");
+  expect(
+    validateRestaurantInput({ ...valid, links: [{ type: "other", url: "https://a.sg", label: ` ${"x".repeat(30)} ` }] }),
+  ).toBeNull();
+});

@@ -4,6 +4,7 @@ import { useReducer, useState, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow } from "next/navigation";
 import type { Restaurant, RestaurantInput, RestaurantLink, RestaurantStatus } from "@/lib/restaurants";
 import type { FoodItem } from "@/lib/foods";
+import { defaultLinkLabel, MAX_LINK_LABEL } from "@/lib/links";
 import { initialPhotos, photoReducer, savedUrls, uploadingCount } from "@/lib/photoUploads";
 import { STATUS_LABEL } from "@/app/_components/StatusMark";
 import { FoodRows } from "./FoodRows";
@@ -188,6 +189,15 @@ export function RestaurantForm({
               value={link.url}
               onChange={(e) => updateLink(i, { url: e.target.value })}
               placeholder="https://..."
+              aria-label={`Link ${i + 1} address`}
+            />
+            {/* Optional button text; empty shows the type's name. */}
+            <input
+              value={link.label ?? ""}
+              onChange={(e) => updateLink(i, { label: e.target.value })}
+              placeholder={defaultLinkLabel(link.type)}
+              maxLength={MAX_LINK_LABEL}
+              aria-label={`Link ${i + 1} button name`}
             />
             <button type="button" onClick={() => removeLink(i)}>
               Remove

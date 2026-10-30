@@ -4,16 +4,12 @@ import Link from "next/link";
 import { ArrowUpRight, MapPin } from "@phosphor-icons/react";
 import { formatAdded, formatScore } from "@/lib/format";
 import { sortFoodsForDisplay } from "@/lib/foods";
-import type { Restaurant, RestaurantLink } from "@/lib/restaurants";
+import { linkLabel } from "@/lib/links";
+import type { Restaurant } from "@/lib/restaurants";
+import Notes from "./Notes";
 import PhotoStrip from "./PhotoStrip";
 import StatusMark from "./StatusMark";
 import styles from "./RestaurantDetail.module.css";
-
-const LINK_LABEL: Record<RestaurantLink["type"], string> = {
-  website: "Website",
-  instagram: "Instagram",
-  other: "Link",
-};
 
 // Shared by the Map page's pane/sheet and the List page's drawer/sheet; only
 // the container around it differs. A future /r/[id] page would reuse it too.
@@ -47,14 +43,15 @@ export default function RestaurantDetail({
 
       <PhotoStrip urls={r.photo_urls} name={r.name} />
 
-      {r.notes && <p className={styles.notes}>{r.notes}</p>}
+      {/* Keyed so a different spot starts collapsed again. */}
+      {r.notes && <Notes key={r.id} text={r.notes} />}
 
       {r.foods.length > 0 && (
         <section className={styles.foods} aria-label="Food tried">
           <h3 className={styles.label}>Food tried</h3>
           <ul>
             {sortFoodsForDisplay(r.foods).map((food, i) => (
-              <li key={i}>
+              <li key={i} data-must-try={food.must_try || undefined}>
                 {food.name}
                 {food.must_try && <span className={styles.mustTry}>Must try</span>}
               </li>
@@ -73,7 +70,7 @@ export default function RestaurantDetail({
           )}
           {links.map((link, i) => (
             <a key={i} className={styles.secondary} href={link.url} target="_blank" rel="noopener noreferrer">
-              {LINK_LABEL[link.type] ?? "Link"}
+              {linkLabel(link)}
               <ArrowUpRight size={16} aria-hidden />
             </a>
           ))}

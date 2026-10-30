@@ -1,10 +1,13 @@
 import { getServiceClient, getAnonClient } from "./supabase";
 import { parseMapsUrl } from "./maps";
 import { MAX_FOOD_NAME, MAX_FOODS, normalizeFoods, type FoodItem } from "./foods";
+import { MAX_LINK_LABEL, normalizeLinks } from "./links";
 import { isOwnPhotoUrl, MAX_PHOTOS, removedPhotoUrls } from "./photos";
 import { deletePhotoFiles } from "./photoStorage";
 
-export type RestaurantLink = { type: "website" | "instagram" | "other"; url: string };
+// label: Lex's own button text for the link (e.g. "Book a table"); without
+// one, the button shows the type's name.
+export type RestaurantLink = { type: "website" | "instagram" | "other"; url: string; label?: string };
 export type RestaurantStatus = "wishlist" | "tried";
 
 export type Restaurant = {
@@ -56,6 +59,9 @@ export function validateRestaurantInput(input: RestaurantInput): string | null {
   for (const link of input.links ?? []) {
     if (link.url && !/^https?:\/\//i.test(link.url)) {
       return "Links must be http or https URLs";
+    }
+    if ((link.label?.trim().length ?? 0) > MAX_LINK_LABEL) {
+      return `Button names must be ${MAX_LINK_LABEL} characters or fewer`;
     }
   }
   // Counted after blank rows and surrounding spaces are dropped, as saved.
@@ -126,7 +132,7 @@ export async function createRestaurant(input: RestaurantInput): Promise<Restaura
       maps_url: input.maps_url,
       lat: coords?.lat ?? null,
       lng: coords?.lng ?? null,
-      links: input.links,
+      links: normalizeLinks(input.links),
       cuisine_tags: input.cuisine_tags,
       price_range: input.price_range,
       status: input.status,
@@ -166,7 +172,7 @@ export async function updateRestaurant(
       maps_url: input.maps_url,
       lat: coords?.lat ?? null,
       lng: coords?.lng ?? null,
-      links: input.links,
+      links: normalizeLinks(input.links),
       cuisine_tags: input.cuisine_tags,
       price_range: input.price_range,
       status: input.status,
