@@ -103,6 +103,12 @@ export function collapsedOptions(options: string[], selected: string[], limit: n
   return options.filter((option, i) => i < limit || ticked.includes(lower(option)));
 }
 
+// The Filters menu's Clear: empties what's set inside it, leaving the status
+// tabs and the search alone.
+export function clearMenuFilters(filters: Filters): Filters {
+  return { ...filters, cuisine: [], area: [], price: [], minScore: null };
+}
+
 export function activeFilterCount(filters: Filters): number {
   return filters.cuisine.length + filters.area.length + filters.price.length + (filters.minScore != null ? 1 : 0);
 }

@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   EMPTY_FILTERS,
   activeFilterCount,
+  clearMenuFilters,
   applyFilters,
   collapsedOptions,
   deriveOptions,
@@ -183,4 +184,10 @@ describe("collapsedOptions", () => {
     expect(collapsedOptions(["$", "$$"], [], 6)).toEqual(["$", "$$"]);
     expect(collapsedOptions(cuisines.slice(0, 6), [], 6)).toHaveLength(6);
   });
+});
+
+test("clearMenuFilters resets score, cuisine, area and price but keeps status and search", () => {
+  const filters = { status: "tried" as const, q: "noodle", cuisine: ["Ramen"], area: ["Central"], price: ["$"], minScore: 8 };
+  expect(clearMenuFilters(filters)).toEqual({ ...EMPTY_FILTERS, status: "tried", q: "noodle" });
+  expect(activeFilterCount(clearMenuFilters(filters))).toBe(0);
 });

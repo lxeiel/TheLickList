@@ -5,6 +5,7 @@ import { MagnifyingGlass, Plus } from "@phosphor-icons/react";
 import {
   EMPTY_FILTERS,
   activeFilterCount,
+  clearMenuFilters,
   type FilterOptions,
   type Filters,
   type StatusFilter,
@@ -142,6 +143,12 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
   const isPhone = useMediaQuery(PHONE_QUERY);
   const [sheetOpen, setSheetOpen] = useState(false);
   const count = activeFilterCount(filters);
+  // Empties what's set in this menu; greyed out when nothing is.
+  const clear = (
+    <button type="button" className={styles.clearFilters} disabled={count === 0} onClick={() => onChange(clearMenuFilters(filters))}>
+      Clear filters
+    </button>
+  );
   const label = (
     <>
       Filters{count > 0 && <b className={styles.filtersCount}> {count}</b>} <Plus size={14} aria-hidden />
@@ -152,6 +159,7 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
     return (
       <Dropdown label="Filters" count={count} trigger={label} buttonClassName={styles.filtersText} panelClassName={styles.filtersPanel} align="end">
         <FilterGroups filters={filters} options={options} onChange={onChange} isPhone={false} />
+        <div className={styles.menuFooter}>{clear}</div>
       </Dropdown>
     );
   }
@@ -166,6 +174,7 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
           <FilterGroups filters={filters} options={options} onChange={onChange} isPhone />
         </div>
         <div className={styles.sheetFooter}>
+          {clear}
           <button type="button" className={styles.done} onClick={() => setSheetOpen(false)}>
             Done
           </button>
