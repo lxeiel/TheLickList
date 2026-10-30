@@ -3,6 +3,7 @@ import {
   EMPTY_FILTERS,
   activeFilterCount,
   applyFilters,
+  collapsedOptions,
   deriveOptions,
   findSpot,
   listHref,
@@ -160,5 +161,25 @@ describe("minimum score", () => {
 
   test("counts as one active filter", () => {
     expect(activeFilterCount({ ...EMPTY_FILTERS, minScore: 7, price: ["$"] })).toBe(2);
+  });
+});
+
+describe("collapsedOptions", () => {
+  const cuisines = ["Chinese", "French", "Indian", "Japanese", "Korean", "Malay", "Thai", "Western"];
+
+  test("shows the first few options", () => {
+    expect(collapsedOptions(cuisines, [], 6)).toEqual(["Chinese", "French", "Indian", "Japanese", "Korean", "Malay"]);
+  });
+
+  test("keeps ticked options past the cut, in list order, matching case-insensitively", () => {
+    expect(collapsedOptions(cuisines, ["western", "Thai"], 6)).toEqual([
+      "Chinese", "French", "Indian", "Japanese", "Korean", "Malay", "Thai", "Western",
+    ]);
+    expect(collapsedOptions(cuisines, ["Western"], 3)).toEqual(["Chinese", "French", "Indian", "Western"]);
+  });
+
+  test("leaves a list at or under the limit whole", () => {
+    expect(collapsedOptions(["$", "$$"], [], 6)).toEqual(["$", "$$"]);
+    expect(collapsedOptions(cuisines.slice(0, 6), [], 6)).toHaveLength(6);
   });
 });

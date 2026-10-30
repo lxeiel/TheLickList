@@ -96,6 +96,13 @@ export function deriveOptions(restaurants: Restaurant[]): FilterOptions {
   };
 }
 
+// A long group shows only its first `limit` options until expanded, plus any
+// ticked ones past the cut so a choice never hides.
+export function collapsedOptions(options: string[], selected: string[], limit: number): string[] {
+  const ticked = selected.map(lower);
+  return options.filter((option, i) => i < limit || ticked.includes(lower(option)));
+}
+
 export function activeFilterCount(filters: Filters): number {
   return filters.cuisine.length + filters.area.length + filters.price.length + (filters.minScore != null ? 1 : 0);
 }

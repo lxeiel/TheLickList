@@ -14,6 +14,7 @@ export function Dropdown({
   children,
   trigger,
   buttonClassName,
+  panelClassName,
   align = "start",
 }: {
   label: string;
@@ -23,6 +24,8 @@ export function Dropdown({
   /** Replaces the default boxed button content (label, count, caret). */
   trigger?: ReactNode;
   buttonClassName?: string;
+  /** Added to the popover, e.g. to change its size or scrolling. */
+  panelClassName?: string;
   /** Which edge of the button the popover lines up with. */
   align?: "start" | "end";
 }) {
@@ -71,7 +74,7 @@ export function Dropdown({
         )}
       </button>
       {open && (
-        <div id={panelId} className={styles.panel} data-align={align}>
+        <div id={panelId} className={panelClassName ? `${styles.panel} ${panelClassName}` : styles.panel} data-align={align}>
           {children}
         </div>
       )}

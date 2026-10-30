@@ -106,16 +106,31 @@ function SearchInput({ filters, onChange }: { filters: Filters; onChange: (next:
   );
 }
 
-function FilterGroups({ filters, options, onChange }: { filters: Filters; options: FilterOptions; onChange: (next: Filters) => void }) {
+// On phones a long group shows this many options behind "Show all".
+const PHONE_GROUP_LIMIT = 6;
+
+function FilterGroups({
+  filters,
+  options,
+  onChange,
+  isPhone,
+}: {
+  filters: Filters;
+  options: FilterOptions;
+  onChange: (next: Filters) => void;
+  isPhone: boolean;
+}) {
   // Score is a short row of pills across the top; the longer lists sit
-  // side by side beneath it (stacked on phones).
+  // side by side beneath it, each scrolling on its own (stacked on phones,
+  // where long ones collapse instead).
+  const collapseAfter = isPhone ? PHONE_GROUP_LIMIT : undefined;
   return (
     <div className={styles.filterGroups}>
       <ScoreGroup value={filters.minScore} onChange={(minScore) => onChange({ ...filters, minScore })} />
       <div className={styles.filterColumns}>
-        <CheckboxGroup legend="Cuisine" options={options.cuisine} selected={filters.cuisine} onChange={(cuisine) => onChange({ ...filters, cuisine })} />
-        <CheckboxGroup legend="Area" options={options.area} selected={filters.area} onChange={(area) => onChange({ ...filters, area })} />
-        <CheckboxGroup legend="Price" options={options.price} selected={filters.price} onChange={(price) => onChange({ ...filters, price })} />
+        <CheckboxGroup legend="Cuisine" options={options.cuisine} selected={filters.cuisine} onChange={(cuisine) => onChange({ ...filters, cuisine })} collapseAfter={collapseAfter} />
+        <CheckboxGroup legend="Area" options={options.area} selected={filters.area} onChange={(area) => onChange({ ...filters, area })} collapseAfter={collapseAfter} />
+        <CheckboxGroup legend="Price" options={options.price} selected={filters.price} onChange={(price) => onChange({ ...filters, price })} collapseAfter={collapseAfter} />
       </div>
     </div>
   );
@@ -135,8 +150,8 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
 
   if (!isPhone) {
     return (
-      <Dropdown label="Filters" count={count} trigger={label} buttonClassName={styles.filtersText} align="end">
-        <FilterGroups filters={filters} options={options} onChange={onChange} />
+      <Dropdown label="Filters" count={count} trigger={label} buttonClassName={styles.filtersText} panelClassName={styles.filtersPanel} align="end">
+        <FilterGroups filters={filters} options={options} onChange={onChange} isPhone={false} />
       </Dropdown>
     );
   }
@@ -148,7 +163,7 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
       </button>
       <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} label="Filters" placement="sheet">
         <div className={styles.sheetBody}>
-          <FilterGroups filters={filters} options={options} onChange={onChange} />
+          <FilterGroups filters={filters} options={options} onChange={onChange} isPhone />
         </div>
         <div className={styles.sheetFooter}>
           <button type="button" className={styles.done} onClick={() => setSheetOpen(false)}>

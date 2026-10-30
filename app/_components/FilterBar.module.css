@@ -225,16 +225,35 @@
   }
 }
 
+/* The Filters popover doesn't scroll as a whole (its columns do), and its
+   width is capped so a long name wraps instead of widening it. It sizes to
+   its content, not to the small button it hangs from. `div.` beats the
+   popover's own single-class rules whatever order the sheets load in. */
+div.filtersPanel {
+  max-height: none;
+  overflow: visible;
+  width: max-content;
+  max-width: min(600px, calc(100vw - 32px));
+}
+
 /* Inside the Filters menu: Score on top, the other groups side by side. */
 .filterGroups {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
+/* Each column scrolls on its own; a wide one gives up width first. */
 .filterColumns {
+  --group-max-height: min(280px, 45dvh);
   display: flex;
   gap: 24px;
+}
+
+.filterColumns > * {
+  flex: 1 1 auto;
+  min-width: 7rem;
 }
 
 @media (max-width: 767px) {
@@ -243,7 +262,9 @@
     gap: 24px;
   }
 
+  /* The sheet scrolls; groups collapse rather than scroll inside it. */
   .filterColumns {
+    --group-max-height: none;
     flex-direction: column;
   }
 }

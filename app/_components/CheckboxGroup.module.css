@@ -14,18 +14,36 @@
   color: var(--muted);
 }
 
-.option {
+/* A parent can cap the list's height (--group-max-height) so it scrolls on
+   its own while the legend stays put. */
+.options {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  max-height: var(--group-max-height, none);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* A long name wraps beside its checkbox, which stays level with the first
+   line. */
+.option {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
   gap: 8px;
   min-height: 36px;
+  padding: 7px 0;
   font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
 
 .option input {
+  flex-shrink: 0;
   width: 16px;
   height: 16px;
+  margin: 2.5px 0 0;
   accent-color: var(--accent);
 }
 
@@ -34,8 +52,30 @@
   color: var(--muted);
 }
 
+.showAll {
+  align-self: flex-start;
+  min-height: 36px;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.showAll:hover {
+  color: var(--ink);
+}
+
 @media (max-width: 767px) {
   .option {
+    min-height: 44px;
+    padding: 10px 0;
+    font-size: 16px;
+  }
+
+  .option input {
+    margin-top: 4px;
+  }
+
+  .showAll {
     min-height: 44px;
     font-size: 16px;
   }
