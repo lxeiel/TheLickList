@@ -17,12 +17,12 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
     <section id="menu" className={styles.section} aria-label="About The Lick List">
       <div className={styles.grid}>
         <div className={styles.about}>
-          <h2 className={styles.heading}>About</h2>
-          {/* Lex: rewrite this intro in your own words */}
+          <h2 className={styles.heading}>About Me</h2>
           <p className={styles.intro}>
-            Hi, I&apos;m Lex. This is where I keep every place I&apos;ve eaten and every place I&apos;m
-            dying to try: mostly hawker stalls and neighbourhood spots around Singapore, plus a few
-            further afield whenever I travel. Steal my favourites, and tell me what I&apos;m missing.
+           I&apos;m Lex, and I&apos;m always hungry, always on the hunt for my next good meal.
+           From hawker stalls to hidden cafes and restaurants worth the hype, 
+           this is where I keep track of the good stuff. Singapore for now, the world next.
+           Steal my picks, and maybe I&apos;ll catch you at one of them.
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
                   $$
                 </span>
                 <span>
-                  <b>Price</b>, runs from $ to $$$
+                  <b>Price</b>, runs from $ to $$$$
                 </span>
               </li>
             </ul>
