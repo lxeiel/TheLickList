@@ -52,8 +52,10 @@ export default function RestaurantDetail({
           <ul>
             {sortFoodsForDisplay(r.foods).map((food, i) => (
               <li key={i} data-must-try={food.must_try || undefined}>
-                {food.name}
-                {food.must_try && <span className={styles.mustTry}>Must try</span>}
+                <span className={styles.foodName}>
+                  {food.name}
+                  {food.must_try && <span className={styles.mustTry}>Must try</span>}
+                </span>
               </li>
             ))}
           </ul>
