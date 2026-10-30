@@ -1,9 +1,10 @@
 "use client";
 
 import type { Restaurant } from "@/lib/restaurants";
-import { NATURAL_DIR, SORT_OPTIONS, type Sort, type SortKey } from "@/lib/sort";
+import type { Sort } from "@/lib/sort";
 import EmptyState from "./EmptyState";
 import RestaurantRow from "./RestaurantRow";
+import SortSelect from "./SortSelect";
 import styles from "./RestaurantList.module.css";
 
 export function spotCount(n: number): string {
@@ -34,24 +35,7 @@ export default function RestaurantList({
         <p className={styles.count} aria-live="polite">
           {spotCount(restaurants.length)}
         </p>
-        {sort && onSortChange && restaurants.length > 1 && (
-          <label className={styles.sort}>
-            <span className="visually-hidden">Sort</span>
-            <select
-              value={sort.key}
-              onChange={(e) => {
-                const key = e.target.value as SortKey;
-                onSortChange({ key, dir: NATURAL_DIR[key] });
-              }}
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
+        {sort && onSortChange && restaurants.length > 1 && <SortSelect sort={sort} onChange={onSortChange} />}
       </div>
       {restaurants.length === 0 ? (
         <EmptyState kind={total === 0 ? "no-data" : "no-matches"} onClear={onClearFilters} />

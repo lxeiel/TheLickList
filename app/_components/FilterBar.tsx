@@ -9,10 +9,11 @@ import {
   type Filters,
   type StatusFilter,
 } from "@/lib/filters";
-import { NATURAL_DIR, SORT_OPTIONS, type Sort, type SortKey } from "@/lib/sort";
+import type { Sort } from "@/lib/sort";
 import CheckboxGroup from "./CheckboxGroup";
 import { Dropdown } from "./MultiSelect";
 import ScoreGroup from "./ScoreGroup";
+import SortSelect from "./SortSelect";
 import Sheet from "./Sheet";
 import { PHONE_QUERY, useMediaQuery } from "./useMediaQuery";
 import styles from "./FilterBar.module.css";
@@ -209,7 +210,6 @@ export default function FilterBar({
   sort?: Sort;
   onSortChange?: (next: Sort) => void;
 }) {
-  const sortValue = sort?.key ?? "added";
 
   return (
     <div className={styles.bar} data-variant={variant}>
@@ -219,22 +219,9 @@ export default function FilterBar({
           <SearchInput filters={filters} onChange={onChange} />
           <FiltersButton filters={filters} options={options} onChange={onChange} />
           {variant === "list" && onSortChange && (
-            <label className={styles.sortSelect}>
-              <span className="visually-hidden">Sort</span>
-              <select
-                value={sortValue}
-                onChange={(e) => {
-                  const key = e.target.value as SortKey;
-                  onSortChange({ key, dir: NATURAL_DIR[key] });
-                }}
-              >
-                {SORT_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <span className={styles.sortSelect}>
+              <SortSelect sort={sort ?? { key: "added", dir: "desc" }} onChange={onSortChange} />
+            </span>
           )}
         </div>
       </div>

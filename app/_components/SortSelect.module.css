@@ -1,0 +1,58 @@
+/* Matches FilterBar's "FILTERS +" text button. */
+.sort {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sort:hover {
+  color: var(--accent);
+}
+
+.sort select {
+  appearance: none;
+  padding: 0 20px 0 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.sort select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Options in the open list read normally, not shouted. */
+.sort option {
+  color: var(--ink);
+  background: var(--surface);
+  text-transform: none;
+}
+
+.caret {
+  position: absolute;
+  right: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  /* 16px stops iOS zooming into the page when the picker opens. */
+  .sort {
+    min-height: 44px;
+    font-size: 16px;
+  }
+}

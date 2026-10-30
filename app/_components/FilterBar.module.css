@@ -137,14 +137,6 @@
   display: none;
 }
 
-.sortSelect select {
-  min-height: 40px;
-  padding: 0 8px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  font-size: 16px;
-}
 
 /* Active filters: plain removable words. */
 .chips {
@@ -213,8 +205,10 @@
     display: block;
   }
 
-  .sortSelect select {
-    min-height: 44px;
+  /* Same size as the sort control beside it on phones (16px there keeps
+     iOS from zooming when its picker opens). */
+  .filtersText {
+    font-size: 16px;
   }
 
   /* 44px hit area around the small filter words. */
