@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "@phosphor-icons/react";
-import { formatAdded, formatScore } from "@/lib/format";
+import { formatAdded, formatMeta, formatScore } from "@/lib/format";
 import { sortFoodsForDisplay } from "@/lib/foods";
 import { linkLabel } from "@/lib/links";
 import type { Restaurant } from "@/lib/restaurants";
@@ -21,7 +21,7 @@ export default function RestaurantDetail({
   showOnMapHref?: string;
 }) {
   const score = formatScore(r);
-  const meta = [r.area, r.cuisine_tags.length > 0 ? r.cuisine_tags.join(", ") : null, r.price_range].filter(Boolean);
+  const meta = formatMeta(r);
   const links = r.links.filter((link) => link.url);
 
   return (
@@ -36,7 +36,7 @@ export default function RestaurantDetail({
       {meta.length > 0 && (
         <p className={styles.meta}>
           {meta.map((item) => (
-            <span key={item as string}>{item}</span>
+            <span key={item}>{item}</span>
           ))}
         </p>
       )}

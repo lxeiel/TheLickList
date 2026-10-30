@@ -25,6 +25,8 @@ export type Restaurant = {
   photo_urls: string[];
   foods: FoodItem[];
   area: string | null;
+  /** More than one outlet; shown as a tag. */
+  multiple_locations: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -39,6 +41,7 @@ export type RestaurantInput = {
   rating: number | null;
   notes: string | null;
   area: string | null;
+  multiple_locations: boolean;
   foods: FoodItem[];
   photo_urls: string[];
 };
@@ -139,6 +142,7 @@ export async function createRestaurant(input: RestaurantInput): Promise<Restaura
       rating: input.rating,
       notes: input.notes,
       area: input.area,
+      multiple_locations: input.multiple_locations === true,
       foods: normalizeFoods(input.foods),
       photo_urls: input.photo_urls,
     })
@@ -179,6 +183,7 @@ export async function updateRestaurant(
       rating: input.rating,
       notes: input.notes,
       area: input.area,
+      multiple_locations: input.multiple_locations === true,
       foods: normalizeFoods(input.foods),
       photo_urls: input.photo_urls,
     })

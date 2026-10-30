@@ -21,6 +21,7 @@ function r(status: Restaurant["status"], day: number, updatedDay = day): Restaur
     photo_urls: [],
     foods: [],
     area: null,
+    multiple_locations: false,
     created_at: d(day),
     updated_at: d(updatedDay),
   };

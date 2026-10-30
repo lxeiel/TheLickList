@@ -11,6 +11,7 @@ const valid: RestaurantInput = {
   rating: 8,
   notes: null,
   area: "Central",
+  multiple_locations: false,
   foods: [],
   photo_urls: [],
 };

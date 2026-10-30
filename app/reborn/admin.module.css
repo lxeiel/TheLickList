@@ -431,14 +431,16 @@
   gap: 8px;
 }
 
-.admin .mustTry {
+.admin .mustTry,
+.admin .checkField {
   flex-direction: row;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
 }
 
-.admin .mustTry input {
+.admin .mustTry input,
+.admin .checkField input {
   min-height: 0;
   width: 18px;
   height: 18px;

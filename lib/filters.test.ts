@@ -27,6 +27,7 @@ function restaurant(overrides: Partial<Restaurant> & Pick<Restaurant, "id" | "na
     photo_urls: [],
     foods: [],
     area: null,
+    multiple_locations: false,
     created_at: "2026-10-01T00:00:00Z",
     updated_at: "2026-10-01T00:00:00Z",
     ...overrides,

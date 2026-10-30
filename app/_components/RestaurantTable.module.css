@@ -75,3 +75,9 @@ th[aria-sort] .sortButton {
 .added {
   white-space: nowrap;
 }
+
+/* "+ more" after the area of a spot with multiple locations. */
+.more {
+  color: var(--muted);
+  white-space: nowrap;
+}

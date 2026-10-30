@@ -74,7 +74,17 @@ export default function RestaurantTable({
             <td>
               <StatusMark status={r.status} showLabel />
             </td>
-            <td>{r.area}</td>
+            <td>
+              {r.area}
+              {r.multiple_locations &&
+                (r.area ? (
+                  <span className={styles.more} title="Multiple locations">
+                    {" "}+ more<span className="visually-hidden"> locations</span>
+                  </span>
+                ) : (
+                  <span className={styles.more}>Multiple</span>
+                ))}
+            </td>
             <td>{r.cuisine_tags.join(", ")}</td>
             <td>{r.price_range}</td>
             <td className={`${styles.right} ${styles.score}`}>{formatScore(r)}</td>

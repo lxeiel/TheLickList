@@ -34,6 +34,7 @@ const validInput: RestaurantInput = {
   rating: null,
   notes: null,
   area: null,
+  multiple_locations: false,
   foods: [],
   photo_urls: [],
 };

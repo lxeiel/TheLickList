@@ -41,6 +41,7 @@ export function RestaurantForm({
   const [areaOther, setAreaOther] = useState(
     initial?.area != null && !initialAreaIsStandard ? initial.area : "",
   );
+  const [multipleLocations, setMultipleLocations] = useState(initial?.multiple_locations ?? false);
   const [foods, setFoods] = useState<FoodItem[]>(initial?.foods ?? []);
   const [photos, dispatchPhotos] = useReducer(photoReducer, initial?.photo_urls ?? [], initialPhotos);
   const uploading = uploadingCount(photos);
@@ -76,6 +77,7 @@ export function RestaurantForm({
       rating: rating === "" ? null : Number(rating),
       notes: notes || null,
       area: areaSelect === "Other" ? areaOther.trim() || null : areaSelect || null,
+      multiple_locations: multipleLocations,
       foods,
       photo_urls: savedUrls(photos),
     };
@@ -170,6 +172,14 @@ export function RestaurantForm({
           />
         </label>
       )}
+      <label className={styles.checkField}>
+        <input
+          type="checkbox"
+          checked={multipleLocations}
+          onChange={(e) => setMultipleLocations(e.target.checked)}
+        />
+        Multiple locations
+      </label>
 
       <fieldset>
         <legend>Links</legend>
