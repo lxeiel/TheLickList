@@ -24,6 +24,24 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
            this is where I keep track of the good stuff. Singapore for now, the world next.
            Steal my picks, and maybe I&apos;ll catch you at one of them.
           </p>
+          {contact.length > 0 && (
+            <div className={styles.contactBlock}>
+              <h2 className="visually-hidden">Contact</h2>
+              <ul className={styles.contact}>
+                {contact.map((link) => (
+                  <li key={link.label}>
+                    {/* Web links open in a new tab; mailto: would leave a blank one behind. */}
+                    <a
+                      href={link.href}
+                      {...(link.href.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
+                    >
+                      <span className={styles.contactLabel}>{link.label}</span> - {link.detail}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className={styles.list}>
@@ -84,20 +102,6 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
               </li>
             </ul>
           </div>
-          {contact.length > 0 && (
-            <div>
-              <h2 className={styles.heading}>Contact</h2>
-              <ul>
-                {contact.map((link) => (
-                  <li key={link.label}>
-                    <a href={link.href} target="_blank" rel="noopener noreferrer">
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
 
         <div className={styles.numbers}>

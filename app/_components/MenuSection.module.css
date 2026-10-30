@@ -138,6 +138,24 @@
   font-weight: 600;
 }
 
+/* Contact: one line under the About Me text (wrapping on narrow screens).
+   The emerald labels say what the links are, so its heading is for screen
+   readers only. */
+.contactBlock {
+  margin-top: 1em;
+}
+
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.5em;
+  list-style: none;
+}
+
+.contactLabel {
+  color: var(--accent);
+}
+
 .down {
   position: absolute;
   left: 50%;
