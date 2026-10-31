@@ -29,6 +29,10 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
   const [collapsed, setCollapsed] = useState(false);
   const [mapUnavailable, setMapUnavailable] = useState(false);
+  // Phones: typing in the sheet's search box opens the sheet to full height,
+  // so the keyboard doesn't hide the results.
+  const [searching, setSearching] = useState(false);
+  const searchBlurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Desktop list panel: docked on the left; the visitor can collapse it.
   const [listClosedByUser, setListClosedByUser] = useState(false);
@@ -48,6 +52,8 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   if ((selected?.id ?? null) !== shownId) {
     setShownId(selected?.id ?? null);
     if (selected) {
+      // The detail replaces the search box, which unmounts without a blur.
+      setSearching(false);
       setCollapsed(false);
       setListClosedByUser(false);
     }
@@ -114,20 +120,52 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
     }
   }, []);
 
-  const sheet: SheetState = mapUnavailable ? "full" : collapsed ? "collapsed" : selected ? "detail" : "list";
+  const sheet: SheetState =
+    mapUnavailable || searching ? "full" : collapsed ? "collapsed" : selected ? "detail" : "list";
+  // While searching the map is hidden behind the full sheet; fit the pins for
+  // the list height the sheet drops back to (a full-height padding would
+  // leave Mapbox no room to fit them at all).
+  const paddingSheet: SheetState = searching && !mapUnavailable ? (collapsed ? "collapsed" : "list") : sheet;
   const bottomPadding = isPhone
     ? Math.round(
-        sheet === "collapsed"
+        paddingSheet === "collapsed"
           ? Math.max(window.innerHeight * SHEET_FRACTION.collapsed, COLLAPSED_MIN_PX)
-          : window.innerHeight * SHEET_FRACTION[sheet],
+          : window.innerHeight * SHEET_FRACTION[paddingSheet],
       )
     : 0;
 
+  // Leaving the search box shrinks the sheet back a moment later, so a tap on
+  // a result lands before the list moves under the finger. Only the search
+  // box counts: the Filters sheet's checkboxes are portalled out of the DOM
+  // but their focus events still bubble here through React.
+  const isSearchBox = (target: EventTarget) => target instanceof HTMLInputElement && target.type === "search";
+  function onSearchFocus(e: React.FocusEvent) {
+    if (!isSearchBox(e.target)) return;
+    if (searchBlurTimer.current) clearTimeout(searchBlurTimer.current);
+    setSearching(true);
+  }
+  function onSearchBlur(e: React.FocusEvent) {
+    if (!isSearchBox(e.target)) return;
+    if (searchBlurTimer.current) clearTimeout(searchBlurTimer.current);
+    searchBlurTimer.current = setTimeout(() => setSearching(false), 200);
+  }
+  // The keyboard's Search/Enter key puts the keyboard away to show the map.
+  function onSearchKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && isSearchBox(e.target)) (e.target as HTMLInputElement).blur();
+  }
+  useEffect(() => () => {
+    if (searchBlurTimer.current) clearTimeout(searchBlurTimer.current);
+  }, []);
+
   return (
     <div className={styles.page}>
-      <div className={styles.filters}>
-        <FilterBar variant="map" filters={filters} options={options} onChange={setFilters} />
-      </div>
+      {/* On phones the search and filters sit at the top of the sheet
+          instead, leaving the map more room. */}
+      {!isPhone && (
+        <div className={styles.filters}>
+          <FilterBar variant="map" filters={filters} options={options} onChange={setFilters} />
+        </div>
+      )}
 
       <div className={styles.body} data-list={listOpen ? "open" : "closed"}>
         <section
@@ -149,6 +187,18 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
               <span aria-hidden />
             </button>
           )}
+          {isPhone && !selected && (
+            <div className={styles.sheetFilters} onFocus={onSearchFocus} onBlur={onSearchBlur} onKeyDown={onSearchKeyDown}>
+              <FilterBar
+                variant="map"
+                filters={filters}
+                options={options}
+                onChange={setFilters}
+                sort={listed.length > 1 ? sort : undefined}
+                onSortChange={listed.length > 1 ? setSort : undefined}
+              />
+            </div>
+          )}
           {selected ? (
             <div className={styles.detail}>
               <DetailHeader onBack={deselect} onClose={deselect} />
@@ -161,8 +211,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
               onSelect={selectSpot}
               total={restaurants.length}
               onClearFilters={() => setFilters(EMPTY_FILTERS)}
-              sort={sort}
-              onSortChange={setSort}
+              // On phones the sort sits beside Filters + in the sheet's header.
+              sort={isPhone ? undefined : sort}
+              onSortChange={isPhone ? undefined : setSort}
             />
           )}
         </section>

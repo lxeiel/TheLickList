@@ -174,7 +174,8 @@
 }
 
 @media (max-width: 767px) {
-  /* Tabs on their own row; search, Filters + (and sort) below. */
+  /* No status tabs on phones (status is in the Filters menu); search, then
+     Filters + (and sort) below it. */
   .row {
     flex-direction: column;
     align-items: stretch;
@@ -182,12 +183,7 @@
   }
 
   .segmented {
-    justify-content: space-between;
-  }
-
-  .segment {
-    min-height: 44px;
-    font-size: 20px;
+    display: none;
   }
 
   /* Search gets a full row; Filters + (and sort) wrap beneath it. */

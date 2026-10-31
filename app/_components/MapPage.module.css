@@ -88,10 +88,12 @@
 
 /* Phone: the map fills the screen behind a bottom sheet. Heights here must
    match SHEET_FRACTION in MapPage.tsx. */
+.sheetFilters {
+  flex-shrink: 0;
+  padding: 0 16px 8px;
+}
+
 @media (max-width: 767px) {
-  .filters {
-    padding: 8px 16px;
-  }
 
   .listToggle {
     display: none;

@@ -103,14 +103,31 @@ export function collapsedOptions(options: string[], selected: string[], limit: n
   return options.filter((option, i) => i < limit || ticked.includes(lower(option)));
 }
 
-// The Filters menu's Clear: empties what's set inside it, leaving the status
-// tabs and the search alone.
-export function clearMenuFilters(filters: Filters): Filters {
-  return { ...filters, cuisine: [], area: [], price: [], minScore: null };
+// On phones the status tabs are hidden and status is chosen in the Filters
+// menu instead, so there it counts and clears with the rest (includeStatus).
+type MenuScope = { includeStatus?: boolean };
+
+// The Filters menu's Clear: empties what's set inside it, leaving the search
+// (and, on wide screens, the status tabs) alone.
+export function clearMenuFilters(filters: Filters, { includeStatus = false }: MenuScope = {}): Filters {
+  return {
+    ...filters,
+    cuisine: [],
+    area: [],
+    price: [],
+    minScore: null,
+    status: includeStatus ? "all" : filters.status,
+  };
 }
 
-export function activeFilterCount(filters: Filters): number {
-  return filters.cuisine.length + filters.area.length + filters.price.length + (filters.minScore != null ? 1 : 0);
+export function activeFilterCount(filters: Filters, { includeStatus = false }: MenuScope = {}): number {
+  return (
+    filters.cuisine.length +
+    filters.area.length +
+    filters.price.length +
+    (filters.minScore != null ? 1 : 0) +
+    (includeStatus && filters.status !== "all" ? 1 : 0)
+  );
 }
 
 export function findSpot(restaurants: Restaurant[], id: string | null): Restaurant | null {

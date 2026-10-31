@@ -186,6 +186,15 @@ describe("collapsedOptions", () => {
   });
 });
 
+test("on phones the Filters menu holds status too, so it counts and clears it", () => {
+  const filters = { ...EMPTY_FILTERS, status: "wishlist" as const, q: "noodle", cuisine: ["Thai"] };
+  expect(activeFilterCount(filters, { includeStatus: true })).toBe(2);
+  expect(activeFilterCount({ ...EMPTY_FILTERS, status: "tried" }, { includeStatus: true })).toBe(1);
+  expect(activeFilterCount(EMPTY_FILTERS, { includeStatus: true })).toBe(0);
+  // Search still stays.
+  expect(clearMenuFilters(filters, { includeStatus: true })).toEqual({ ...EMPTY_FILTERS, q: "noodle" });
+});
+
 test("clearMenuFilters resets score, cuisine, area and price but keeps status and search", () => {
   const filters = { status: "tried" as const, q: "noodle", cuisine: ["Ramen"], area: ["Central"], price: ["$"], minScore: 8 };
   expect(clearMenuFilters(filters)).toEqual({ ...EMPTY_FILTERS, status: "tried", q: "noodle" });

@@ -16,6 +16,7 @@ import { Dropdown } from "./MultiSelect";
 import ScoreGroup from "./ScoreGroup";
 import SortSelect from "./SortSelect";
 import Sheet from "./Sheet";
+import StatusGroup from "./StatusGroup";
 import { PHONE_QUERY, useMediaQuery } from "./useMediaQuery";
 import styles from "./FilterBar.module.css";
 
@@ -127,6 +128,8 @@ function FilterGroups({
   const collapseAfter = isPhone ? PHONE_GROUP_LIMIT : undefined;
   return (
     <div className={styles.filterGroups}>
+      {/* Phones hide the status tabs, so status is chosen here instead. */}
+      {isPhone && <StatusGroup value={filters.status} onChange={(status) => onChange({ ...filters, status })} />}
       <ScoreGroup value={filters.minScore} onChange={(minScore) => onChange({ ...filters, minScore })} />
       <div className={styles.filterColumns}>
         <CheckboxGroup legend="Cuisine" options={options.cuisine} selected={filters.cuisine} onChange={(cuisine) => onChange({ ...filters, cuisine })} collapseAfter={collapseAfter} />
@@ -137,15 +140,16 @@ function FilterGroups({
   );
 }
 
-// Cuisine/area/price behind one "Filters +" text button: a popover on
-// desktop, a sheet on phone.
+// Score/cuisine/area/price (and status, on phones) behind one "Filters +"
+// text button: a popover on desktop, a sheet on phone.
 function FiltersButton({ filters, options, onChange }: { filters: Filters; options: FilterOptions; onChange: (next: Filters) => void }) {
   const isPhone = useMediaQuery(PHONE_QUERY);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const count = activeFilterCount(filters);
+  const scope = { includeStatus: isPhone };
+  const count = activeFilterCount(filters, scope);
   // Empties what's set in this menu; greyed out when nothing is.
   const clear = (
-    <button type="button" className={styles.clearFilters} disabled={count === 0} onClick={() => onChange(clearMenuFilters(filters))}>
+    <button type="button" className={styles.clearFilters} disabled={count === 0} onClick={() => onChange(clearMenuFilters(filters, scope))}>
       Clear filters
     </button>
   );
@@ -197,13 +201,26 @@ function Chips({
   sort?: Sort;
   onSortChange?: (next: Sort) => void;
 }) {
+  // On phones status lives in the Filters menu, so it gets a chip too.
+  const isPhone = useMediaQuery(PHONE_QUERY);
+  const statusChip = isPhone && filters.status !== "all" ? STATUSES.find((s) => s.value === filters.status)?.label : null;
   const sortLabel = sort && onSortChange ? sortChipLabel(sort) : null;
-  if (activeFilterCount(filters) === 0 && !sortLabel) return null;
+  if (activeFilterCount(filters) === 0 && !sortLabel && !statusChip) return null;
   const chips = (["cuisine", "area", "price"] as const).flatMap((key) =>
     filters[key].map((value) => ({ key, value })),
   );
   return (
     <div className={styles.chips}>
+      {statusChip && (
+        <button
+          type="button"
+          className={styles.chip}
+          aria-label={`Remove filter: ${statusChip}`}
+          onClick={() => onChange({ ...filters, status: "all" })}
+        >
+          {statusChip} ×
+        </button>
+      )}
       {filters.minScore != null && (
         <button
           type="button"
@@ -272,7 +289,8 @@ export default function FilterBar({
         <div className={styles.searchRow}>
           <SearchInput filters={filters} onChange={onChange} />
           <FiltersButton filters={filters} options={options} onChange={onChange} />
-          {variant === "list" && onSortChange && (
+          {/* Phones only: the List page's sort, and the map sheet's. */}
+          {onSortChange && (
             <span className={styles.sortSelect}>
               <SortSelect sort={sort ?? DEFAULT_SORT} onChange={onSortChange} />
             </span>
