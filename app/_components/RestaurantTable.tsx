@@ -24,7 +24,7 @@ function SortHeader({
   return (
     <th
       scope="col"
-      className={align === "right" ? styles.right : undefined}
+      className={`${styles.sortable} ${align === "right" ? styles.right : ""}`}
       aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : undefined}
     >
       <button type="button" className={styles.sortButton} onClick={() => onSortChange(toggleSort(sort, sortKey))}>

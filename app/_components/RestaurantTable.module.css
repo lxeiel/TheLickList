@@ -37,20 +37,39 @@
   text-align: right !important;
 }
 
+/* A sortable header's button fills the whole cell, so anywhere in the
+   column heading sorts, not just the word. */
+.table th.sortable {
+  padding: 0;
+}
+
 .sortButton {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 4px;
-  min-height: 28px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px 8px;
+  cursor: pointer;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
   color: inherit;
 }
 
+.right .sortButton {
+  justify-content: flex-end;
+}
+
 .sortButton:hover,
 th[aria-sort] .sortButton {
   color: var(--ink);
+}
+
+.sortButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
 }
 
 .name {
