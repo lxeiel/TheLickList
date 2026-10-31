@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDown, ArrowUp } from "@phosphor-icons/react";
-import { formatAdded, formatScore } from "@/lib/format";
+import { formatScore } from "@/lib/format";
 import type { Restaurant } from "@/lib/restaurants";
 import { toggleSort, type Sort, type SortKey } from "@/lib/sort";
 import StatusMark from "./StatusMark";
@@ -53,12 +53,12 @@ export default function RestaurantTable({
       <thead>
         <tr>
           <SortHeader label="Name" sortKey="name" sort={sort} onSortChange={onSortChange} />
-          <th scope="col">Status</th>
-          <th scope="col">Area</th>
+          <SortHeader label="Status" sortKey="status" sort={sort} onSortChange={onSortChange} />
+          <SortHeader label="Area" sortKey="area" sort={sort} onSortChange={onSortChange} />
+          {/* A spot can have several cuisines, so there's no single value to sort by. */}
           <th scope="col">Cuisine</th>
-          <th scope="col">Price</th>
+          <SortHeader label="Price" sortKey="price" sort={sort} onSortChange={onSortChange} />
           <SortHeader label="Score" sortKey="rating" sort={sort} onSortChange={onSortChange} align="right" />
-          <SortHeader label="Added" sortKey="added" sort={sort} onSortChange={onSortChange} />
         </tr>
       </thead>
       <tbody>
@@ -88,7 +88,6 @@ export default function RestaurantTable({
             <td>{r.cuisine_tags.join(", ")}</td>
             <td>{r.price_range}</td>
             <td className={`${styles.right} ${styles.score}`}>{formatScore(r)}</td>
-            <td className={styles.added}>{formatAdded(r.created_at)}</td>
           </tr>
         ))}
       </tbody>

@@ -10,7 +10,7 @@ import {
   type Filters,
   type StatusFilter,
 } from "@/lib/filters";
-import type { Sort } from "@/lib/sort";
+import { DEFAULT_SORT, sortChipLabel, type Sort } from "@/lib/sort";
 import CheckboxGroup from "./CheckboxGroup";
 import { Dropdown } from "./MultiSelect";
 import ScoreGroup from "./ScoreGroup";
@@ -184,8 +184,21 @@ function FiltersButton({ filters, options, onChange }: { filters: Filters; optio
   );
 }
 
-function Chips({ filters, onChange }: { filters: Filters; onChange: (next: Filters) => void }) {
-  if (activeFilterCount(filters) === 0) return null;
+// Removable chips for the active filters and, on the List page, a sort other
+// than newest first. Clear all resets both.
+function Chips({
+  filters,
+  onChange,
+  sort,
+  onSortChange,
+}: {
+  filters: Filters;
+  onChange: (next: Filters) => void;
+  sort?: Sort;
+  onSortChange?: (next: Sort) => void;
+}) {
+  const sortLabel = sort && onSortChange ? sortChipLabel(sort) : null;
+  if (activeFilterCount(filters) === 0 && !sortLabel) return null;
   const chips = (["cuisine", "area", "price"] as const).flatMap((key) =>
     filters[key].map((value) => ({ key, value })),
   );
@@ -212,7 +225,24 @@ function Chips({ filters, onChange }: { filters: Filters; onChange: (next: Filte
           {value} ×
         </button>
       ))}
-      <button type="button" className={styles.clearAll} onClick={() => onChange(EMPTY_FILTERS)}>
+      {sortLabel && (
+        <button
+          type="button"
+          className={styles.chip}
+          aria-label={`Reset sort to newest first (now ${sortLabel})`}
+          onClick={() => onSortChange?.(DEFAULT_SORT)}
+        >
+          <span className={styles.chipPrefix}>Sorted:</span> {sortLabel} ×
+        </button>
+      )}
+      <button
+        type="button"
+        className={styles.clearAll}
+        onClick={() => {
+          onChange(EMPTY_FILTERS);
+          if (sortLabel) onSortChange?.(DEFAULT_SORT);
+        }}
+      >
         Clear all
       </button>
     </div>
@@ -244,12 +274,17 @@ export default function FilterBar({
           <FiltersButton filters={filters} options={options} onChange={onChange} />
           {variant === "list" && onSortChange && (
             <span className={styles.sortSelect}>
-              <SortSelect sort={sort ?? { key: "added", dir: "desc" }} onChange={onSortChange} />
+              <SortSelect sort={sort ?? DEFAULT_SORT} onChange={onSortChange} />
             </span>
           )}
         </div>
       </div>
-      <Chips filters={filters} onChange={onChange} />
+      <Chips
+        filters={filters}
+        onChange={onChange}
+        sort={variant === "list" ? sort : undefined}
+        onSortChange={variant === "list" ? onSortChange : undefined}
+      />
     </div>
   );
 }

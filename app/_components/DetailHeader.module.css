@@ -31,3 +31,13 @@
 .close:hover {
   background: var(--hover);
 }
+
+@media (min-width: 768px) {
+  .header[data-back-phone-only] {
+    justify-content: flex-end;
+  }
+
+  .header[data-back-phone-only] .back {
+    display: none;
+  }
+}

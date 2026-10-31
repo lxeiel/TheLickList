@@ -7,12 +7,17 @@ import styles from "./Sheet.module.css";
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+// Skips controls a breakpoint hides (e.g. the popup's phone-only back link),
+// which can't take focus.
+const focusables = (root: HTMLElement) =>
+  [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.checkVisibility());
+
 const LEAVE_MS = 160;
 
 const noopSubscribe = () => () => {};
 
 // A modal overlay: a drawer from the right, a sheet from the bottom, or
-// "responsive" (drawer at ≥768px, sheet below). Focus moves in on open, is
+// "popup" (a centered dialog at ≥768px, a sheet from the bottom below). Focus moves in on open, is
 // trapped while open, and returns to whatever opened it on close.
 export default function Sheet({
   open,
@@ -25,7 +30,7 @@ export default function Sheet({
   open: boolean;
   onClose: () => void;
   label: string;
-  placement: "drawer" | "sheet" | "responsive";
+  placement: "drawer" | "sheet" | "popup";
   height?: "85%" | "auto";
   children: ReactNode;
 }) {
@@ -55,7 +60,7 @@ export default function Sheet({
   useLayoutEffect(() => {
     if (open && !wasOpen.current) {
       opener.current = document.activeElement;
-      panel.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+      if (panel.current) focusables(panel.current)[0]?.focus();
     }
     wasOpen.current = open;
   }, [open]);
@@ -76,7 +81,7 @@ export default function Sheet({
       return;
     }
     if (e.key !== "Tab" || !panel.current) return;
-    const items = [...panel.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
+    const items = focusables(panel.current);
     if (items.length === 0) return;
     const first = items[0];
     const last = items[items.length - 1];

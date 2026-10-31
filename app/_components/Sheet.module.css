@@ -46,19 +46,21 @@
   height: 85dvh;
 }
 
+/* Centered dialog on wide screens; the same bottom sheet on phones. */
 @media (min-width: 768px) {
-  .responsive {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 420px;
-    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
-    animation: drawer-in 220ms var(--ease-out);
+  .popup {
+    inset: 0;
+    width: min(560px, calc(100vw - 48px));
+    height: fit-content;
+    max-height: 85dvh;
+    margin: auto;
+    border-radius: var(--radius-lg);
+    animation: popup-in 220ms var(--ease-out);
   }
 }
 
 @media (max-width: 767px) {
-  .responsive {
+  .popup {
     left: 0;
     right: 0;
     bottom: 0;
@@ -68,7 +70,7 @@
     animation: sheet-in 220ms var(--ease-out);
   }
 
-  .responsive[data-height="85%"] {
+  .popup[data-height="85%"] {
     height: 85dvh;
   }
 }
@@ -90,14 +92,17 @@
 }
 
 @media (min-width: 768px) {
-  .root[data-state="closed"] .responsive {
-    transform: translateX(100%);
-    transition: transform 160ms var(--ease-in);
+  .root[data-state="closed"] .popup {
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+      opacity 160ms var(--ease-in),
+      transform 160ms var(--ease-in);
   }
 }
 
 @media (max-width: 767px) {
-  .root[data-state="closed"] .responsive {
+  .root[data-state="closed"] .popup {
     transform: translateY(100%);
     transition: transform 160ms var(--ease-in);
   }
@@ -112,6 +117,13 @@
 @keyframes drawer-in {
   from {
     transform: translateX(100%);
+  }
+}
+
+@keyframes popup-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
   }
 }
 

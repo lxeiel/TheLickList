@@ -160,6 +160,12 @@
   text-decoration: line-through;
 }
 
+/* "Sorted:" before the sort chip, so it reads apart from the filters. */
+.chipPrefix {
+  color: var(--muted);
+  font-weight: 400;
+}
+
 .clearAll {
   min-height: 28px;
   color: var(--muted);

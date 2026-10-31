@@ -86,12 +86,12 @@ export default function ListPage({ restaurants }: { restaurants: Restaurant[] })
         open={selected != null}
         onClose={clearSpot}
         label={shown?.name ?? "Restaurant"}
-        placement="responsive"
+        placement="popup"
         height="85%"
       >
         {shown && (
           <>
-            <DetailHeader onBack={clearSpot} onClose={clearSpot} />
+            <DetailHeader onBack={clearSpot} onClose={clearSpot} backOnPhoneOnly />
             <RestaurantDetail
               restaurant={shown}
               showOnMapHref={shown.lat != null ? mapHref(params, shown.id) : undefined}

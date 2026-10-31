@@ -72,10 +72,6 @@ th[aria-sort] .sortButton {
   font-variant-numeric: tabular-nums;
 }
 
-.added {
-  white-space: nowrap;
-}
-
 /* "+ more" after the area of a spot with multiple locations. */
 .more {
   color: var(--muted);
