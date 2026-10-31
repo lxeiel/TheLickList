@@ -34,6 +34,14 @@ test("rejects non-integer rating", () => {
   expect(validateRestaurantInput({ ...valid, rating: 7.5 })).toBe(RATING_ERROR);
 });
 
+test.each([["javascript:alert(1)"], ["data:text/html,hi"], ["maps.google.com/?q=x"]])("rejects Maps link %j", (maps_url) => {
+  expect(validateRestaurantInput({ ...valid, maps_url })).toBe("The Maps link must be an http or https URL");
+});
+
+test.each([[""], ["https://maps.app.goo.gl/abc"], ["HTTP://maps.google.com/?q=x"]])("accepts Maps link %j", (maps_url) => {
+  expect(validateRestaurantInput({ ...valid, maps_url })).toBeNull();
+});
+
 test("rejects more than 40 foods", () => {
   const foods = Array.from({ length: 41 }, (_, i) => ({ name: `F${i}`, must_try: false }));
   expect(validateRestaurantInput({ ...valid, foods })).toBe("Too many foods (max 40)");

@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { getIronSession, type IronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -14,8 +15,22 @@ export async function getSession(): Promise<IronSession<SessionData>> {
   return getIronSession<SessionData>(await cookies(), sessionOptions);
 }
 
+// A wrong guess waits this long before it's answered, so guessing the
+// password one try after another is slow.
+const FAILED_LOGIN_DELAY_MS = 1000;
+
+// Hashing both sides gives equal-length buffers, so the comparison takes the
+// same time however much of the guess is right.
+function passwordMatches(given: string, expected: string | undefined): boolean {
+  // An unset or blank ADMIN_PASSWORD must never let a blank guess in.
+  if (!expected) return false;
+  const digest = (value: string) => createHash("sha256").update(value).digest();
+  return timingSafeEqual(digest(given), digest(expected));
+}
+
 export async function login(password: string): Promise<boolean> {
-  if (password !== process.env.ADMIN_PASSWORD) {
+  if (!passwordMatches(password, process.env.ADMIN_PASSWORD)) {
+    await new Promise((resolve) => setTimeout(resolve, FAILED_LOGIN_DELAY_MS));
     return false;
   }
 

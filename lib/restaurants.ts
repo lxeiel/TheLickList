@@ -59,6 +59,10 @@ export function validateRestaurantInput(input: RestaurantInput): string | null {
   ) {
     return "Rating must be a whole number from 1 to 10";
   }
+  // Shown as a link on the public site, so nothing like "javascript:".
+  if (input.maps_url && !/^https?:\/\//i.test(input.maps_url)) {
+    return "The Maps link must be an http or https URL";
+  }
   for (const link of input.links ?? []) {
     if (link.url && !/^https?:\/\//i.test(link.url)) {
       return "Links must be http or https URLs";
