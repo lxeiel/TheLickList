@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "@phosphor-icons/react";
 import { formatAdded, formatMeta, formatScore } from "@/lib/format";
@@ -11,35 +12,54 @@ import PhotoStrip from "./PhotoStrip";
 import StatusMark from "./StatusMark";
 import styles from "./RestaurantDetail.module.css";
 
-// Shared by the Map page's pane/sheet and the List page's drawer/sheet; only
+const Dot = () => (
+  <span className={styles.dot} aria-hidden>
+    ·
+  </span>
+);
+
+// Shared by the Map page's pane/sheet and the List page's popup/sheet; only
 // the container around it differs. A future /r/[id] page would reuse it too.
+// layout="popup" gives the List page's wide-screen popup roomier spacing and
+// larger photos, and leaves space beside the name for the corner ✕.
 export default function RestaurantDetail({
   restaurant: r,
   showOnMapHref,
+  layout,
 }: {
   restaurant: Restaurant;
   showOnMapHref?: string;
+  layout?: "popup";
 }) {
   const score = formatScore(r);
   const meta = formatMeta(r);
   const links = r.links.filter((link) => link.url);
 
   return (
-    <article className={styles.detail}>
+    <article className={styles.detail} data-layout={layout}>
       <h2 className={styles.name}>{r.name}</h2>
 
-      <p className={styles.status}>
-        <StatusMark status={r.status} size="md" showLabel />
-        {score && <span className={styles.score}>{score}</span>}
+      {/* Status and score, then area, cuisine, price and so on, on one line.
+          Each dot sticks to the item before it, so a wrapped line starts with
+          an item rather than a stray dot. */}
+      <p className={styles.summary}>
+        <span className={styles.part}>
+          <span className={styles.status}>
+            <StatusMark status={r.status} size="md" showLabel />
+            {score && <span className={styles.score}>{score}</span>}
+          </span>
+          {meta.length > 0 && <Dot />}
+        </span>
+        {meta.map((item, i) => (
+          <Fragment key={item}>
+            {" "}
+            <span className={`${styles.part} ${styles.metaItem}`}>
+              {item}
+              {i < meta.length - 1 && <Dot />}
+            </span>
+          </Fragment>
+        ))}
       </p>
-
-      {meta.length > 0 && (
-        <p className={styles.meta}>
-          {meta.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </p>
-      )}
 
       <PhotoStrip urls={r.photo_urls} name={r.name} />
 
@@ -62,7 +82,7 @@ export default function RestaurantDetail({
         </section>
       )}
 
-      {(r.maps_url || links.length > 0) && (
+      {(r.maps_url || links.length > 0 || showOnMapHref) && (
         <div className={styles.actions}>
           {r.maps_url && (
             <a className={styles.primary} href={r.maps_url} target="_blank" rel="noopener noreferrer">
@@ -76,14 +96,13 @@ export default function RestaurantDetail({
               <ArrowUpRight size={16} aria-hidden />
             </a>
           ))}
+          {showOnMapHref && (
+            <Link className={styles.secondary} href={showOnMapHref}>
+              <MapPin size={16} aria-hidden />
+              Show on map
+            </Link>
+          )}
         </div>
-      )}
-
-      {showOnMapHref && (
-        <Link className={styles.secondary} href={showOnMapHref}>
-          <MapPin size={16} aria-hidden />
-          Show on map
-        </Link>
       )}
 
       {r.lat == null && !showOnMapHref && <p className={styles.muted}>No map location yet</p>}

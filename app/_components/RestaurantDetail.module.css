@@ -1,9 +1,26 @@
 .detail {
+  /* Side padding, also read by the photo strip so it can bleed to the edge. */
+  --detail-pad: 16px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  padding: 4px 16px 24px;
+  padding: 4px var(--detail-pad) 24px;
+}
+
+/* The List page's popup on wide screens: roomier, larger photos, and the
+   name stops short of the ✕ in the corner. */
+@media (min-width: 768px) {
+  .detail[data-layout="popup"] {
+    --detail-pad: 28px;
+    --photo-size: 150px;
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+
+  .detail[data-layout="popup"] .name {
+    padding-right: 48px;
+  }
 }
 
 .name {
@@ -14,11 +31,31 @@
   overflow-wrap: anywhere;
 }
 
+.summary {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Lines only break between parts, never inside one. */
+.part {
+  white-space: nowrap;
+}
+
 .status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 14px;
+  vertical-align: top;
+}
+
+.metaItem {
+  color: var(--muted);
+}
+
+.dot {
+  margin-left: 6px;
+  color: var(--muted);
+  opacity: 0.6;
 }
 
 .score {
@@ -26,19 +63,6 @@
   font-size: 14px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.meta > * + *::before {
-  content: "·";
-  margin: 0 6px;
-  opacity: 0.6;
 }
 
 /* Notes: a thin outline on the page (no fill); long notes are cut to four

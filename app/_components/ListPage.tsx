@@ -94,6 +94,7 @@ export default function ListPage({ restaurants }: { restaurants: Restaurant[] })
             <DetailHeader onBack={clearSpot} onClose={clearSpot} backOnPhoneOnly />
             <RestaurantDetail
               restaurant={shown}
+              layout="popup"
               showOnMapHref={shown.lat != null ? mapHref(params, shown.id) : undefined}
             />
           </>

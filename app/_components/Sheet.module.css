@@ -50,7 +50,7 @@
 @media (min-width: 768px) {
   .popup {
     inset: 0;
-    width: min(560px, calc(100vw - 48px));
+    width: min(720px, calc(100vw - 48px));
     height: fit-content;
     max-height: 85dvh;
     margin: auto;

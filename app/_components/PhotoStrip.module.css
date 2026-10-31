@@ -1,11 +1,12 @@
 /* Strip: square photos in a sideways row that reaches the panel's right edge,
-   so the next one peeks in. */
+   so the next one peeks in. The detail panel sets --detail-pad (its side
+   padding) and, in the List page's popup, --photo-size. */
 .strip {
   display: flex;
   gap: 8px;
   align-self: stretch;
-  margin-right: -16px;
-  padding: 2px 16px 6px 2px;
+  margin-right: calc(-1 * var(--detail-pad, 16px));
+  padding: 2px var(--detail-pad, 16px) 6px 2px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-left: 2px;
@@ -23,8 +24,8 @@
 
 .tile {
   flex: 0 0 auto;
-  width: 120px;
-  height: 120px;
+  width: var(--photo-size, 120px);
+  height: var(--photo-size, 120px);
   padding: 0;
   overflow: hidden;
   border-radius: var(--radius-sm);

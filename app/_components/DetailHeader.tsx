@@ -4,7 +4,8 @@ import { ArrowLeft, X } from "@phosphor-icons/react";
 import styles from "./DetailHeader.module.css";
 
 // backOnPhoneOnly: in the List page's popup the ✕ already closes it on wide
-// screens, so "All spots" only shows in the phone sheet.
+// screens, so "All spots" only shows in the phone sheet and the ✕ moves up
+// into the corner beside the name.
 export default function DetailHeader({
   onBack,
   onClose,
