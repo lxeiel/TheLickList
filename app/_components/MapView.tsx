@@ -11,7 +11,8 @@ import StatusMark, { STATUS_LABEL } from "./StatusMark";
 import styles from "./MapView.module.css";
 
 // Every visit opens on this view of Singapore. Framed as an area rather than
-// a centre + zoom so it looks the same on a phone and a wide screen.
+// a centre + zoom so it looks the same on a phone and a wide screen. On
+// phones it's framed in the part of the map above the bottom sheet.
 const HOME_BOUNDS: [[number, number], [number, number]] = [
   [103.62, 1.22],
   [104.03, 1.47],
@@ -100,7 +101,19 @@ function LiveMap({
     const firstRun = fittedIds.current === null;
     if (!firstRun && fittedIds.current === locatedIds) return;
     fittedIds.current = locatedIds;
-    if ((firstRun && !fitOnLoad) || located.length === 0 || selected) return;
+    if (firstRun && !fitOnLoad) {
+      // initialViewState can't know the sheet's height, so re-frame the home
+      // view clear of it once the map exists. A selected spot flies there
+      // itself (below).
+      if (!selected) {
+        mapRef.current?.fitBounds(HOME_BOUNDS, {
+          padding: { top: 16, left: 16, right: 16, bottom: 16 + bottomPadding },
+          duration: 0,
+        });
+      }
+      return;
+    }
+    if (located.length === 0 || selected) return;
     const lats = located.map((r) => r.lat);
     const lngs = located.map((r) => r.lng);
     mapRef.current?.fitBounds(
