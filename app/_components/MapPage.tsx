@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { activeFilterCount, applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
+import type { SheetSize } from "@/lib/sheet";
 import { sortRestaurants } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
 import MapView from "./MapView";
 import RestaurantDetail from "./RestaurantDetail";
 import RestaurantList from "./RestaurantList";
+import { useSheetDrag } from "./useSheetDrag";
 import { PHONE_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "./useMediaQuery";
 import { useTheme } from "./useTheme";
 import { useUrlState } from "./useUrlState";
@@ -27,7 +29,8 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const { theme } = useTheme();
   const isPhone = useMediaQuery(PHONE_QUERY);
   const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
-  const [collapsed, setCollapsed] = useState(false);
+  // The phone sheet's size, as the visitor last dragged or tapped it.
+  const [size, setSize] = useState<SheetSize>("default");
   const [mapUnavailable, setMapUnavailable] = useState(false);
   // Phones: typing in the sheet's search box opens the sheet to full height,
   // so the keyboard doesn't hide the results.
@@ -47,14 +50,14 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
     filters.status !== "all" || filters.q !== "" || activeFilterCount(filters) > 0;
 
   // A selection made from the map should be visible even if the sheet was
-  // collapsed.
+  // collapsed, and the map beside it even if the sheet was pulled to full.
   const [shownId, setShownId] = useState(selected?.id ?? null);
   if ((selected?.id ?? null) !== shownId) {
     setShownId(selected?.id ?? null);
     if (selected) {
       // The detail replaces the search box, which unmounts without a blur.
       setSearching(false);
-      setCollapsed(false);
+      setSize("default");
       setListClosedByUser(false);
     }
   }
@@ -121,11 +124,28 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   }, []);
 
   const sheet: SheetState =
-    mapUnavailable || searching ? "full" : collapsed ? "collapsed" : selected ? "detail" : "list";
-  // While searching the map is hidden behind the full sheet; fit the pins for
-  // the list height the sheet drops back to (a full-height padding would
-  // leave Mapbox no room to fit them at all).
-  const paddingSheet: SheetState = searching && !mapUnavailable ? (collapsed ? "collapsed" : "list") : sheet;
+    mapUnavailable || searching || size === "full"
+      ? "full"
+      : size === "collapsed"
+        ? "collapsed"
+        : selected
+          ? "detail"
+          : "list";
+  // A full sheet hides the map; fit the pins for the height it comes back
+  // down to (a full-height padding would leave Mapbox no room to fit them).
+  const paddingSheet: SheetState =
+    sheet === "full" && !mapUnavailable ? (size === "collapsed" ? "collapsed" : selected ? "detail" : "list") : sheet;
+
+  const handle = useSheetDrag({
+    pane,
+    size,
+    getSnaps: () => ({
+      collapsed: Math.max(window.innerHeight * SHEET_FRACTION.collapsed, COLLAPSED_MIN_PX),
+      default: window.innerHeight * SHEET_FRACTION[selected ? "detail" : "list"],
+      full: pane.current?.parentElement?.clientHeight ?? window.innerHeight,
+    }),
+    onChange: setSize,
+  });
   const bottomPadding = isPhone
     ? Math.round(
         paddingSheet === "collapsed"
@@ -180,9 +200,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             <button
               type="button"
               className={styles.handle}
-              aria-label={collapsed ? "Expand list" : "Collapse list"}
-              aria-expanded={!collapsed}
-              onClick={() => setCollapsed(!collapsed)}
+              aria-label={size === "collapsed" ? "Expand list" : size === "full" ? "Shrink list" : "Collapse list"}
+              aria-expanded={size !== "collapsed"}
+              {...handle}
             >
               <span aria-hidden />
             </button>

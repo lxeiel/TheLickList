@@ -136,12 +136,21 @@
     height: max(20dvh, 120px);
   }
 
+  /* A height rather than top: 0, so the sheet can glide up to it. */
   .pane[data-sheet="full"] {
-    top: 0;
+    height: 100%;
     border-radius: 0;
   }
 
+  /* Glide between sizes, but follow the finger exactly while dragging. */
+  .pane:not([data-dragging]) {
+    transition: height 220ms var(--ease-out);
+  }
+
+  /* The handle takes vertical drags itself instead of scrolling the page. */
   .handle {
+    touch-action: none;
+    cursor: grab;
     position: relative;
     display: grid;
     place-items: center;
@@ -162,5 +171,11 @@
     height: 4px;
     border-radius: 2px;
     background: var(--line-strong);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .pane:not([data-dragging]) {
+    transition: none;
   }
 }
