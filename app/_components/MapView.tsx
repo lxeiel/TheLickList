@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CircleNotch, NavigationArrow } from "@phosphor-icons/react";
 import Map, { AttributionControl, Marker, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { scoreLabel } from "@/lib/format";
+import { sortByDistance, type Point } from "@/lib/geo";
 import type { Restaurant } from "@/lib/restaurants";
 import type { Theme } from "@/lib/theme";
 import { readMapColors, recolorMap } from "./mapTheme";
@@ -53,6 +55,10 @@ function LiveMap({
   onUnavailable,
   pinsFocusable = true,
   fitOnLoad = false,
+  here = null,
+  locating = false,
+  locateRequest = 0,
+  onLocate,
 }: {
   restaurants: Restaurant[];
   selectedId: string | null;
@@ -65,6 +71,13 @@ function LiveMap({
   pinsFocusable?: boolean;
   /** Fit to the pins on load instead of opening on the home view. */
   fitOnLoad?: boolean;
+  /** The visitor's location, once they've shared it. */
+  here?: Point | null;
+  locating?: boolean;
+  /** Goes up on each tap of the locate button; the map frames the visitor
+      and their nearest spot once `here` is known for that tap. */
+  locateRequest?: number;
+  onLocate?: () => void;
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -140,6 +153,29 @@ function LiveMap({
     else mapRef.current?.flyTo(move);
   }, [loaded, selected, bottomPadding, reducedMotion]);
 
+  // Frame the visitor with their nearest pin, so "what's close" is answered
+  // at a glance. Only on a tap of the locate button: later position updates
+  // move the dot without yanking the map away from where they've panned.
+  const framedRequest = useRef(0);
+  useEffect(() => {
+    if (!loaded || !here || locateRequest === framedRequest.current) return;
+    framedRequest.current = locateRequest;
+    const padding = { top: 64, left: 48, right: 48, bottom: 48 + bottomPadding };
+    const nearest = sortByDistance(located, here)[0] as Located | undefined;
+    if (!nearest) {
+      mapRef.current?.flyTo({ center: [here.lng, here.lat], zoom: SELECT_ZOOM, padding, duration: reducedMotion ? 0 : undefined });
+      return;
+    }
+    mapRef.current?.fitBounds(
+      [
+        [Math.min(here.lng, nearest.lng), Math.min(here.lat, nearest.lat)],
+        [Math.max(here.lng, nearest.lng), Math.max(here.lat, nearest.lat)],
+      ],
+      { padding, maxZoom: 15, duration: reducedMotion ? 0 : 800 },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, here, locateRequest]);
+
   if (unavailable) {
     return <div className={styles.unavailable}>Map unavailable</div>;
   }
@@ -173,6 +209,28 @@ function LiveMap({
       style={{ width: "100%", height: "100%" }}
     >
       <AttributionControl position="top-right" compact />
+      {onLocate && (
+        <button
+          type="button"
+          className={styles.locate}
+          aria-label={here ? "Show my location" : "Share my location to find nearby spots"}
+          title={here ? "Show my location" : "Find spots near me"}
+          aria-busy={locating || undefined}
+          data-active={here ? true : undefined}
+          onClick={onLocate}
+        >
+          {locating ? (
+            <CircleNotch size={18} weight="bold" aria-hidden className={styles.spinner} />
+          ) : (
+            <NavigationArrow size={18} weight={here ? "fill" : "bold"} aria-hidden className={styles.arrow} />
+          )}
+        </button>
+      )}
+      {here && (
+        <Marker longitude={here.lng} latitude={here.lat} style={{ pointerEvents: "none" }}>
+          <span className={styles.here} role="img" aria-label="You are here" />
+        </Marker>
+      )}
       {located.map((r) => (
         <Marker key={r.id} longitude={r.lng} latitude={r.lat}>
           <button

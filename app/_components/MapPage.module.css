@@ -179,3 +179,20 @@
     transition: none;
   }
 }
+
+/* Why locating failed, beside the map's locate button. */
+.locateError {
+  position: absolute;
+  top: 44px;
+  right: 58px;
+  z-index: 3;
+  max-width: min(280px, calc(100% - 84px));
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-overlay);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.4;
+}

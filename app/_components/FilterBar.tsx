@@ -273,6 +273,8 @@ export default function FilterBar({
   onChange,
   sort,
   onSortChange,
+  nearest,
+  onNearest,
 }: {
   variant: "map" | "list";
   filters: Filters;
@@ -280,6 +282,9 @@ export default function FilterBar({
   onChange: (next: Filters) => void;
   sort?: Sort;
   onSortChange?: (next: Sort) => void;
+  /** The map sheet's "Nearest to you" sort; see SortSelect. */
+  nearest?: boolean;
+  onNearest?: () => void;
 }) {
 
   return (
@@ -292,7 +297,7 @@ export default function FilterBar({
           {/* Phones only: the List page's sort, and the map sheet's. */}
           {onSortChange && (
             <span className={styles.sortSelect}>
-              <SortSelect sort={sort ?? DEFAULT_SORT} onChange={onSortChange} />
+              <SortSelect sort={sort ?? DEFAULT_SORT} onChange={onSortChange} nearest={nearest} onNearest={onNearest} />
             </span>
           )}
         </div>

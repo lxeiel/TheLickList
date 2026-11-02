@@ -13,6 +13,9 @@
   --accent: #0B6B4F;
   --on-accent: #FBF7EE;
   --danger: #B3261E;
+  /* The visitor's own dot on the map: blue, so it never reads as a pin. */
+  --here: #2F6FEB;
+  --here-ring: #FFFFFF;
   --map-land: #F3EEE2;
   --map-water: #DEE5E3;
   --map-park: #E6EAD9;
@@ -40,6 +43,8 @@
   --accent: #59C0A2;
   --on-accent: #161616;
   --danger: #F2867D;
+  --here: #4C8DFF;
+  --here-ring: #FFFFFF;
   --map-land: #1C1C1C;
   --map-water: #121417;
   --map-park: #1A1D1A;

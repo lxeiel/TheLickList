@@ -55,3 +55,78 @@
   color: var(--muted);
   font-size: 14px;
 }
+
+/* Locate button: top-right, under Mapbox's attribution, clear of the phone
+   sheet at the bottom. */
+.locate {
+  position: absolute;
+  top: 44px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-overlay);
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+
+.locate:hover {
+  background: var(--hover);
+}
+
+.locate[data-active] {
+  color: var(--accent);
+}
+
+/* NavigationArrow points up-left; turn it to point up-right like a compass. */
+.arrow {
+  transform: rotate(90deg);
+}
+
+.spinner {
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The visitor's own dot: blue with a white ring and a soft pulsing halo. */
+.here {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--here-ring);
+  border-radius: 50%;
+  background: var(--here);
+  box-shadow: var(--shadow-overlay);
+}
+
+.here::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--here) 30%, transparent);
+  animation: pulse 2s var(--ease-out) infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}

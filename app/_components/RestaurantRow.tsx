@@ -11,14 +11,18 @@ export default function RestaurantRow({
   onSelect,
   showCuisine = true,
   showPrice = true,
+  distance,
 }: {
   restaurant: Restaurant;
   selected: boolean;
   onSelect: (id: string) => void;
   showCuisine?: boolean;
   showPrice?: boolean;
+  /** e.g. "1.2 km", once the visitor has shared their location. */
+  distance?: string | null;
 }) {
   const meta = formatMeta(r, { cuisine: showCuisine, price: showPrice });
+  if (distance) meta.unshift(distance);
   const score = formatScore(r);
 
   return (

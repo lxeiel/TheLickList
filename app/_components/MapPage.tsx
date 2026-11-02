@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { distanceTo, formatDistance, sortByDistance, type Point } from "@/lib/geo";
 import { activeFilterCount, applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
 import type { SheetSize } from "@/lib/sheet";
-import { sortRestaurants } from "@/lib/sort";
+import { sortRestaurants, type Sort } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
 import MapView from "./MapView";
@@ -41,10 +42,87 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const [listClosedByUser, setListClosedByUser] = useState(false);
   const listOpen = !listClosedByUser;
 
+  // The visitor's location, once they tap the map's locate button. Kept up
+  // to date as they move; never stored or sent anywhere.
+  const [here, setHere] = useState<Point | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState<string | null>(null);
+  const [locateRequest, setLocateRequest] = useState(0);
+  // Sharing a location switches the list to nearest first; picking another
+  // sort switches it back.
+  const [byNearest, setByNearest] = useState(false);
+  const watchId = useRef<number | null>(null);
+
+  const locate = useCallback(() => {
+    setLocateRequest((n) => n + 1);
+    setLocateError(null);
+    if (watchId.current != null) {
+      // Already watching: the tap just re-frames the map.
+      setByNearest(true);
+      return;
+    }
+    if (!("geolocation" in navigator)) {
+      setLocateError("Your browser can't share its location.");
+      return;
+    }
+    setLocating(true);
+    let firstFix = true;
+    watchId.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        // The first fix sorts the list by distance.
+        if (firstFix) setByNearest(true);
+        firstFix = false;
+        setLocating(false);
+        setHere({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      (err) => {
+        setLocating(false);
+        if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);
+        watchId.current = null;
+        setLocateError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location is blocked. Allow it in your browser settings to see what's near you."
+            : "Couldn't find your location. Try again in a moment.",
+        );
+      },
+      { enableHighAccuracy: true, maximumAge: 30_000, timeout: 15_000 },
+    );
+  }, []);
+  useEffect(() => () => {
+    if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);
+  }, []);
+  useEffect(() => {
+    if (!locateError) return;
+    const timer = setTimeout(() => setLocateError(null), 5000);
+    return () => clearTimeout(timer);
+  }, [locateError]);
+
   const options = useMemo(() => deriveOptions(restaurants), [restaurants]);
   const filtered = useMemo(() => applyFilters(restaurants, filters), [restaurants, filters]);
   // The sort only orders the list; the map shows the same pins either way.
-  const listed = useMemo(() => sortRestaurants(filtered, sort), [filtered, sort]);
+  const nearest = byNearest && here != null;
+  const listed = useMemo(
+    () => (nearest ? sortByDistance(filtered, here) : sortRestaurants(filtered, sort)),
+    [filtered, sort, nearest, here],
+  );
+  const distanceOf = useMemo(
+    () =>
+      here
+        ? (r: Restaurant) => {
+            const d = distanceTo(r, here);
+            return d == null ? null : formatDistance(d);
+          }
+        : undefined,
+    [here],
+  );
+  const chooseSort = useCallback(
+    (next: Sort) => {
+      setByNearest(false);
+      setSort(next);
+    },
+    [setSort],
+  );
+  const chooseNearest = useCallback(() => setByNearest(true), []);
   const selected = findSpot(filtered, spot);
   const hasActiveFilters =
     filters.status !== "all" || filters.q !== "" || activeFilterCount(filters) > 0;
@@ -215,7 +293,9 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
                 options={options}
                 onChange={setFilters}
                 sort={listed.length > 1 ? sort : undefined}
-                onSortChange={listed.length > 1 ? setSort : undefined}
+                onSortChange={listed.length > 1 ? chooseSort : undefined}
+                nearest={nearest}
+                onNearest={here ? chooseNearest : undefined}
               />
             </div>
           )}
@@ -233,7 +313,10 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
               onClearFilters={() => setFilters(EMPTY_FILTERS)}
               // On phones the sort sits beside Filters + in the sheet's header.
               sort={isPhone ? undefined : sort}
-              onSortChange={isPhone ? undefined : setSort}
+              onSortChange={isPhone ? undefined : chooseSort}
+              nearest={nearest}
+              onNearest={here ? chooseNearest : undefined}
+              distanceOf={distanceOf}
             />
           )}
         </section>
@@ -266,7 +349,16 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             // A plain visit opens on the home view of Singapore; a link that
             // arrives already filtered opens on its results.
             fitOnLoad={hasActiveFilters}
+            here={here}
+            locating={locating}
+            locateRequest={locateRequest}
+            onLocate={locate}
           />
+          {locateError && (
+            <p className={styles.locateError} role="alert">
+              {locateError}
+            </p>
+          )}
         </div>
 
       </div>
