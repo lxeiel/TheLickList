@@ -135,3 +135,19 @@ button {
     animation-duration: 0ms !important;
   }
 }
+
+/* Theme switch (useTheme): one View Transition for the whole page, the new
+   theme clipped to a circle growing from the tap (animated from script)
+   over the old one, with no crossfade. Element color transitions are paused
+   so nothing lags behind the switch. */
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition: none !important;
+}
+
+:root[data-theme-switching]::view-transition-old(root),
+:root[data-theme-switching]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}

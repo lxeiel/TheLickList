@@ -10,6 +10,7 @@ import type { Restaurant } from "@/lib/restaurants";
 import type { Theme } from "@/lib/theme";
 import { readMapColors, recolorMap } from "./mapTheme";
 import StatusMark, { STATUS_LABEL } from "./StatusMark";
+import { MAP_RESTYLED_EVENT } from "./useTheme";
 import styles from "./MapView.module.css";
 
 // Every visit opens on this view of Singapore. Framed as an area rather than
@@ -242,7 +243,10 @@ function LiveMap({
         const map = e.target;
         recolorMap(map, readMapColors());
         // Fires again after every theme switch swaps the style.
-        map.on("style.load", () => recolorMap(map, readMapColors()));
+        map.on("style.load", () => {
+          recolorMap(map, readMapColors());
+          window.dispatchEvent(new Event(MAP_RESTYLED_EVENT));
+        });
         setLoaded(true);
       }}
       onError={() => {
