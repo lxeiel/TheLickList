@@ -19,10 +19,10 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
         <div className={styles.about}>
           <h2 className={styles.heading}>About Me</h2>
           <p className={styles.intro}>
-           I'm Lex, and this is my little corner for all things food.
+           I&apos;m Lex, and this is my little corner for all things food.
             From hawker stalls and neighbourhood gems to cafes and restaurants, 
-            this is where I keep track of the places I've eaten, 
-            the dishes I've loved, and the ones next on my list.
+            this is where I keep track of the places I&apos;ve eaten, 
+            the dishes I&apos;ve loved, and the ones next on my list.
             Singapore for now, the world next. Feel free to steal a few picks and catch me along the way!
           </p>
           {contact.length > 0 && (
