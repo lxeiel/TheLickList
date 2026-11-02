@@ -56,13 +56,53 @@
   font-size: 14px;
 }
 
-/* Locate button: top-right, under Mapbox's attribution, clear of the phone
-   sheet at the bottom. */
-.locate {
+/* Map buttons (find me, closest, surprise me, reset): top-right, under
+   Mapbox's attribution, clear of the phone sheet at the bottom. */
+.locateGroup {
   position: absolute;
   top: 44px;
   right: 10px;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Each button is its label (on the map, outside the box) and the boxed
+   icon; the whole row is the tap target. */
+.locate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+}
+
+/* A halo in the page color keeps the label readable over any part of the
+   map, the way Mapbox's own place names are. */
+.locateLabel {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-shadow:
+    0 0 2px var(--bg),
+    0 0 4px var(--bg),
+    0 0 6px var(--bg);
+  transition: opacity 400ms var(--ease-out);
+}
+
+/* Faded labels let taps through to the map beneath them. */
+.locateGroup[data-labels="hidden"] .locateLabel {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.locateGroup[data-labels="hidden"] .locate:hover .locateLabel,
+.locateGroup[data-labels="hidden"] .locate:focus-visible .locateLabel {
+  opacity: 1;
+}
+
+.locateIcon {
   display: grid;
   place-items: center;
   width: 40px;
@@ -70,16 +110,15 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  color: var(--ink);
   box-shadow: var(--shadow-overlay);
   transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
 }
 
-.locate:hover {
+.locate:hover .locateIcon {
   background: var(--hover);
 }
 
-.locate[data-active] {
+.locate[data-active] .locateIcon {
   color: var(--accent);
 }
 

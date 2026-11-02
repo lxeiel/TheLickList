@@ -113,24 +113,39 @@
   text-transform: uppercase;
 }
 
-/* The legend, two by two: the status marks on top, scores and price
-   beneath them. */
+/* The legend in two groups side by side: what the list's marks mean, and
+   what the map's buttons do. In each group the marks share a column as
+   wide as its widest mark, so every description lines up; the slightly
+   smaller text keeps the wrapping (and the section's height) down. */
 .key {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: clamp(20px, 2vw, 40px);
-  row-gap: 12px;
+  font-size: 0.8em;
 }
 
-.key li {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+.keyGroup {
+  margin-bottom: 0.7em;
+  color: var(--muted);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-/* A fifth, longer line spans both columns rather than leaving a gap. */
-.keyWide {
+.keyList {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 0.6em;
+  row-gap: 8px;
+  list-style: none;
+}
+
+.keyList li {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
 }
 
 .scoreMark {
@@ -139,6 +154,22 @@
   font-size: 0.85em;
   font-variant-numeric: tabular-nums;
   color: var(--accent);
+}
+
+/* The map buttons' icons, sized to the text and turned the way the map
+   shows them. An icon has no baseline, so it sits on the first line's and
+   is nudged down to look centred on it. */
+.iconMark {
+  flex-shrink: 0;
+  display: inline-flex;
+  position: relative;
+  top: 0.15em;
+  font-size: 1.05em;
+  color: var(--accent);
+}
+
+.arrowMark {
+  transform: rotate(90deg);
 }
 
 .key b {
@@ -203,5 +234,13 @@
      between the wishlist and the crossed-off half. */
   .names {
     columns: 1;
+  }
+
+  /* The legend's two groups stack, list first, and the section can scroll
+     here, so the text goes back up a size. */
+  .key {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+    font-size: 0.9em;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CircleNotch, NavigationArrow } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, CircleNotch, DiceFive, ForkKnife, NavigationArrow } from "@phosphor-icons/react";
 import Map, { AttributionControl, Marker, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { scoreLabel } from "@/lib/format";
@@ -22,6 +22,11 @@ const HOME_BOUNDS: [[number, number], [number, number]] = [
 const SELECT_ZOOM = 14;
 
 type Located = Restaurant & { lat: number; lng: number };
+
+/** A tap of one of the map's location buttons: "me" centers on the visitor,
+    "nearest" frames them with their nearest pin. `n` goes up on every tap. */
+export type LocateFrame = "me" | "nearest";
+export type LocateRequest = { n: number; frame: LocateFrame };
 
 function pinLabel(r: Restaurant): string {
   return [r.name, STATUS_LABEL[r.status], scoreLabel(r)].filter(Boolean).join(", ");
@@ -57,7 +62,7 @@ function LiveMap({
   fitOnLoad = false,
   here = null,
   locating = false,
-  locateRequest = 0,
+  locateRequest = null,
   onLocate,
 }: {
   restaurants: Restaurant[];
@@ -74,10 +79,10 @@ function LiveMap({
   /** The visitor's location, once they've shared it. */
   here?: Point | null;
   locating?: boolean;
-  /** Goes up on each tap of the locate button; the map frames the visitor
-      and their nearest spot once `here` is known for that tap. */
-  locateRequest?: number;
-  onLocate?: () => void;
+  /** The latest tap of a location button; the map moves once `here` is
+      known for it. */
+  locateRequest?: LocateRequest | null;
+  onLocate?: (frame: LocateFrame) => void;
 }) {
   const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -101,6 +106,30 @@ function LiveMap({
     const observer = new ResizeObserver(() => map.resize());
     observer.observe(map.getContainer());
     return () => observer.disconnect();
+  }, [loaded]);
+
+  // The buttons' labels introduce them, then fade 10 seconds after the map
+  // comes into view (it sits below the homepage's hero), leaving just the
+  // icons. Hovering or focusing a button brings its label back.
+  const [labelsHidden, setLabelsHidden] = useState(false);
+  useEffect(() => {
+    if (!loaded) return;
+    const container = mapRef.current?.getMap().getContainer();
+    if (!container) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        observer.disconnect();
+        timer = setTimeout(() => setLabelsHidden(true), 10_000);
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, [loaded]);
 
   // The map opens on the home view, then re-fits to the pins whenever a
@@ -153,28 +182,51 @@ function LiveMap({
     else mapRef.current?.flyTo(move);
   }, [loaded, selected, bottomPadding, reducedMotion]);
 
-  // Frame the visitor with their nearest pin, so "what's close" is answered
-  // at a glance. Only on a tap of the locate button: later position updates
-  // move the dot without yanking the map away from where they've panned.
-  const framedRequest = useRef(0);
+  // Center on the visitor, or frame them with their nearest pin. Only on a
+  // tap of a location button: later position updates move the dot without
+  // yanking the map away from where they've panned.
+  const handledRequest = useRef(0);
   useEffect(() => {
-    if (!loaded || !here || locateRequest === framedRequest.current) return;
-    framedRequest.current = locateRequest;
-    const padding = { top: 64, left: 48, right: 48, bottom: 48 + bottomPadding };
-    const nearest = sortByDistance(located, here)[0] as Located | undefined;
-    if (!nearest) {
-      mapRef.current?.flyTo({ center: [here.lng, here.lat], zoom: SELECT_ZOOM, padding, duration: reducedMotion ? 0 : undefined });
+    if (!loaded || !here || !locateRequest || locateRequest.n === handledRequest.current) return;
+    handledRequest.current = locateRequest.n;
+    const nearest = locateRequest.frame === "nearest" ? (sortByDistance(located, here)[0] as Located | undefined) : undefined;
+    if (nearest) {
+      mapRef.current?.fitBounds(
+        [
+          [Math.min(here.lng, nearest.lng), Math.min(here.lat, nearest.lat)],
+          [Math.max(here.lng, nearest.lng), Math.max(here.lat, nearest.lat)],
+        ],
+        { padding: { top: 64, left: 48, right: 48, bottom: 48 + bottomPadding }, maxZoom: 15, duration: reducedMotion ? 0 : 800 },
+      );
       return;
     }
-    mapRef.current?.fitBounds(
-      [
-        [Math.min(here.lng, nearest.lng), Math.min(here.lat, nearest.lat)],
-        [Math.max(here.lng, nearest.lng), Math.max(here.lat, nearest.lat)],
-      ],
-      { padding, maxZoom: 15, duration: reducedMotion ? 0 : 800 },
-    );
+    // Bottom padding keeps the dot centered above the phone sheet.
+    const move = {
+      center: [here.lng, here.lat] as [number, number],
+      zoom: SELECT_ZOOM,
+      padding: { top: 0, left: 0, right: 0, bottom: bottomPadding },
+    };
+    if (reducedMotion) mapRef.current?.jumpTo(move);
+    else mapRef.current?.flyTo(move);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, here, locateRequest]);
+
+  // Opens a random spot from the ones the filters show, never the one
+  // already open, so each tap lands somewhere new.
+  function surprise() {
+    const pool = restaurants.filter((r) => r.id !== selectedId);
+    const pick = pool[Math.floor(Math.random() * pool.length)] ?? restaurants[0];
+    if (pick) onSelect(pick.id);
+  }
+
+  // Back to the home view of all of Singapore, framed clear of the phone
+  // sheet like the first view.
+  function resetView() {
+    mapRef.current?.fitBounds(HOME_BOUNDS, {
+      padding: { top: 16, left: 16, right: 16, bottom: 16 + bottomPadding },
+      duration: reducedMotion ? 0 : 800,
+    });
+  }
 
   if (unavailable) {
     return <div className={styles.unavailable}>Map unavailable</div>;
@@ -209,23 +261,64 @@ function LiveMap({
       style={{ width: "100%", height: "100%" }}
     >
       <AttributionControl position="top-right" compact />
-      {onLocate && (
-        <button
-          type="button"
-          className={styles.locate}
-          aria-label={here ? "Show my location" : "Share my location to find nearby spots"}
-          title={here ? "Show my location" : "Find spots near me"}
-          aria-busy={locating || undefined}
-          data-active={here ? true : undefined}
-          onClick={onLocate}
-        >
-          {locating ? (
-            <CircleNotch size={18} weight="bold" aria-hidden className={styles.spinner} />
-          ) : (
-            <NavigationArrow size={18} weight={here ? "fill" : "bold"} aria-hidden className={styles.arrow} />
-          )}
+      <div className={styles.locateGroup} data-labels={labelsHidden ? "hidden" : undefined}>
+        {onLocate && (
+          <>
+            <button
+              type="button"
+              className={styles.locate}
+              title={here ? "Center the map on me" : "Share my location to find nearby spots"}
+              aria-busy={(locating && locateRequest?.frame === "me") || undefined}
+              data-active={here ? true : undefined}
+              onClick={() => onLocate("me")}
+            >
+              <span className={styles.locateLabel}>Find me</span>
+              <span className={styles.locateIcon}>
+                {locating && locateRequest?.frame === "me" ? (
+                  <CircleNotch size={18} weight="bold" aria-hidden className={styles.spinner} />
+                ) : (
+                  <NavigationArrow size={18} weight={here ? "fill" : "bold"} aria-hidden className={styles.arrow} />
+                )}
+              </span>
+            </button>
+            <button
+              type="button"
+              className={styles.locate}
+              title="Show the spot nearest to me"
+              aria-busy={(locating && locateRequest?.frame === "nearest") || undefined}
+              onClick={() => onLocate("nearest")}
+            >
+              <span className={styles.locateLabel}>Closest Lick</span>
+              <span className={styles.locateIcon}>
+                {locating && locateRequest?.frame === "nearest" ? (
+                  <CircleNotch size={18} weight="bold" aria-hidden className={styles.spinner} />
+                ) : (
+                  <ForkKnife size={18} weight="bold" aria-hidden />
+                )}
+              </span>
+            </button>
+          </>
+        )}
+        {restaurants.length > 0 && (
+          <button
+            type="button"
+            className={styles.locate}
+            title="Pick a random spot for me"
+            onClick={surprise}
+          >
+            <span className={styles.locateLabel}>Surprise Me</span>
+            <span className={styles.locateIcon}>
+              <DiceFive size={18} weight="bold" aria-hidden />
+            </span>
+          </button>
+        )}
+        <button type="button" className={styles.locate} title="Show all of Singapore" onClick={resetView}>
+          <span className={styles.locateLabel}>Reset Map</span>
+          <span className={styles.locateIcon}>
+            <ArrowCounterClockwise size={18} weight="bold" aria-hidden />
+          </span>
         </button>
-      )}
+      </div>
       {here && (
         <Marker longitude={here.lng} latitude={here.lat} style={{ pointerEvents: "none" }}>
           <span className={styles.here} role="img" aria-label="You are here" />

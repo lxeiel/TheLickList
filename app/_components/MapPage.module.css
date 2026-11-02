@@ -180,13 +180,13 @@
   }
 }
 
-/* Why locating failed, beside the map's locate button. */
+/* Why locating failed, under the map's buttons. */
 .locateError {
   position: absolute;
-  top: 44px;
-  right: 58px;
+  top: 244px;
+  right: 10px;
   z-index: 3;
-  max-width: min(280px, calc(100% - 84px));
+  max-width: min(280px, calc(100% - 20px));
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);

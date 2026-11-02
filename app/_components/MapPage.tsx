@@ -9,7 +9,7 @@ import type { SheetSize } from "@/lib/sheet";
 import { sortRestaurants, type Sort } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
-import MapView from "./MapView";
+import MapView, { type LocateFrame, type LocateRequest } from "./MapView";
 import RestaurantDetail from "./RestaurantDetail";
 import RestaurantList from "./RestaurantList";
 import { useSheetDrag } from "./useSheetDrag";
@@ -47,14 +47,14 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const [here, setHere] = useState<Point | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<string | null>(null);
-  const [locateRequest, setLocateRequest] = useState(0);
+  const [locateRequest, setLocateRequest] = useState<LocateRequest | null>(null);
   // Sharing a location switches the list to nearest first; picking another
   // sort switches it back.
   const [byNearest, setByNearest] = useState(false);
   const watchId = useRef<number | null>(null);
 
-  const locate = useCallback(() => {
-    setLocateRequest((n) => n + 1);
+  const locate = useCallback((frame: LocateFrame) => {
+    setLocateRequest((prev) => ({ n: (prev?.n ?? 0) + 1, frame }));
     setLocateError(null);
     if (watchId.current != null) {
       // Already watching: the tap just re-frames the map.

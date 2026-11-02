@@ -1,4 +1,6 @@
 import Link from "next/link";
+// The /ssr build renders in a server component like this one.
+import { ArrowCounterClockwise, DiceFive, ForkKnife, NavigationArrow } from "@phosphor-icons/react/ssr";
 import { buildMenuList, countByStatus } from "@/lib/menu";
 import type { Restaurant } from "@/lib/restaurants";
 import { CONTACT_LINKS } from "@/lib/site";
@@ -72,44 +74,87 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
         <div className={styles.how}>
           <div>
             <h2 className={styles.heading}>How it works</h2>
-            <ul className={styles.key}>
-              <li>
-                <StatusMark status="tried" size="md" />
-                <span>
-                  <b>Licked</b>, been there, eaten that
-                </span>
-              </li>
-              <li>
-                <StatusMark status="wishlist" size="md" />
-                <span>
-                  <b>Gotta Lick</b>, on the wishlist
-                </span>
-              </li>
-              <li>
-                <span className={styles.scoreMark} aria-hidden>
-                  9/10
-                </span>
-                <span>
-                  <b>Scores</b>, out of 10
-                </span>
-              </li>
-              <li>
-                <span className={styles.scoreMark} aria-hidden>
-                  $$
-                </span>
-                <span>
-                  <b>Price</b>, runs from $ to $$$$
-                </span>
-              </li>
-              <li className={styles.keyWide}>
-                <span className={styles.scoreMark} aria-hidden>
-                  +
-                </span>
-                <span>
-                  <b>Multiple locations</b>, I pin one, U search for the rest
-                </span>
-              </li>
-            </ul>
+            <div className={styles.key}>
+              <div>
+                <h3 className={styles.keyGroup}>On the list</h3>
+                <ul className={styles.keyList}>
+                  <li>
+                    <StatusMark status="tried" size="md" />
+                    <span>
+                      <b>Licked</b>, been there, eaten that
+                    </span>
+                  </li>
+                  <li>
+                    <StatusMark status="wishlist" size="md" />
+                    <span>
+                      <b>Gotta Lick</b>, on the wishlist
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.scoreMark} aria-hidden>
+                      9/10
+                    </span>
+                    <span>
+                      <b>Scores</b>, out of 10
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.scoreMark} aria-hidden>
+                      $$
+                    </span>
+                    <span>
+                      <b>Price</b>, runs from $ to $$$$
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.scoreMark} aria-hidden>
+                      +
+                    </span>
+                    <span>
+                      <b>Multiple locations</b>, I pin one, U search for the rest
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              {/* The map's buttons, with the icons they show there. */}
+              <div>
+                <h3 className={styles.keyGroup}>On the map</h3>
+                <ul className={styles.keyList}>
+                  <li>
+                    <span className={styles.iconMark} aria-hidden>
+                      <NavigationArrow weight="bold" className={styles.arrowMark} />
+                    </span>
+                    <span>
+                      <b>Find me</b>, see what&apos;s around you
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.iconMark} aria-hidden>
+                      <ForkKnife weight="bold" />
+                    </span>
+                    <span>
+                      <b>Closest Lick</b> to U
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.iconMark} aria-hidden>
+                      <DiceFive weight="bold" />
+                    </span>
+                    <span>
+                      <b>Surprise Me</b>, can&apos;t decide? I&apos;ll pick a spot for U
+                    </span>
+                  </li>
+                  <li>
+                    <span className={styles.iconMark} aria-hidden>
+                      <ArrowCounterClockwise weight="bold" />
+                    </span>
+                    <span>
+                      <b>Reset Map</b>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
