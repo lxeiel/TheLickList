@@ -190,13 +190,16 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
   const onUnavailable = useCallback(() => setMapUnavailable(true), []);
 
   // A shared link that picks a restaurant or filters opens at the map, not
-  // the homepage's hero. So does a "#map" link: navigating from another page
-  // shows the loading screen first, so Next's own scroll to #map runs before
-  // the map exists and finds nothing.
+  // the homepage's hero. So does a "#map" link, and a "#menu" link (the top
+  // bar's About) opens at the menu section: navigating from another page
+  // shows the loading screen first, so Next's own scroll to the hash runs
+  // before the section exists and finds nothing.
   useEffect(() => {
     const url = new URLSearchParams(window.location.search);
     const hasState = ["spot", "status", "q", "cuisine", "area", "price"].some((key) => url.has(key));
-    if (hasState || window.location.hash === "#map") {
+    if (window.location.hash === "#menu") {
+      document.getElementById("menu")?.scrollIntoView({ behavior: "auto" });
+    } else if (hasState || window.location.hash === "#map") {
       document.getElementById("map")?.scrollIntoView({ behavior: "auto" });
     }
   }, []);

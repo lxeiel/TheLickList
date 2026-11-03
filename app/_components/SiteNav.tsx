@@ -6,10 +6,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { List, X } from "@phosphor-icons/react";
 import { listHref, mapHref } from "@/lib/filters";
 import Logo from "./Logo";
+import { scrollToSection } from "./scrollToSection";
 import ThemeToggle from "./ThemeToggle";
 import styles from "./SiteNav.module.css";
 
-type Page = "map" | "list";
+type Page = "map" | "list" | "about";
 
 function currentPage(pathname: string): Page | null {
   if (pathname === "/") return "map";
@@ -75,7 +76,20 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
   const links: { page: Page; label: string }[] = [
     { page: "map", label: "Map" },
     { page: "list", label: "List" },
+    { page: "about", label: "About" },
   ];
+
+  // About is the homepage's menu section. Already on the homepage, it glides
+  // there like the hero's About button (a same-page Link would jump, or do
+  // nothing if the URL already ends in #menu); from another page the Link
+  // goes to /#menu and MapPage scrolls once the page has arrived.
+  function onLinkClick(page: Page, e: React.MouseEvent) {
+    setOpen(false);
+    if (page !== "about" || pathname !== "/") return;
+    e.preventDefault();
+    scrollToSection("menu");
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#menu`);
+  }
 
   return (
     <header className={styles.bar} data-home={isHome || undefined} data-hidden={hidden || undefined} inert={hidden}>
@@ -106,6 +120,7 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
               href={hrefs[page]}
               className={styles.link}
               aria-current={current === page ? "page" : undefined}
+              onClick={(e) => onLinkClick(page, e)}
             >
               {label}
             </Link>
@@ -139,7 +154,7 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
               href={hrefs[page]}
               className={styles.menuLink}
               aria-current={current === page ? "page" : undefined}
-              onClick={() => setOpen(false)}
+              onClick={(e) => onLinkClick(page, e)}
             >
               {label}
               {current === page && <span className={styles.currentDot} aria-hidden />}
@@ -158,10 +173,10 @@ function NavBar({ hrefs }: { hrefs: Record<Page, string> }) {
 // string; useSearchParams requires a Suspense boundary (see layout.tsx).
 export default function SiteNav() {
   const params = useSearchParams();
-  return <NavBar hrefs={{ map: `${mapHref(params)}#map`, list: listHref(params) }} />;
+  return <NavBar hrefs={{ map: `${mapHref(params)}#map`, list: listHref(params), about: `${mapHref(params)}#menu` }} />;
 }
 
 // Same bar with plain links, shown until the query string is available.
 export function SiteNavFallback() {
-  return <NavBar hrefs={{ map: "/#map", list: "/list" }} />;
+  return <NavBar hrefs={{ map: "/#map", list: "/list", about: "/#menu" }} />;
 }
