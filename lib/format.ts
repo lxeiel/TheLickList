@@ -40,3 +40,7 @@ const addedFormat = new Intl.DateTimeFormat("en-US", {
 export function formatAdded(createdAt: string): string {
   return addedFormat.format(new Date(createdAt));
 }
+
+export function spotCount(n: number): string {
+  return n === 1 ? "1 spot" : `${n} spots`;
+}

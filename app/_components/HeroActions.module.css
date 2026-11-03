@@ -1,0 +1,65 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    opacity 150ms var(--ease-out),
+    background-color 150ms var(--ease-out),
+    border-color 150ms var(--ease-out);
+}
+
+/* The main action: filled in the accent. */
+.primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.primary:hover {
+  opacity: 0.9;
+}
+
+/* The quieter second choice: outlined. */
+.secondary {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.secondary:hover {
+  background: var(--hover);
+  border-color: var(--ink);
+}
+
+/* Each arrow leans the way its button goes on hover. */
+.nudgeRight,
+.nudgeDown {
+  transition: transform 150ms var(--ease-out);
+}
+
+.pill:hover .nudgeRight {
+  transform: translateX(3px);
+}
+
+.pill:hover .nudgeDown {
+  transform: translateY(2px);
+}
+
+@media (max-width: 767px) {
+  .pill {
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}

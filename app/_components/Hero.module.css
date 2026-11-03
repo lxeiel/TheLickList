@@ -1,9 +1,11 @@
+/* Bottom padding keeps the logo, centred in what's left, clear of the
+   actions at the bottom. */
 .hero {
   position: relative;
   display: grid;
   place-items: center;
   min-height: 100dvh;
-  padding: 24px 16px 120px;
+  padding: 24px 16px 160px;
 }
 
 .title {
@@ -11,9 +13,21 @@
   font-weight: inherit;
 }
 
-.down {
+.actions {
   position: absolute;
   left: 50%;
-  bottom: calc(24px + env(safe-area-inset-bottom));
+  bottom: calc(clamp(24px, 5vh, 48px) + env(safe-area-inset-bottom));
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+}
+
+.count {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
 }

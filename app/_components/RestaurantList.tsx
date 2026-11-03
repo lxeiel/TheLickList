@@ -1,15 +1,12 @@
 "use client";
 
+import { spotCount } from "@/lib/format";
 import type { Restaurant } from "@/lib/restaurants";
 import type { Sort } from "@/lib/sort";
 import EmptyState from "./EmptyState";
 import RestaurantRow from "./RestaurantRow";
 import SortSelect from "./SortSelect";
 import styles from "./RestaurantList.module.css";
-
-export function spotCount(n: number): string {
-  return n === 1 ? "1 spot" : `${n} spots`;
-}
 
 export default function RestaurantList({
   restaurants,

@@ -12,7 +12,7 @@ export default async function Home() {
   const restaurants = await listPublicRestaurants();
   return (
     <main>
-      <Hero />
+      <Hero spots={restaurants.length} />
       <MenuSection restaurants={restaurants} />
       <section id="map" className={styles.map} aria-label="Map">
         {/* MapPage reads filters from the URL (useSearchParams), which needs a
