@@ -22,15 +22,9 @@ export function applyThemePreference() {
   try {
     stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   } catch {
-    // Storage blocked: fall back to the device setting.
+    // Storage blocked: day mode.
   }
-  const theme =
-    stored === "light" || stored === "dark"
-      ? stored
-      : window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.theme = stored === "dark" ? "dark" : "light";
 }
 
 // The map fires this once its new style has loaded and been recolored, so a

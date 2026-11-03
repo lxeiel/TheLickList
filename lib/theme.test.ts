@@ -28,8 +28,8 @@ test("stored choice wins", () => {
   expect(run({ stored: "light", prefersDark: true })).toBe("light");
 });
 
-test("follows the device when nothing is stored", () => {
-  expect(run({ stored: null, prefersDark: true })).toBe("dark");
+test("opens in light mode when nothing is stored, whatever the device prefers", () => {
+  expect(run({ stored: null, prefersDark: true })).toBe("light");
   expect(run({ stored: null, prefersDark: false })).toBe("light");
 });
 
@@ -37,7 +37,7 @@ test("ignores garbage in storage", () => {
   expect(run({ stored: "purple", prefersDark: false })).toBe("light");
 });
 
-test("themeScript falls back to the device when localStorage throws", () => {
-  expect(run({ stored: "dark", prefersDark: true, storageThrows: true })).toBe("dark");
+test("themeScript falls back to light mode when localStorage throws", () => {
+  expect(run({ stored: "dark", prefersDark: true, storageThrows: true })).toBe("light");
   expect(run({ stored: "dark", prefersDark: false, storageThrows: true })).toBe("light");
 });
