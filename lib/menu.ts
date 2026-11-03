@@ -8,7 +8,7 @@ export type MenuListItem = { restaurant: Restaurant; crossedOff: boolean };
 const newestBy = (key: "created_at" | "updated_at") => (a: Restaurant, b: Restaurant) =>
   Date.parse(b[key]) - Date.parse(a[key]);
 
-// "The list" on the homepage: Gotta Lick spots (newest first), then the most
+// The "Lick List" on the homepage: Gotta Lick spots (newest first), then the most
 // recently licked spots crossed off. Each side gets half the lines, and a
 // side that runs short hands its spare lines to the other. Licked spots are
 // ordered by last update, the closest we have to "when it was licked" (the

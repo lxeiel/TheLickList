@@ -48,7 +48,8 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
         </div>
 
         <div className={styles.list}>
-          <h2 className={styles.heading}>The list</h2>
+          <h2 className={styles.heading}>Lick List</h2>
+          <p className={styles.listNote}>Crossed off = licked, the rest are next in line.</p>
           {list.length === 0 ? (
             <p>Nothing here yet.</p>
           ) : (

@@ -81,6 +81,18 @@
   list-style: none;
 }
 
+/* What the crossing-out means, tucked right under the heading for new
+   visitors; the heading gives up most of its gap to sit close to it. */
+.heading:has(+ .listNote) {
+  margin-bottom: 0.15em;
+}
+
+.listNote {
+  margin-bottom: 0.9em;
+  color: var(--muted);
+  font-size: 0.8em;
+}
+
 .names {
   columns: 2;
   column-gap: clamp(28px, 3vw, 64px);
