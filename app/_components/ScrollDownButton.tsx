@@ -38,13 +38,24 @@ function glideTo(target: HTMLElement) {
 }
 
 // Round ↓ button that scrolls to a section on the page; instant when the
-// device asks for reduced motion. The label is for screen readers only.
-export default function ScrollDownButton({ target, label }: { target: string; label: string }) {
+// device asks for reduced motion. The label is for screen readers only,
+// unless showLabel puts it above the arrow; a labelled arrow holds still,
+// since its words already say where it goes.
+export default function ScrollDownButton({
+  target,
+  label,
+  showLabel = false,
+}: {
+  target: string;
+  label: string;
+  showLabel?: boolean;
+}) {
   return (
     <button
       type="button"
       className={styles.button}
-      aria-label={label}
+      data-labelled={showLabel || undefined}
+      aria-label={showLabel ? undefined : label}
       onClick={() => {
         const el = document.getElementById(target);
         if (!el) return;
@@ -52,6 +63,7 @@ export default function ScrollDownButton({ target, label }: { target: string; la
         else glideTo(el);
       }}
     >
+      {showLabel && <span className={styles.label}>{label}</span>}
       <span className={styles.circle}>
         <ArrowDown size={18} aria-hidden />
       </span>

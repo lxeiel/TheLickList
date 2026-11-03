@@ -170,7 +170,7 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
       </div>
 
       <div className={styles.down}>
-        <ScrollDownButton target="map" label="Scroll to the map" />
+        <ScrollDownButton target="map" label="See them on the map" showLabel />
       </div>
     </section>
   );

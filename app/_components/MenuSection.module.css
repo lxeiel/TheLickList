@@ -6,8 +6,9 @@
   flex-direction: column;
   justify-content: center;
   min-height: 100dvh;
-  /* Bottom padding leaves room for the ↓ arrow. */
-  padding: calc(var(--nav-h) + clamp(24px, 4vh, 56px)) clamp(24px, 6vw, 112px) calc(44px + clamp(24px, 5vh, 56px));
+  /* Bottom padding leaves room for the ↓ arrow and the line above it; the
+     top and the grid's row gap are a little tighter to make up for it. */
+  padding: calc(var(--nav-h) + clamp(16px, 3vh, 56px)) clamp(24px, 6vw, 112px) calc(60px + clamp(24px, 5vh, 56px));
   border-top: 1px solid var(--line);
 }
 
@@ -17,7 +18,7 @@
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   column-gap: clamp(28px, 3vw, 64px);
-  row-gap: clamp(36px, 5vh, 88px);
+  row-gap: clamp(32px, 4vh, 88px);
   align-items: start;
   font-size: clamp(16px, min(1.3vw, 2.4vh), 22px);
   font-weight: 500;
@@ -223,7 +224,7 @@
 
 @media (max-width: 767px) {
   .section {
-    padding: calc(var(--nav-h) + 24px) 16px calc(44px + 48px);
+    padding: calc(var(--nav-h) + 24px) 16px calc(72px + 48px);
   }
 
   .grid {

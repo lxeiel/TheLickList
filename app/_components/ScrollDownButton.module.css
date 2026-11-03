@@ -25,10 +25,27 @@
   opacity: 0.85;
 }
 
+/* Above the arrow. Part of the button, so tapping the words scrolls too. */
+.label {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.button[data-labelled] {
+  gap: 6px;
+}
+
+.button:hover .label {
+  color: var(--ink);
+}
+
 /* A nudge to tap: two quick hops (about 0.9s), then a rest, every 4s, so
    it draws the eye without bouncing nonstop. The first waits 3s, for
-   visitors who haven't scrolled yet. Holds still under the pointer. */
-.circle {
+   visitors who haven't scrolled yet. Holds still under the pointer, and
+   always when it's labelled. */
+.button:not([data-labelled]) .circle {
   animation: nudge 4s 3s infinite;
 }
 
@@ -61,7 +78,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .circle {
+  .button:not([data-labelled]) .circle {
     animation: none;
   }
 }
