@@ -60,6 +60,7 @@ function LiveMap({
   reducedMotion,
   onUnavailable,
   pinsFocusable = true,
+  bottomCovered = false,
   fitOnLoad = false,
   here = null,
   locating = false,
@@ -75,6 +76,8 @@ function LiveMap({
   reducedMotion: boolean;
   onUnavailable: () => void;
   pinsFocusable?: boolean;
+  /** Something (the phone sheet) covers the bottom of the map. */
+  bottomCovered?: boolean;
   /** Fit to the pins on load instead of opening on the home view. */
   fitOnLoad?: boolean;
   /** The visitor's location, once they've shared it. */
@@ -258,13 +261,21 @@ function LiveMap({
         if ((e.originalEvent.target as Element).closest("[data-pin]")) return;
         onDeselect();
       }}
-      // Logo and attribution sit at the top: on phones the bottom sheet covers
-      // the bottom of the map, and Mapbox requires both to stay visible.
+      // Mapbox requires its logo and attribution to stay visible. The logo
+      // sits top-left, clear of the phone sheet. The attribution sits
+      // bottom-right, out of the way of the buttons, unless the sheet covers
+      // the bottom; then it joins the logo.
       logoPosition="top-left"
       attributionControl={false}
       style={{ width: "100%", height: "100%" }}
     >
-      <AttributionControl position="top-right" compact />
+      {/* Keyed by position: react-map-gl places a control once, so a
+          layout change (resizing past the phone width) re-adds it. */}
+      <AttributionControl
+        key={bottomCovered ? "top" : "bottom"}
+        position={bottomCovered ? "top-left" : "bottom-right"}
+        compact
+      />
       <div className={styles.locateGroup} data-labels={labelsHidden ? "hidden" : undefined}>
         {onLocate && (
           <>

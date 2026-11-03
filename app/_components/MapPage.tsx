@@ -346,6 +346,7 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
             // On phones the sheet covers part of the map, so keyboard focus
             // could land on a hidden pin; the list rows do the same job.
             pinsFocusable={!isPhone}
+            bottomCovered={isPhone}
             // A plain visit opens on the home view of Singapore; a link that
             // arrives already filtered opens on its results.
             fitOnLoad={hasActiveFilters}

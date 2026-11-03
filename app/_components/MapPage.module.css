@@ -183,7 +183,7 @@
 /* Why locating failed, under the map's buttons. */
 .locateError {
   position: absolute;
-  top: 244px;
+  top: 210px;
   right: 10px;
   z-index: 3;
   max-width: min(280px, calc(100% - 20px));

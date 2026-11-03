@@ -56,11 +56,11 @@
   font-size: 14px;
 }
 
-/* Map buttons (find me, closest, surprise me, reset): top-right, under
-   Mapbox's attribution, clear of the phone sheet at the bottom. */
+/* Map buttons (find me, closest, surprise me, reset): top-right, clear of
+   the phone sheet at the bottom. */
 .locateGroup {
   position: absolute;
-  top: 44px;
+  top: 10px;
   right: 10px;
   z-index: 2;
   display: flex;
