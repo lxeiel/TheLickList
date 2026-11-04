@@ -29,6 +29,17 @@ type Located = Restaurant & { lat: number; lng: number };
 export type LocateFrame = "me" | "nearest";
 export type LocateRequest = { n: number; frame: LocateFrame };
 
+/** Fits the visitor and a spot in view together, clear of the phone sheet. */
+function fitHereAndSpot(map: MapRef | null, here: Point, spot: Located, bottomPadding: number, reducedMotion: boolean) {
+  map?.fitBounds(
+    [
+      [Math.min(here.lng, spot.lng), Math.min(here.lat, spot.lat)],
+      [Math.max(here.lng, spot.lng), Math.max(here.lat, spot.lat)],
+    ],
+    { padding: { top: 64, left: 48, right: 48, bottom: 48 + bottomPadding }, maxZoom: 15, duration: reducedMotion ? 0 : 800 },
+  );
+}
+
 function pinLabel(r: Restaurant): string {
   return [r.name, STATUS_LABEL[r.status], scoreLabel(r)].filter(Boolean).join(", ");
 }
@@ -173,8 +184,18 @@ function LiveMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, locatedIds]);
 
+  // "Closest Lick" opens the nearest spot, then frames it with the visitor
+  // rather than flying in to the spot alone. Set just before it selects one.
+  const frameWithHere = useRef<{ id: string; here: Point } | null>(null);
+
   useEffect(() => {
     if (!loaded || !selected) return;
+    const framing = frameWithHere.current;
+    frameWithHere.current = null;
+    if (framing?.id === selected.id) {
+      fitHereAndSpot(mapRef.current, framing.here, selected, bottomPadding, reducedMotion);
+      return;
+    }
     // Bottom padding keeps the pin centered in the part of the map the
     // phone sheet doesn't cover.
     const move = {
@@ -186,22 +207,25 @@ function LiveMap({
     else mapRef.current?.flyTo(move);
   }, [loaded, selected, bottomPadding, reducedMotion]);
 
-  // Center on the visitor, or frame them with their nearest pin. Only on a
-  // tap of a location button: later position updates move the dot without
-  // yanking the map away from where they've panned.
+  // Center on the visitor, or open their nearest spot in the list and frame
+  // them with its pin. Only on a tap of a location button: later position
+  // updates move the dot without yanking the map away from where they've
+  // panned.
   const handledRequest = useRef(0);
   useEffect(() => {
     if (!loaded || !here || !locateRequest || locateRequest.n === handledRequest.current) return;
     handledRequest.current = locateRequest.n;
     const nearest = locateRequest.frame === "nearest" ? (sortByDistance(located, here)[0] as Located | undefined) : undefined;
     if (nearest) {
-      mapRef.current?.fitBounds(
-        [
-          [Math.min(here.lng, nearest.lng), Math.min(here.lat, nearest.lat)],
-          [Math.max(here.lng, nearest.lng), Math.max(here.lat, nearest.lat)],
-        ],
-        { padding: { top: 64, left: 48, right: 48, bottom: 48 + bottomPadding }, maxZoom: 15, duration: reducedMotion ? 0 : 800 },
-      );
+      if (nearest.id === selectedId) {
+        // Already open, so selecting it again wouldn't move the map.
+        fitHereAndSpot(mapRef.current, here, nearest, bottomPadding, reducedMotion);
+      } else {
+        // The map frames them once the detail opens (above), so the framing
+        // allows for the taller detail sheet on phones.
+        frameWithHere.current = { id: nearest.id, here };
+        onSelect(nearest.id);
+      }
       return;
     }
     // Bottom padding keeps the dot centered above the phone sheet.
