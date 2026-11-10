@@ -1,0 +1,60 @@
+/* The legend line the popover is placed against. */
+.line {
+  position: relative;
+}
+
+/* The dropdown's wrapper sits in the text like a word, and hands the
+   popover's positioning up to the line. (div. outranks the dropdown's own
+   classes whichever stylesheet loads first.) */
+div.root {
+  position: static;
+  display: inline;
+}
+
+/* Just the icon, sized to the text. The padding makes it easier to hit and
+   the matching negative margin keeps it from pushing the line around; the
+   focus ring is pulled in to hug the icon, clear of the text beside it. */
+.button {
+  display: inline-flex;
+  position: relative;
+  top: 0.15em;
+  padding: 10px;
+  margin: -10px -10px -10px calc(0.2em - 10px);
+  border-radius: 50%;
+  font-size: 1.1em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.button:focus-visible {
+  outline-offset: -8px;
+}
+
+div.panel {
+  display: block;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: min(24em, calc(100vw - 32px));
+  max-height: none;
+  overflow: visible;
+  padding: 12px 14px;
+}
+
+@media (max-width: 767px) {
+  /* Thumb-sized target. */
+  .button {
+    padding: 14px;
+    margin: -14px -14px -14px calc(0.2em - 14px);
+  }
+
+  .button:focus-visible {
+    outline-offset: -12px;
+  }
+
+  /* As wide as the line, so it can't run off the screen. */
+  div.panel {
+    right: 0;
+    width: auto;
+    max-width: none;
+  }
+}

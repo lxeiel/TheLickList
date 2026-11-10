@@ -56,7 +56,7 @@
   font-size: 14px;
 }
 
-/* Map buttons (find me, closest, surprise me, reset): top-right, clear of
+/* Map buttons (score guide, find me, closest, surprise me, reset): top-right, clear of
    the phone sheet at the bottom. */
 .locateGroup {
   position: absolute;
@@ -120,6 +120,38 @@
 
 .locate[data-active] .locateIcon {
   color: var(--accent);
+}
+
+/* The score guide opens beside its button, not below it, where it would
+   cover the other buttons. (div. outranks the dropdown's own classes
+   whichever stylesheet loads first.) */
+div.scorePanel {
+  display: block;
+  top: 0;
+  left: auto;
+  right: calc(100% + 8px);
+  width: max-content;
+  max-width: min(320px, calc(100vw - 68px));
+  max-height: none;
+  overflow: visible;
+  padding: 10px 12px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.scorePanel b {
+  font-weight: 600;
+}
+
+/* On a phone there's no room beside the whole button, so the guide sits
+   over its label, right next to the icon. */
+@media (max-width: 767px) {
+  div.scorePanel {
+    right: 48px;
+  }
 }
 
 /* NavigationArrow points up-left; turn it to point up-right like a compass. */
