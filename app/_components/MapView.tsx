@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowCounterClockwise, CircleNotch, DiceFive, ForkKnife, NavigationArrow } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, CircleNotch, DiceFive, ForkKnife, Info, NavigationArrow } from "@phosphor-icons/react";
 import Map, { AttributionControl, Marker, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { scoreLabel } from "@/lib/format";
@@ -9,6 +9,8 @@ import { sortByDistance, type Point } from "@/lib/geo";
 import type { Restaurant } from "@/lib/restaurants";
 import type { Theme } from "@/lib/theme";
 import { readMapColors, recolorMap } from "./mapTheme";
+import { Dropdown } from "./MultiSelect";
+import ScoreGuide from "./ScoreGuide";
 import StatusMark, { STATUS_LABEL } from "./StatusMark";
 import { MAP_RESTYLED_EVENT } from "./useTheme";
 import styles from "./MapView.module.css";
@@ -301,6 +303,24 @@ function LiveMap({
         compact
       />
       <div className={styles.locateGroup} data-labels={labelsHidden ? "hidden" : undefined}>
+        {/* Not a map action like the rest: it shows what the scores mean,
+            on hover or on a tap, in a popover to the buttons' left. */}
+        <Dropdown
+          label="Score Guide"
+          trigger={
+            <>
+              <span className={styles.locateLabel}>Score Guide</span>
+              <span className={styles.locateIcon}>
+                <Info size={18} weight="bold" aria-hidden />
+              </span>
+            </>
+          }
+          buttonClassName={styles.locate}
+          panelClassName={styles.scorePanel}
+          openOnHover
+        >
+          <ScoreGuide />
+        </Dropdown>
         {onLocate && (
           <>
             <button

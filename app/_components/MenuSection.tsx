@@ -1,9 +1,10 @@
 import Link from "next/link";
 // The /ssr build renders in a server component like this one.
-import { ArrowCounterClockwise, DiceFive, ForkKnife, NavigationArrow } from "@phosphor-icons/react/ssr";
+import { ArrowCounterClockwise, DiceFive, ForkKnife, Info, NavigationArrow } from "@phosphor-icons/react/ssr";
 import { buildMenuList, countByStatus } from "@/lib/menu";
 import type { Restaurant } from "@/lib/restaurants";
 import { CONTACT_LINKS } from "@/lib/site";
+import ScoreInfo from "./ScoreInfo";
 import ScrollDownButton from "./ScrollDownButton";
 import StatusMark from "./StatusMark";
 import styles from "./MenuSection.module.css";
@@ -95,9 +96,9 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
                     <span className={styles.scoreMark} aria-hidden>
                       9/10
                     </span>
-                    <span>
+                    <ScoreInfo>
                       <b>Scores</b>, out of 10
-                    </span>
+                    </ScoreInfo>
                   </li>
                   <li>
                     <span className={styles.scoreMark} aria-hidden>
@@ -121,6 +122,14 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
               <div>
                 <h3 className={styles.keyGroup}>On the map</h3>
                 <ul className={styles.keyList}>
+                  <li>
+                    <span className={styles.iconMark} aria-hidden>
+                      <Info weight="bold" />
+                    </span>
+                    <span>
+                      <b>Score Guide</b>
+                    </span>
+                  </li>
                   <li>
                     <span className={styles.iconMark} aria-hidden>
                       <NavigationArrow weight="bold" className={styles.arrowMark} />
