@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono, Homemade_Apple } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import InlineScript from "@/app/_components/InlineScript";
 import SiteNav, { SiteNavFallback } from "@/app/_components/SiteNav";
 import { themeScript } from "@/lib/theme";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SiteNav />
         </Suspense>
         {children}
+        <Analytics />
       </body>
     </html>
   );
