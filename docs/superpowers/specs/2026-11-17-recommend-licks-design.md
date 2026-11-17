@@ -1,6 +1,6 @@
 # Recommend Licks — design
 
-Status: approved by Lex on 2026-11-17. Not built yet.
+Status: approved by Lex on 2026-11-17; built on 2026-11-17 (branch `recommend-licks`). Not merged.
 
 Lex wants to hear about new places from people who visit the site. Visitors send a restaurant recommendation from a popup; Lex reviews them in a **Recs** inbox on `/reborn` and either adds one to Gotta Lick or dismisses it.
 
