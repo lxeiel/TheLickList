@@ -197,7 +197,12 @@ function RecommendForm({ onSent }: { onSent: () => void }) {
   return (
     <form className={styles.form} onSubmit={submit}>
       <label className={styles.field}>
-        <span className={styles.label}>Shop name</span>
+        <span className={styles.label}>
+          Spot name{" "}
+          <span className={styles.required} aria-hidden="true">
+            *
+          </span>
+        </span>
         <input
           type="text"
           value={name}
@@ -205,11 +210,14 @@ function RecommendForm({ onSent }: { onSent: () => void }) {
           maxLength={MAX_REC_NAME}
           required
           autoComplete="off"
+          placeholder="e.g. Tian Tian Chicken Rice"
         />
       </label>
 
       <label className={styles.field}>
-        <span className={styles.label}>Google Maps link</span>
+        <span className={styles.label}>
+          Google Maps link <span className={styles.optional}>(optional)</span>
+        </span>
         <input
           type="text"
           inputMode="url"
@@ -227,18 +235,22 @@ function RecommendForm({ onSent }: { onSent: () => void }) {
       </label>
 
       <label className={styles.field}>
-        <span className={styles.label}>Notes</span>
+        <span className={styles.label}>
+          Notes <span className={styles.optional}>(optional)</span>
+        </span>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           maxLength={MAX_REC_NOTES}
           rows={3}
-          placeholder="Dishes to try, why you love it"
+          placeholder="Must-try dishes, why you love it, anything I should know"
         />
       </label>
 
       <label className={styles.field}>
-        <span className={styles.label}>Your name</span>
+        <span className={styles.label}>
+          Your name <span className={styles.optional}>(optional)</span>
+        </span>
         <input
           type="text"
           value={from}

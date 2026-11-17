@@ -36,9 +36,9 @@ Ships with this work: hiding the Instagram contact link. Today that's only an un
 
 | Field | Required | Limit (after trimming) | Notes |
 | --- | --- | --- | --- |
-| Shop name | Yes | 100 characters | |
+| Spot name | Yes | 100 characters | Label "Spot name *" (the * is aria-hidden; the input is `required`); placeholder "e.g. Tian Tian Chicken Rice". The three other labels end in a muted "(optional)". |
 | Google Maps link | No | 500 characters; must start with `http://` or `https://` | Hint: "In Google Maps, tap Share, then Copy link" |
-| Notes | No | 1,000 characters | Placeholder: "Dishes to try, why you love it" |
+| Notes | No | 1,000 characters | Placeholder: "Must-try dishes, why you love it, anything I should know" |
 | Your name | No | 50 characters | Hint: "Only I see this". Never shown on the public site. |
 
 No email or contact field, and no cuisine, area or price: Lex fills those in when adding.
@@ -66,9 +66,9 @@ Not in the top menu, not among the map's right-hand buttons, and no "Recommend" 
 
 | Situation | Message |
 | --- | --- |
-| Shop name empty | "Add the shop's name" |
+| Spot name empty | "Add the spot's name" |
 | Maps link not http(s) | "The Maps link should start with https://" |
-| A field over its limit | "Shop name is too long", "Google Maps link is too long", "Notes are too long" or "Your name is too long" (the input `maxLength` normally prevents this) |
+| A field over its limit | "Spot name is too long", "Google Maps link is too long", "Notes are too long" or "Your name is too long" (the input `maxLength` normally prevents this) |
 | Per-person limit reached | "That's a lot of recs! Try again in a bit." |
 | Inbox full (200 waiting) | "My inbox is full right now, try again later." |
 | BotID says bot, or the save fails | "Couldn't send that. Try again." |

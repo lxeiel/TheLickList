@@ -54,8 +54,8 @@ export function normalizeRecommendation(
 export function validateRecommendation(
   rec: NormalizedRecommendation,
 ): string | null {
-  if (!rec.name) return "Add the shop's name";
-  if (rec.name.length > MAX_REC_NAME) return "Shop name is too long";
+  if (!rec.name) return "Add the spot's name";
+  if (rec.name.length > MAX_REC_NAME) return "Spot name is too long";
   if (rec.maps_url !== null && !/^https?:\/\//i.test(rec.maps_url)) {
     return "The Maps link should start with https://";
   }

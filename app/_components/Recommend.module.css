@@ -71,6 +71,16 @@
   font-weight: 500;
 }
 
+.required {
+  color: var(--accent);
+}
+
+.optional {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
 .hint {
   color: var(--muted);
   font-size: 13px;

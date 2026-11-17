@@ -71,7 +71,7 @@ test("a full inbox refuses new recs", async () => {
 test("an invalid rec is refused with its message", async () => {
   expect(
     await submitRecommendationAction({ ...valid, name: "x".repeat(101) }),
-  ).toEqual({ error: "Shop name is too long" });
+  ).toEqual({ error: "Spot name is too long" });
   expect(insertRecommendation).not.toHaveBeenCalled();
 });
 

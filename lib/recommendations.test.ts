@@ -20,12 +20,12 @@ describe("recommendations", () => {
       .toEqual({ name: "", maps_url: null, notes: null, from_name: null });
   });
   test("validateRecommendation requires a name", () => {
-    expect(validateRecommendation(normalizeRecommendation({ ...blank, name: "   " }))).toBe("Add the shop's name");
+    expect(validateRecommendation(normalizeRecommendation({ ...blank, name: "   " }))).toBe("Add the spot's name");
   });
   test("validateRecommendation enforces each limit", () => {
     const ok = { name: "A", maps_url: null, notes: null, from_name: null };
     expect(validateRecommendation({ ...ok, name: "x".repeat(100) })).toBeNull();
-    expect(validateRecommendation({ ...ok, name: "x".repeat(101) })).toBe("Shop name is too long");
+    expect(validateRecommendation({ ...ok, name: "x".repeat(101) })).toBe("Spot name is too long");
     expect(validateRecommendation({ ...ok, maps_url: "https://" + "x".repeat(493) })).toBe("Google Maps link is too long");
     expect(validateRecommendation({ ...ok, notes: "x".repeat(1001) })).toBe("Notes are too long");
     expect(validateRecommendation({ ...ok, from_name: "x".repeat(51) })).toBe("Your name is too long");
