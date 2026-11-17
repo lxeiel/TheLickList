@@ -8,7 +8,7 @@ This is the first time the public site writes anything. Today visitors only read
 
 Out of scope: emailing Lex when a rec arrives; any public display of recs or of who recommended a spot; a history of handled recs.
 
-Ships with this work: hiding the Instagram contact link. Today that's only an uncommitted change in `lib/site.ts` (Instagram's `href` set to `""`); it's committed on this feature's branch, so the live site shows Email, then Recommend Licks (Lex's call).
+Ships with this work: removing the Instagram contact link, which Recommend Licks replaces. The Instagram entry is deleted from `CONTACT_LINKS` in `lib/site.ts` on this feature's branch, so the live site shows Email, then Recommend Licks (Lex's call).
 
 ## Goals, non-goals, anti-goals
 
@@ -47,7 +47,7 @@ No email or contact field, and no cuisine, area or price: Lex fills those in whe
 
 All entry points open the same popup. The label everywhere is **Recommend Licks** (Lex's wording).
 
-1. **Homepage, About Me contact list** (`app/_components/MenuSection.tsx`): a new line in the slot where Instagram used to show, right under "Email - thelicklist17@gmail.com". It reads **Recommend Licks** in the accent colour, like the contact labels, with no " - detail" part. It's a button, not a link. It shows even if every `CONTACT_LINKS` entry is hidden, so the Contact block now always renders. If Instagram is restored later, Recommend Licks stays directly under Email.
+1. **Homepage, About Me contact list** (`app/_components/MenuSection.tsx`): a new line in the slot where Instagram used to show, right under "Email - thelicklist17@gmail.com". It reads **Recommend Licks** in the accent colour, like the contact labels, with no " - detail" part. It's a button, not a link. It shows even if every `CONTACT_LINKS` entry is hidden, so the Contact block now always renders. Any contact link added later goes after Recommend Licks, which stays directly under Email.
 2. **Map page, left list panel** (`app/_components/RestaurantList.tsx` header): an outlined **Recommend Licks** button (chat icon, accent text, accent-tinted border, about 32px tall with a 44px tap area) right beside the spot count, e.g. "33 spots [Recommend Licks]", with the sort menu on the right. When the panel is too narrow for both, the sort menu drops to its own line on the right. On phones it sits in the same row at the top of the list sheet. (Lex moved it here from a bar pinned at the bottom of the panel, 2026-11-17, from a mockup; the List page's button uses the same accent-tinted border.)
 3. **List page** (`app/_components/ListPage.tsx`): a **Recommend Licks** button at the right end of the header row with "All spots" and the count.
 4. **Shareable link `/#recommend`:** loading the homepage with that hash opens the popup once the page is ready, so Lex can put the link in a bio or send it to friends. Closing the popup removes the hash (replaceState), so a refresh doesn't reopen it.
@@ -199,7 +199,7 @@ In the browser (desktop and phone, day and night):
 
 1. Lex runs `0005_recommendations.sql` in the Supabase SQL Editor (the one manual step).
 2. No new environment variables: BotID needs none, and the IP hash reuses `SESSION_SECRET`.
-3. Built on a feature branch created before any code is written, which also carries the `lib/site.ts` change hiding Instagram. All checks above pass before Lex sees it, and nothing merges without Lex's go-ahead. BotID can only be fully checked on a Vercel preview deployment.
+3. Built on a feature branch created before any code is written, which also carries the `lib/site.ts` change removing Instagram. All checks above pass before Lex sees it, and nothing merges without Lex's go-ahead. BotID can only be fully checked on a Vercel preview deployment.
 
 ## Left to the builder
 

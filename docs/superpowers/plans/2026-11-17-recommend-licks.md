@@ -39,13 +39,13 @@
 ### Task 1: Feature branch
 
 **Files:**
-- Modify: `lib/site.ts` (already changed on `main`, uncommitted: Instagram `href: ""`)
+- Modify: `lib/site.ts` (remove the Instagram entry)
 - Add: `docs/superpowers/specs/2026-11-17-recommend-licks-design.md`, `docs/superpowers/plans/2026-11-17-recommend-licks.md`
 
-- [ ] **Step 1: Create the branch** `git switch -c recommend-licks` from `main`. The uncommitted `lib/site.ts` change and both docs come along. If working in a separate worktree instead (superpowers:using-git-worktrees), copy both docs in and re-apply the `lib/site.ts` change there: Instagram's `href` is `""`, with the existing comment.
-- [ ] **Step 2: Check** `git diff lib/site.ts` shows only Instagram's `href` emptied.
+- [ ] **Step 1: Create the branch** `git switch -c recommend-licks` from `main`. The uncommitted `lib/site.ts` change and both docs come along. If working in a separate worktree instead (superpowers:using-git-worktrees), copy both docs in and re-apply the `lib/site.ts` change there: delete the Instagram entry, leaving only Email in `CONTACT_LINKS`.
+- [ ] **Step 2: Check** `git diff lib/site.ts` shows only the Instagram entry removed.
 - [ ] **Step 3: Commit** the two separately:
-  `git add lib/site.ts && git commit -m "Hide the Instagram contact link"`
+  `git add lib/site.ts && git commit -m "Remove the Instagram contact link"`
   `git add docs/superpowers && git commit -m "Add Recommend Licks spec and plan"`
 
 ---
