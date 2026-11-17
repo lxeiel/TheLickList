@@ -14,9 +14,59 @@
   padding: 0 12px 8px;
 }
 
+/* When the panel is too narrow for both, the sort menu drops to its own
+   line on the right instead of running into Recommend Licks. */
+.header {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.header > :last-child:not(.lead) {
+  margin-left: auto;
+}
+
+.lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
 .count {
   color: var(--muted);
   font-size: 13px;
+  white-space: nowrap;
+}
+
+/* An outlined button, matching the List page's. It looks 32px tall; the
+   invisible ::after stretches the tap area to 44px without making the
+   header row any taller. */
+.recommend {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.recommend::after {
+  content: "";
+  position: absolute;
+  inset: -6px 0;
+}
+
+.recommend:hover {
+  background: var(--hover);
 }
 
 /* Scrolls inside its own box so the page (and the map) never moves. */

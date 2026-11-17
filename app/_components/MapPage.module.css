@@ -82,28 +82,6 @@
   overscroll-behavior: contain;
 }
 
-/* Pinned under the list: the list scrolls above it. */
-.recommend {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 44px;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--accent);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.recommend:hover {
-  background: var(--hover);
-}
-
 .handle {
   display: none;
 }

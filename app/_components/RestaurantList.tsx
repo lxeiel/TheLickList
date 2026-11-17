@@ -1,9 +1,11 @@
 "use client";
 
+import { ChatCircleText } from "@phosphor-icons/react";
 import { spotCount } from "@/lib/format";
 import type { Restaurant } from "@/lib/restaurants";
 import type { Sort } from "@/lib/sort";
 import EmptyState from "./EmptyState";
+import { RecommendButton } from "./Recommend";
 import RestaurantRow from "./RestaurantRow";
 import SortSelect from "./SortSelect";
 import styles from "./RestaurantList.module.css";
@@ -36,9 +38,16 @@ export default function RestaurantList({
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <p className={styles.count} aria-live="polite">
-          {spotCount(restaurants.length)}
-        </p>
+        {/* The count, then Recommend Licks beside it; the sort menu on the right. */}
+        <div className={styles.lead}>
+          <p className={styles.count} aria-live="polite">
+            {spotCount(restaurants.length)}
+          </p>
+          <RecommendButton className={styles.recommend}>
+            <ChatCircleText size={16} weight="bold" aria-hidden />
+            Recommend Licks
+          </RecommendButton>
+        </div>
         {sort && onSortChange && restaurants.length > 1 && (
           <SortSelect sort={sort} onChange={onSortChange} nearest={nearest} onNearest={onNearest} />
         )}

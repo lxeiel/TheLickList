@@ -48,7 +48,7 @@ No email or contact field, and no cuisine, area or price: Lex fills those in whe
 All entry points open the same popup. The label everywhere is **Recommend Licks** (Lex's wording).
 
 1. **Homepage, About Me contact list** (`app/_components/MenuSection.tsx`): a new line in the slot where Instagram used to show, right under "Email - thelicklist17@gmail.com". It reads **Recommend Licks** in the accent colour, like the contact labels, with no " - detail" part. It's a button, not a link. It shows even if every `CONTACT_LINKS` entry is hidden, so the Contact block now always renders. If Instagram is restored later, Recommend Licks stays directly under Email.
-2. **Map page, left list panel** (the `section.pane` in `app/_components/MapPage.tsx`): a slim bar **pinned to the bottom of the panel**, below the restaurant list, with a small icon and **Recommend Licks** in the accent colour. It's always visible: the list scrolls above it, and a top border separates them. On phones it sits at the bottom of the list sheet in the same way. It shows while browsing the list, not while a spot's detail is open in the panel. Suggested icon: Phosphor `ChatCircleText`, builder's call. (Lex picked this over a button in the map's right-hand stack and over a line after the last restaurant.)
+2. **Map page, left list panel** (`app/_components/RestaurantList.tsx` header): an outlined **Recommend Licks** button (chat icon, accent text, accent-tinted border, about 32px tall with a 44px tap area) right beside the spot count, e.g. "33 spots [Recommend Licks]", with the sort menu on the right. When the panel is too narrow for both, the sort menu drops to its own line on the right. On phones it sits in the same row at the top of the list sheet. (Lex moved it here from a bar pinned at the bottom of the panel, 2026-11-17, from a mockup; the List page's button uses the same accent-tinted border.)
 3. **List page** (`app/_components/ListPage.tsx`): a **Recommend Licks** button at the right end of the header row with "All spots" and the count.
 4. **Shareable link `/#recommend`:** loading the homepage with that hash opens the popup once the page is ready, so Lex can put the link in a bio or send it to friends. Closing the popup removes the hash (replaceState), so a refresh doesn't reopen it.
 
@@ -190,7 +190,7 @@ Automated (Vitest, Node only):
 
 In the browser (desktop and phone, day and night):
 
-- Each entry point opens the popup: About Me line, the map's list panel bar (desktop, and the phone sheet at each height), list header, `/#recommend`.
+- Each entry point opens the popup: About Me line, the map list panel's button beside the spot count (desktop, and the phone sheet), list header, `/#recommend`.
 - Sending a rec, the thanks state, Recommend another, error messages keeping typed text, Esc and ✕.
 - On `/reborn`: the Recs tab badge and empty state are correct, Add to Gotta Lick pre-fills and removes the rec on save but not on cancel, and Dismiss with Keep and Yes.
 - Uses recs named "ZZ Test Rec" and a restaurant named "ZZ Test Spot", all deleted afterwards. Lex's real restaurants are never edited.
@@ -207,4 +207,3 @@ In the browser (desktop and phone, day and night):
 - Exact styling, icon, and the phone breakpoint, within the site's tokens and existing patterns.
 - The relative-time format for "2 days ago".
 - Exact BotID wiring, per Vercel's current docs.
-- How the pinned bar works with the phone sheet's heights (collapsed, half, full), as long as it stays reachable whenever the list is showing.

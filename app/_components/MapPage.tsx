@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CaretLeft, CaretRight, ChatCircleText } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { distanceTo, formatDistance, sortByDistance, type Point } from "@/lib/geo";
 import { activeFilterCount, applyFilters, deriveOptions, EMPTY_FILTERS, findSpot } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
@@ -10,7 +10,6 @@ import { sortRestaurants, type Sort } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import FilterBar from "./FilterBar";
 import MapView, { type LocateFrame, type LocateRequest } from "./MapView";
-import { RecommendButton } from "./Recommend";
 import RestaurantDetail from "./RestaurantDetail";
 import RestaurantList from "./RestaurantList";
 import { useSheetDrag } from "./useSheetDrag";
@@ -322,12 +321,6 @@ export default function MapPage({ restaurants }: { restaurants: Restaurant[] }) 
               onNearest={here ? chooseNearest : undefined}
               distanceOf={distanceOf}
             />
-          )}
-          {!selected && (
-            <RecommendButton className={styles.recommend}>
-              <ChatCircleText size={18} weight="bold" aria-hidden />
-              Recommend Licks
-            </RecommendButton>
           )}
         </section>
 
