@@ -14,12 +14,12 @@
 
 - Read the relevant guide in `node_modules/next/dist/docs/` before using a Next API (AGENTS.md). Admin actions refresh with `refresh()` from `next/cache`; the public submit action doesn't refresh anything.
 - Branch `recommend-licks`, created before any code (Task 1). Nothing merges without Lex's go-ahead.
-- Field limits after trimming: shop name 1–100, Maps link ≤ 500 and must match `^https?://` (case-insensitive), notes ≤ 1000, your name ≤ 50. Empty optional fields are stored as null.
+- Field limits after trimming: spot name 1–100, Maps link ≤ 500 and must match `^https?://` (case-insensitive), notes ≤ 1000, your name ≤ 50. Empty optional fields are stored as null.
 - Per-visitor limit: 10 recs per rolling hour. Inbox cap: 200 waiting recs.
 - IP hash: HMAC-SHA256 of the client IP, keyed with `SESSION_SECRET`, hex. Raw IPs are never stored; `ip_hash` is never sent to any browser.
 - Label everywhere: "Recommend Licks". Not in the top menu, not among the map's right-hand buttons, no prompt on empty search results, How it works unchanged.
-- Popup copy, verbatim: title "Recommend Licks"; subtitle "Know somewhere I should try? Tell me."; labels "Shop name", "Google Maps link", "Notes", "Your name"; Maps hint "In Google Maps, tap Share, then Copy link"; notes placeholder "Must-try dishes, why you love it, anything I should know"; name hint "Only I see this"; button "Send it" / "Sending…"; thanks "Thanks!", "I'll check it out.", button "Recommend another".
-- Error copy, verbatim: "Add the shop's name", "The Maps link should start with https://", "Shop name is too long", "Google Maps link is too long", "Notes are too long", "Your name is too long", "That's a lot of recs! Try again in a bit.", "My inbox is full right now, try again later.", "Couldn't send that. Try again.", "Couldn't dismiss it".
+- Popup copy, verbatim: title "Recommend Licks"; subtitle "Know somewhere I should try? Tell me."; labels "Spot name", "Google Maps link", "Notes", "Your name"; Maps hint "In Google Maps, tap Share, then Copy link"; notes placeholder "Must-try dishes, why you love it, anything I should know"; name hint "Only I see this"; button "Send it" / "Sending…"; thanks "Thanks!", "I'll check it out.", button "Recommend another".
+- Error copy, verbatim: "Add the spot's name", "The Maps link should start with https://", "Spot name is too long", "Google Maps link is too long", "Notes are too long", "Your name is too long", "That's a lot of recs! Try again in a bit.", "My inbox is full right now, try again later.", "Couldn't send that. Try again.", "Couldn't dismiss it".
 - Admin copy: section heading "Recs" with the count; "from {name}"; "Google Maps link"; buttons "Add to Gotta Lick", "Dismiss"; confirm "Dismiss {name}?" with "Yes, dismiss" / "Keep".
 - Public UI uses only tokens from `app/globals.css`, day and night. Admin UI uses `app/reborn/admin.module.css`. Phone breakpoint is `PHONE_QUERY` / `(max-width: 767px)`.
 - Every admin action calls `requireAdmin()` first. The public action never does, and never returns rows.
@@ -89,12 +89,12 @@ test("normalizeRecommendation treats non-string fields as empty", () => {
     .toEqual({ name: "", maps_url: null, notes: null, from_name: null });
 });
 test("validateRecommendation requires a name", () => {
-  expect(validateRecommendation(normalizeRecommendation({ ...blank, name: "   " }))).toBe("Add the shop's name");
+  expect(validateRecommendation(normalizeRecommendation({ ...blank, name: "   " }))).toBe("Add the spot's name");
 });
 test("validateRecommendation enforces each limit", () => {
   const ok = { name: "A", maps_url: null, notes: null, from_name: null };
   expect(validateRecommendation({ ...ok, name: "x".repeat(100) })).toBeNull();
-  expect(validateRecommendation({ ...ok, name: "x".repeat(101) })).toBe("Shop name is too long");
+  expect(validateRecommendation({ ...ok, name: "x".repeat(101) })).toBe("Spot name is too long");
   expect(validateRecommendation({ ...ok, maps_url: "https://" + "x".repeat(493) })).toBe("Google Maps link is too long");
   expect(validateRecommendation({ ...ok, notes: "x".repeat(1001) })).toBe("Notes are too long");
   expect(validateRecommendation({ ...ok, from_name: "x".repeat(51) })).toBe("Your name is too long");
@@ -152,7 +152,7 @@ test("a filled trap field looks like success but saves nothing", ...) // { ...va
 test("the 11th rec in an hour is refused", ...)               // countRecentFromIp → 10; { error: "That's a lot of recs! Try again in a bit." }
 test("the hourly window is the last hour, by IP hash", ...)   // countRecentFromIp called with hashIp("1.2.3.4", "test-secret") and a Date within 1s of now − 3,600,000 ms
 test("a full inbox refuses new recs", ...)                    // countWaiting → 200; { error: "My inbox is full right now, try again later." }
-test("an invalid rec is refused with its message", ...)       // { ...valid, name: "x".repeat(101) } → { error: "Shop name is too long" }; insert not called
+test("an invalid rec is refused with its message", ...)       // { ...valid, name: "x".repeat(101) } → { error: "Spot name is too long" }; insert not called
 test("a valid rec is saved trimmed with the hashed IP", ...)  // { ok: true }; insert called with ({ name: "ZZ Test Rec", maps_url: null, notes: "Kaya toast", from_name: null }, hashIp("1.2.3.4", "test-secret"))
 test("a failed save reports the generic error", ...)          // insert rejects → { error: "Couldn't send that. Try again." }
 ```
@@ -180,7 +180,7 @@ test("a failed save reports the generic error", ...)          // insert rejects 
 - [ ] **Step 1: Implement the provider, hook and trigger**, and mount `RecommendProvider` in `app/layout.tsx` around the existing body content (keep `Analytics` and the nav as they are).
 - [ ] **Step 2: Implement the dialog** in the same file:
   - A modal `<dialog>` opened with `showModal()` on mount, closed by Esc and ✕ (aria-label "Close"); the backdrop does not close it (same reasoning as `EditDialog` in `app/reborn/AdminBoard.tsx`).
-  - Copy and field order from Global Constraints; shop name `required`; each input has `maxLength` from the constants; the hints are linked with `aria-describedby`.
+  - Copy and field order from Global Constraints; spot name `required`; each input has `maxLength` from the constants; the hints are linked with `aria-describedby`.
   - The trap field: `<input name="website">` off-screen, `aria-hidden`, `tabIndex={-1}`, `autoComplete="off"`, with its own state passed as `website`.
   - Send: "Sending…" and disabled while pending; on `{ error }` show it with `role="alert"` above the button in `--danger`, keeping the typed values; on `{ ok }` swap the form for the thanks view. "Recommend another" brings back an empty form. Each open starts with an empty form.
   - Styles: tokens only; desktop is a centred box (max-width about 440px) over `--scrim`; under `(max-width: 767px)` it fills the screen height. Day and night.

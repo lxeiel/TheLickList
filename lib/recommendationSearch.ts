@@ -2,7 +2,7 @@
 // pulls in server-only code, so only its types are imported here.
 import type { Recommendation } from "./recommendations";
 
-// Matches the shop name, notes and from-name, ignoring case and surrounding
+// Matches the spot name, notes and from-name, ignoring case and surrounding
 // spaces. A blank query matches everything.
 export function matchesRecSearch(
   rec: Pick<Recommendation, "name" | "notes" | "from_name">,
