@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono, Homemade_Apple } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { RecommendProvider } from "@/app/_components/Recommend";
 import InlineScript from "@/app/_components/InlineScript";
 import SiteNav, { SiteNavFallback } from "@/app/_components/SiteNav";
 import { themeScript } from "@/lib/theme";
@@ -38,14 +39,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <InlineScript html={themeScript} />
       </head>
       <body>
-        <a href="#content" className="skip-link">
-          Skip to content
-        </a>
-        {/* useSearchParams in SiteNav needs a Suspense boundary. */}
-        <Suspense fallback={<SiteNavFallback />}>
-          <SiteNav />
-        </Suspense>
-        {children}
+        <RecommendProvider>
+          <a href="#content" className="skip-link">
+            Skip to content
+          </a>
+          {/* useSearchParams in SiteNav needs a Suspense boundary. */}
+          <Suspense fallback={<SiteNavFallback />}>
+            <SiteNav />
+          </Suspense>
+          {children}
+        </RecommendProvider>
         <Analytics />
       </body>
     </html>

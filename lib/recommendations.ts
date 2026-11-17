@@ -1,5 +1,13 @@
 import { createHmac } from "node:crypto";
 import { getServiceClient } from "./supabase";
+import {
+  MAX_REC_FROM,
+  MAX_REC_MAPS_URL,
+  MAX_REC_NAME,
+  MAX_REC_NOTES,
+} from "./recommendationLimits";
+
+export { MAX_REC_FROM, MAX_REC_MAPS_URL, MAX_REC_NAME, MAX_REC_NOTES };
 
 export type Recommendation = {
   id: string;
@@ -24,10 +32,6 @@ export type NormalizedRecommendation = {
   from_name: string | null;
 };
 
-export const MAX_REC_NAME = 100;
-export const MAX_REC_MAPS_URL = 500;
-export const MAX_REC_NOTES = 1000;
-export const MAX_REC_FROM = 50;
 export const REC_HOURLY_LIMIT = 10;
 export const REC_INBOX_CAP = 200;
 export const NO_IP = "unknown";
