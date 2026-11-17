@@ -58,3 +58,12 @@ export function timeAgo(createdAt: string, now: Date = new Date()): string {
   if (hours < 24) return plural(hours, "hour");
   return plural(Math.floor(hours / 24), "day");
 }
+
+// The host of a link ("maps.app.goo.gl"), or null when it isn't a valid URL.
+export function linkHost(url: string): string | null {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
+}

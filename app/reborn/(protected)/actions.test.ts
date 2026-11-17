@@ -104,6 +104,12 @@ test("dismissRecommendationAction reports a failure", async () => {
   expect(await dismissRecommendationAction(REC_ID)).toEqual({ error: "Couldn't dismiss it" });
 });
 
+test("adding from a rec refuses without an admin session", async () => {
+  await expect(createRestaurantAction(validInput, REC_ID)).rejects.toThrow("NEXT_REDIRECT");
+  expect(createRestaurant).not.toHaveBeenCalled();
+  expect(deleteRecommendation).not.toHaveBeenCalled();
+});
+
 test("adding from a rec deletes the rec after the restaurant is created", async () => {
   vi.mocked(requireAdmin).mockResolvedValue();
   const order: string[] = [];

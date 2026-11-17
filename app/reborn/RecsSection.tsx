@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import { timeAgo } from "@/lib/format";
+import { linkHost, timeAgo } from "@/lib/format";
 import type { Recommendation } from "@/lib/recommendations";
 import { dismissRecommendationAction } from "./(protected)/actions";
 import styles from "./admin.module.css";
@@ -49,13 +49,13 @@ function RecRow({ rec, onAdd }: { rec: Recommendation; onAdd: (rec: Recommendati
     <li className={styles.recRow}>
       <div className={styles.recText}>
         <span className={styles.rowName}>{rec.name}</span>
-        <span className={styles.rowDetails}>
+        <span className={styles.rowDetails} suppressHydrationWarning>
           {timeAgo(rec.created_at)}
           {rec.from_name && ` · from ${rec.from_name}`}
         </span>
         {rec.maps_url && (
           <a href={rec.maps_url} target="_blank" rel="noopener noreferrer">
-            Google Maps link
+            Google Maps link{linkHost(rec.maps_url) && ` (${linkHost(rec.maps_url)})`}
           </a>
         )}
         {rec.notes && <p className={styles.recNotes}>{rec.notes}</p>}

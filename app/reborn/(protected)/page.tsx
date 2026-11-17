@@ -7,7 +7,14 @@ export const instant = false;
 
 export default async function AdminPage() {
   await requireAdmin();
-  const [restaurants, recommendations] = await Promise.all([listRestaurants(), listRecommendations()]);
+  // A recs failure shouldn't lock Lex out of the restaurant admin.
+  const [restaurants, recommendations] = await Promise.all([
+    listRestaurants(),
+    listRecommendations().catch((error) => {
+      console.error("Couldn't load recommendations", error);
+      return [];
+    }),
+  ]);
 
   return (
     <main>

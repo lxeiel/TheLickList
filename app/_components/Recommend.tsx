@@ -13,7 +13,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { X } from "@phosphor-icons/react";
+import { CheckCircle, X } from "@phosphor-icons/react";
 import { submitRecommendationAction } from "@/app/_actions/recommend";
 import {
   MAX_REC_FROM,
@@ -86,6 +86,12 @@ function RecommendDialog({ onClose }: { onClose: () => void }) {
   // Changing the key remounts the form, so "Recommend another" starts empty.
   const [round, setRound] = useState(0);
   const [sent, setSent] = useState(false);
+  const anotherButton = useRef<HTMLButtonElement>(null);
+
+  // Focus would otherwise drop to the body when the form unmounts.
+  useEffect(() => {
+    if (sent) anotherButton.current?.focus();
+  }, [sent]);
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -121,10 +127,12 @@ function RecommendDialog({ onClose }: { onClose: () => void }) {
       </div>
 
       {sent ? (
-        <div className={styles.thanks}>
+        <div className={styles.thanks} role="status">
+          <CheckCircle size={32} weight="fill" color="var(--accent)" aria-hidden />
           <p className={styles.thanksTitle}>Thanks!</p>
           <p className={styles.thanksText}>I&apos;ll check it out.</p>
           <button
+            ref={anotherButton}
             type="button"
             className={styles.secondary}
             onClick={() => {

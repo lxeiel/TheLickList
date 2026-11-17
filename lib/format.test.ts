@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { formatAdded, formatMeta, formatScore, scoreLabel, timeAgo } from "./format";
+import { formatAdded, formatMeta, formatScore, linkHost, scoreLabel, timeAgo } from "./format";
 
 test("formatScore handles every status/rating combination", () => {
   expect(formatScore({ status: "tried", rating: 9 })).toBe("9/10");
@@ -45,4 +45,9 @@ test("timeAgo", () => {
   expect(timeAgo("2026-11-17T11:59:00Z", now)).toBe("1 minute ago");
   expect(timeAgo("2026-11-17T09:00:00Z", now)).toBe("3 hours ago");
   expect(timeAgo("2026-11-15T12:00:00Z", now)).toBe("2 days ago");
+});
+
+test("linkHost returns the host of a valid URL and null for garbage", () => {
+  expect(linkHost("https://maps.app.goo.gl/abc123")).toBe("maps.app.goo.gl");
+  expect(linkHost("not a url")).toBeNull();
 });
