@@ -34,9 +34,16 @@ export function AdminBoard({
   const tabs = ["restaurants", "recs"] as const;
 
   function onTabKey(event: KeyboardEvent<HTMLButtonElement>) {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const last = tabs.length - 1;
+    const index = tabs.indexOf(tab);
+    let target: number;
+    if (event.key === "ArrowRight") target = index === last ? 0 : index + 1;
+    else if (event.key === "ArrowLeft") target = index === 0 ? last : index - 1;
+    else if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = last;
+    else return;
     event.preventDefault();
-    const next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+    const next = tabs[target];
     setTab(next);
     document.getElementById(`${tabsId}-tab-${next}`)?.focus();
   }
@@ -44,9 +51,7 @@ export function AdminBoard({
   return (
     <>
       <div className={styles.header}>
-        <h1>
-          Restaurants <span className={styles.count}>{restaurants.length}</span>
-        </h1>
+        <h1>Admin</h1>
         <button type="button" className={styles.addButton} onClick={() => setEditing({ mode: "new" })}>
           Add restaurant
           <Plus size={16} aria-hidden />
@@ -73,6 +78,7 @@ export function AdminBoard({
           id={`${tabsId}-tab-recs`}
           aria-selected={tab === "recs"}
           aria-controls={`${tabsId}-panel-recs`}
+          aria-label={recommendations.length > 0 ? `Recs, ${recommendations.length} waiting` : "Recs"}
           tabIndex={tab === "recs" ? 0 : -1}
           className={styles.tab}
           onClick={() => setTab("recs")}

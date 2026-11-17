@@ -156,13 +156,18 @@ export async function deleteRecommendation(id: string): Promise<void> {
   }
 }
 
-export async function deleteRecommendations(ids: string[]): Promise<void> {
-  const { error } = await getServiceClient()
-    .from("recommendation")
-    .delete()
-    .in("id", ids);
+// Deleted in chunks so a 200-id batch keeps each request URL short.
+const DELETE_CHUNK = 100;
 
-  if (error) {
-    throw error;
+export async function deleteRecommendations(ids: string[]): Promise<void> {
+  for (let i = 0; i < ids.length; i += DELETE_CHUNK) {
+    const { error } = await getServiceClient()
+      .from("recommendation")
+      .delete()
+      .in("id", ids.slice(i, i + DELETE_CHUNK));
+
+    if (error) {
+      throw error;
+    }
   }
 }

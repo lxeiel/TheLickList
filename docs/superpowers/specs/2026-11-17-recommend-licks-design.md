@@ -129,11 +129,11 @@ On `/reborn` (`app/reborn/(protected)/page.tsx` loads recs alongside restaurants
 
 Redesigned 2026-11-17 (Lex's approved mockup) so 200 waiting recs don't bury the restaurant lists:
 
-- **Two tabs** under the header ("Admin"-page title row with **Add restaurant** unchanged): **Restaurants** with its count in muted text, and **Recs** with a small accent badge showing the waiting count (no badge at 0). The page opens on Restaurants. The Restaurants tab is today's Licked / Gotta Lick columns, unchanged. Tabs are real tab semantics (`role="tablist"`/`tab`/`tabpanel`, arrow keys move between tabs). The chosen tab is plain React state; after Add to Gotta Lick or a dismiss, the page stays on the Recs tab.
-- **Recs tab toolbar:** a **Select all** checkbox and a **Search recs** box. Search matches shop name, notes and from-name, case-insensitive, trimmed. Select all selects every rec the search is currently showing, and shows as indeterminate when only some are selected.
+- **Two tabs** under the header (the page title is "Admin", with **Add restaurant** unchanged beside it): **Restaurants** with its count in muted text, and **Recs** with a small accent badge showing the waiting count (no badge at 0). The page opens on Restaurants. The Restaurants tab is today's Licked / Gotta Lick columns, unchanged. Tabs are real tab semantics (`role="tablist"`/`tab`/`tabpanel`, arrow keys move between tabs). The chosen tab is plain React state; after Add to Gotta Lick or a dismiss, the page stays on the Recs tab.
+- **Recs tab toolbar:** a **Select all** checkbox and a **Search recs** box. Search matches spot name, notes and from-name, case-insensitive, trimmed. Select all selects every rec the search is currently showing, and shows as indeterminate when only some are selected.
 - **Compact rows**, newest first, all of them (at most 200), no paging:
   - a checkbox (aria-label "Select {name}");
-  - the shop name (bold) over one muted line: "{time ago} · from {name} · {notes}", each part only when present, cut off with an ellipsis on one line (wrapping on phones);
+  - the spot name (bold) over one muted line: "{time ago} · from {name} · {notes}", each part only when present, cut off with an ellipsis on one line (wrapping on phones);
   - **Add to Gotta Lick** (accent outline, unchanged behaviour) and **Dismiss** as quiet muted text that turns `--danger` on hover. Dismiss keeps its two-step confirm ("Dismiss {name}? Yes, dismiss / Keep") and "Couldn't dismiss it" on failure.
   - Clicking the name area expands the row (`aria-expanded`) to show the full notes under a small "NOTES" label (line breaks kept, long words wrap), then the link shown as "{host} ↗" (new tab, `rel="noopener noreferrer"`), or "No Maps link" in muted text.
 - **Batch dismiss:** when any row is ticked, a bar shows "{n} selected" and **Dismiss selected**, which turns into "Dismiss {n} recs? **Yes, dismiss** / **Keep**" ("rec" when n is 1). On yes, all selected recs are deleted in one action, the selection clears and the list refreshes. On failure: "Couldn't dismiss them", selection kept.
@@ -192,7 +192,7 @@ In the browser (desktop and phone, day and night):
 
 - Each entry point opens the popup: About Me line, the map's list panel bar (desktop, and the phone sheet at each height), list header, `/#recommend`.
 - Sending a rec, the thanks state, Recommend another, error messages keeping typed text, Esc and ✕.
-- On `/reborn`: the Recs section appears and disappears correctly, Add to Gotta Lick pre-fills and removes the rec on save but not on cancel, and Dismiss with Keep and Yes.
+- On `/reborn`: the Recs tab badge and empty state are correct, Add to Gotta Lick pre-fills and removes the rec on save but not on cancel, and Dismiss with Keep and Yes.
 - Uses recs named "ZZ Test Rec" and a restaurant named "ZZ Test Spot", all deleted afterwards. Lex's real restaurants are never edited.
 
 ## Rollout

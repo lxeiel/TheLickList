@@ -149,6 +149,29 @@ test("dismissRecommendationsAction refuses more than 200 ids", async () => {
   expect(deleteRecommendations).not.toHaveBeenCalled();
 });
 
+test("dismissRecommendationsAction refuses a non-array", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  expect(await dismissRecommendationsAction("x" as never)).toEqual(BATCH_ERROR);
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction refuses a non-string in the list", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  expect(await dismissRecommendationsAction([REC_ID, 42 as never])).toEqual(BATCH_ERROR);
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction accepts exactly 200 ids in one call", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  const ids = Array.from(
+    { length: 200 },
+    (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, "0")}`,
+  );
+  expect(await dismissRecommendationsAction(ids)).toEqual({});
+  expect(deleteRecommendations).toHaveBeenCalledTimes(1);
+  expect(deleteRecommendations).toHaveBeenCalledWith(ids);
+});
+
 test("dismissRecommendationsAction reports a failed delete", async () => {
   vi.mocked(requireAdmin).mockResolvedValue();
   vi.mocked(deleteRecommendations).mockRejectedValue(new Error("db down"));

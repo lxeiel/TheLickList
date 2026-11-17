@@ -337,16 +337,11 @@
     overflow-wrap: anywhere;
   }
 
-  .recMain {
-    flex-basis: calc(100% - 40px);
-  }
-
   .recActions {
     flex-basis: 100%;
     padding-left: 36px;
   }
 
-  .admin .lickButton,
   .admin .quietDismiss,
   .admin .selectAll,
   .admin .batchBar button {
@@ -506,7 +501,12 @@
   background: var(--hover);
 }
 
+/* After the base .lickButton rule so the phone height wins. */
 @media (max-width: 767px) {
+  .admin .lickButton {
+    min-height: 44px;
+  }
+
   .columns {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;

@@ -23,6 +23,7 @@ export function RecsSection({
   const [error, setError] = useState<string | undefined>();
   const [dismissing, startDismiss] = useTransition();
   const selectAll = useRef<HTMLInputElement>(null);
+  const keepBatch = useRef<HTMLButtonElement>(null);
 
   const selectedIds = visibleSelection(recommendations, query, selected);
   const shown = recommendations.filter((rec) => matchesRecSearch(rec, query));
@@ -38,6 +39,7 @@ export function RecsSection({
 
   function toggle(id: string) {
     setConfirmingFor(null);
+    setError(undefined);
     setSelected((current) => {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
@@ -48,6 +50,7 @@ export function RecsSection({
 
   function toggleAll() {
     setConfirmingFor(null);
+    setError(undefined);
     setSelected((current) => {
       const next = new Set(current);
       for (const rec of shown) {
@@ -67,6 +70,7 @@ export function RecsSection({
       } else {
         setSelected(new Set());
         setConfirmingFor(null);
+        selectAll.current?.focus();
       }
     });
   }
@@ -96,6 +100,7 @@ export function RecsSection({
             onChange={(e) => {
               setQuery(e.target.value);
               setConfirmingFor(null);
+              setError(undefined);
             }}
             placeholder="Search recs"
             aria-label="Search recs"
@@ -112,12 +117,20 @@ export function RecsSection({
               <button type="button" className={styles.deleteButton} onClick={dismissSelected} disabled={dismissing}>
                 {dismissing ? "Dismissing…" : "Yes, dismiss"}
               </button>
-              <button type="button" onClick={() => setConfirmingFor(null)}>
+              <button ref={keepBatch} type="button" onClick={() => setConfirmingFor(null)}>
                 Keep
               </button>
             </span>
           ) : (
-            <button type="button" className={styles.deleteButton} onClick={() => setConfirmingFor(n)}>
+            <button
+              type="button"
+              className={styles.deleteButton}
+              onClick={() => {
+                setConfirmingFor(n);
+                // Wait for the confirm buttons to render, then move to Keep.
+                requestAnimationFrame(() => keepBatch.current?.focus());
+              }}
+            >
               Dismiss selected
             </button>
           )}
@@ -158,6 +171,9 @@ function RecRow({
   const [error, setError] = useState<string | undefined>();
   const [dismissing, startDismiss] = useTransition();
   const detailsId = useId();
+  const nameId = useId();
+  const metaId = useId();
+  const keepRef = useRef<HTMLButtonElement>(null);
   const host = rec.maps_url ? linkHost(rec.maps_url) : null;
 
   function dismiss() {
@@ -181,11 +197,17 @@ function RecRow({
         className={styles.recMain}
         aria-expanded={open}
         aria-controls={detailsId}
+        aria-labelledby={nameId}
+        aria-describedby={metaId}
         onClick={() => setOpen((v) => !v)}
       >
-        <span className={styles.rowName}>{rec.name}</span>
-        <span className={open ? styles.recMetaOpen : styles.recMeta} suppressHydrationWarning>
-          {[timeAgo(rec.created_at), rec.from_name && `from ${rec.from_name}`, rec.notes].filter(Boolean).join(" · ")}
+        <span id={nameId} className={styles.rowName}>
+          {rec.name}
+        </span>
+        <span id={metaId} className={open ? styles.recMetaOpen : styles.recMeta} suppressHydrationWarning>
+          {[timeAgo(rec.created_at), rec.from_name && `from ${rec.from_name}`, !open && rec.notes]
+            .filter(Boolean)
+            .join(" · ")}
         </span>
       </button>
       <div className={styles.recActions}>
@@ -198,12 +220,19 @@ function RecRow({
             <button type="button" className={styles.deleteButton} onClick={dismiss} disabled={dismissing}>
               {dismissing ? "Dismissing…" : "Yes, dismiss"}
             </button>
-            <button type="button" onClick={() => setConfirming(false)}>
+            <button ref={keepRef} type="button" onClick={() => setConfirming(false)}>
               Keep
             </button>
           </span>
         ) : (
-          <button type="button" className={styles.quietDismiss} onClick={() => setConfirming(true)}>
+          <button
+            type="button"
+            className={styles.quietDismiss}
+            onClick={() => {
+              setConfirming(true);
+              requestAnimationFrame(() => keepRef.current?.focus());
+            }}
+          >
             Dismiss
           </button>
         )}
