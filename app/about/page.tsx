@@ -10,7 +10,6 @@ export default function AboutPage() {
       <h1 className={styles.title}>About</h1>
       <p className={styles.subtitle}>Lex&apos;s Nomz Adventure</p>
 
-      {/* Lex: rewrite this intro in your own words */}
       <p className={styles.intro}>
         Hi, I&apos;m Lex. This is where I keep track of every place I&apos;ve eaten and every
         place I&apos;m dying to try, mostly around Singapore plus a few spots further afield.
