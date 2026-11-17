@@ -203,6 +203,19 @@
   list-style: none;
 }
 
+.contactButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.contactButton:hover .contactLabel {
+  text-decoration: underline;
+}
+
 .contactLabel {
   color: var(--accent);
 }
