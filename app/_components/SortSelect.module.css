@@ -1,6 +1,9 @@
+.root {
+  position: relative;
+}
+
 /* Matches FilterBar's "FILTERS +" text button. */
 .sort {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -11,48 +14,135 @@
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
-  cursor: pointer;
 }
 
-.sort:hover {
+.sort:hover,
+.sort[data-open] {
   color: var(--accent);
 }
 
-.sort select {
-  appearance: none;
-  padding: 0 20px 0 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-}
-
-.sort select:focus-visible {
+.sort:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
   border-radius: 2px;
 }
 
-/* Options in the open list read normally, not shouted. */
-.sort option {
-  color: var(--ink);
-  background: var(--surface);
-  text-transform: none;
+/* The sort in use reads in green. */
+.value {
+  color: var(--accent);
 }
 
 .caret {
+  margin-left: 2px;
+  transition: transform 150ms var(--ease-out);
+}
+
+.sort[data-open] .caret {
+  transform: rotate(180deg);
+}
+
+/* Desktop: hangs under the button, lined up with its right edge. */
+.popover {
   position: absolute;
+  top: calc(100% + 4px);
   right: 0;
-  pointer-events: none;
+  z-index: 40;
+  min-width: 208px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-overlay);
+  animation: pop-in 150ms var(--ease-out);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.list {
+  list-style: none;
+}
+
+/* The ring moves to the highlighted option instead of the whole list. */
+.list:focus-visible {
+  outline: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 12px 0 10px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.option[data-active] {
+  background: var(--hover);
+}
+
+/* With the keyboard, the soft highlight alone is too faint to follow
+   (about 1.1:1 on the menu), so the option the arrows are on gets the
+   accent focus ring too. */
+.list:focus-visible .option[data-active] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.option[aria-selected="true"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.check {
+  flex: none;
+  visibility: hidden;
+}
+
+.option[aria-selected="true"] .check {
+  visibility: visible;
+}
+
+/* Phones: a bottom sheet, like Filters there. */
+.sheetBody {
+  padding: 16px 8px 12px;
+}
+
+.sheetTitle {
+  padding: 0 10px 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 767px) {
-  /* 16px stops iOS zooming into the page when the picker opens. */
   .sort {
     min-height: 44px;
     font-size: 16px;
+  }
+
+  .sheetBody .option {
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover {
+    animation: none;
+  }
+
+  .caret {
+    transition: none;
   }
 }
