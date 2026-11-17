@@ -22,16 +22,26 @@ vi.mock("@/lib/restaurants", async (importOriginal) => ({
 vi.mock("@/lib/recommendations", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/recommendations")>()),
   deleteRecommendation: vi.fn(),
+  deleteRecommendations: vi.fn(),
 }));
 
 const { requireAdmin } = await import("@/lib/auth");
+const { refresh } = await import("next/cache");
 const { createPhotoUpload, deletePhotoFiles } = await import("@/lib/photoStorage");
 const { createRestaurant, updateRestaurant } = await import("@/lib/restaurants");
-const { deleteRecommendation } = await import("@/lib/recommendations");
-const { createPhotoUploadAction, createRestaurantAction, dismissRecommendationAction, updateRestaurantAction } =
+const { deleteRecommendation, deleteRecommendations } = await import("@/lib/recommendations");
+const {
+  createPhotoUploadAction,
+  createRestaurantAction,
+  dismissRecommendationAction,
+  dismissRecommendationsAction,
+  updateRestaurantAction,
+} =
   await import("./actions");
 
 const REC_ID = "11111111-1111-4111-8111-111111111111";
+const REC_ID_B = "22222222-2222-4222-8222-222222222222";
+const BATCH_ERROR = { error: "Couldn't dismiss them" };
 
 const validInput: RestaurantInput = {
   name: "ZZ Test Spot",
@@ -102,6 +112,48 @@ test("dismissRecommendationAction reports a failure", async () => {
   vi.mocked(requireAdmin).mockResolvedValue();
   vi.mocked(deleteRecommendation).mockRejectedValue(new Error("db down"));
   expect(await dismissRecommendationAction(REC_ID)).toEqual({ error: "Couldn't dismiss it" });
+});
+
+test("dismissRecommendationsAction refuses without an admin session", async () => {
+  await expect(dismissRecommendationsAction([REC_ID])).rejects.toThrow("NEXT_REDIRECT");
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction deletes each selected rec once", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  expect(await dismissRecommendationsAction([REC_ID, REC_ID_B, REC_ID])).toEqual({});
+  expect(deleteRecommendations).toHaveBeenCalledTimes(1);
+  expect(deleteRecommendations).toHaveBeenCalledWith([REC_ID, REC_ID_B]);
+  expect(refresh).toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction refuses an empty list", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  expect(await dismissRecommendationsAction([])).toEqual(BATCH_ERROR);
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction refuses if any id is malformed", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  expect(await dismissRecommendationsAction([REC_ID, "x' OR '1'='1"])).toEqual(BATCH_ERROR);
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction refuses more than 200 ids", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  const ids = Array.from(
+    { length: 201 },
+    (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, "0")}`,
+  );
+  expect(await dismissRecommendationsAction(ids)).toEqual(BATCH_ERROR);
+  expect(deleteRecommendations).not.toHaveBeenCalled();
+});
+
+test("dismissRecommendationsAction reports a failed delete", async () => {
+  vi.mocked(requireAdmin).mockResolvedValue();
+  vi.mocked(deleteRecommendations).mockRejectedValue(new Error("db down"));
+  expect(await dismissRecommendationsAction([REC_ID])).toEqual(BATCH_ERROR);
+  expect(refresh).not.toHaveBeenCalled();
 });
 
 test("adding from a rec refuses without an admin session", async () => {

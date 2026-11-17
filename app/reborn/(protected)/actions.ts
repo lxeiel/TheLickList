@@ -10,7 +10,12 @@ import {
   validateRestaurantInput,
   type RestaurantInput,
 } from "@/lib/restaurants";
-import { deleteRecommendation, isRecommendationId } from "@/lib/recommendations";
+import {
+  REC_INBOX_CAP,
+  deleteRecommendation,
+  deleteRecommendations,
+  isRecommendationId,
+} from "@/lib/recommendations";
 import { logout, requireAdmin } from "@/lib/auth";
 import { createPhotoUpload } from "@/lib/photoStorage";
 
@@ -63,6 +68,28 @@ export async function dismissRecommendationAction(id: string): Promise<{ error?:
     await deleteRecommendation(id);
   } catch {
     return { error: "Couldn't dismiss it" };
+  }
+
+  refresh();
+  return {};
+}
+
+export async function dismissRecommendationsAction(ids: string[]): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  if (
+    !Array.isArray(ids) ||
+    ids.length < 1 ||
+    ids.length > REC_INBOX_CAP ||
+    !ids.every(isRecommendationId)
+  ) {
+    return { error: "Couldn't dismiss them" };
+  }
+
+  try {
+    await deleteRecommendations([...new Set(ids)]);
+  } catch {
+    return { error: "Couldn't dismiss them" };
   }
 
   refresh();

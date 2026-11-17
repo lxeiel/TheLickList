@@ -155,3 +155,14 @@ export async function deleteRecommendation(id: string): Promise<void> {
     throw error;
   }
 }
+
+export async function deleteRecommendations(ids: string[]): Promise<void> {
+  const { error } = await getServiceClient()
+    .from("recommendation")
+    .delete()
+    .in("id", ids);
+
+  if (error) {
+    throw error;
+  }
+}
