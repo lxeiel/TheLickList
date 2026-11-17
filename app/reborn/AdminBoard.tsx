@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { CaretRight, MagnifyingGlass, Plus, X } from "@phosphor-icons/react";
 import { applyFilters, EMPTY_FILTERS } from "@/lib/filters";
 import { formatScore } from "@/lib/format";
+import type { Recommendation } from "@/lib/recommendations";
 import type { Restaurant, RestaurantStatus } from "@/lib/restaurants";
 import StatusMark, { STATUS_LABEL } from "@/app/_components/StatusMark";
 import {
@@ -12,14 +13,21 @@ import {
   markLickedAction,
   updateRestaurantAction,
 } from "./(protected)/actions";
+import { RecsSection } from "./RecsSection";
 import { RestaurantForm } from "./RestaurantForm";
 import styles from "./admin.module.css";
 
-type Editing = { mode: "new" } | { mode: "edit"; restaurant: Restaurant };
+type Editing = { mode: "new"; fromRec?: Recommendation } | { mode: "edit"; restaurant: Restaurant };
 
 // The admin page: Licked and Gotta Lick side by side, each with its own
 // search, and one popup for adding and editing.
-export function AdminBoard({ restaurants }: { restaurants: Restaurant[] }) {
+export function AdminBoard({
+  restaurants,
+  recommendations,
+}: {
+  restaurants: Restaurant[];
+  recommendations: Recommendation[];
+}) {
   const [editing, setEditing] = useState<Editing | null>(null);
 
   return (
@@ -33,6 +41,8 @@ export function AdminBoard({ restaurants }: { restaurants: Restaurant[] }) {
           <Plus size={16} aria-hidden />
         </button>
       </div>
+
+      <RecsSection recommendations={recommendations} onAdd={(fromRec) => setEditing({ mode: "new", fromRec })} />
 
       <div className={styles.columns}>
         <Column status="tried" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
@@ -161,7 +171,7 @@ function EditDialog({ editing, onClose }: { editing: Editing; onClose: () => voi
   async function save(input: Parameters<typeof createRestaurantAction>[0]) {
     const result = restaurant
       ? await updateRestaurantAction(restaurant.id, input)
-      : await createRestaurantAction(input);
+      : await createRestaurantAction(input, editing.mode === "new" ? editing.fromRec?.id : undefined);
     if (!result.error) close();
     return result;
   }
@@ -186,6 +196,7 @@ function EditDialog({ editing, onClose }: { editing: Editing; onClose: () => voi
 
       <RestaurantForm
         initial={restaurant}
+        prefill={editing.mode === "new" ? editing.fromRec : undefined}
         onSubmit={save}
         actions={
           <>

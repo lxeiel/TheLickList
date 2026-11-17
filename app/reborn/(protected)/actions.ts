@@ -10,14 +10,22 @@ import {
   validateRestaurantInput,
   type RestaurantInput,
 } from "@/lib/restaurants";
+import { deleteRecommendation, isRecommendationId } from "@/lib/recommendations";
 import { logout, requireAdmin } from "@/lib/auth";
 import { createPhotoUpload } from "@/lib/photoStorage";
 
 // The admin edits in a popup over the list, so these return a result (the
 // popup closes on success) and refresh the list rather than redirecting.
 
-export async function createRestaurantAction(input: RestaurantInput): Promise<{ error?: string }> {
+export async function createRestaurantAction(
+  input: RestaurantInput,
+  fromRecommendationId?: string,
+): Promise<{ error?: string }> {
   await requireAdmin();
+
+  if (fromRecommendationId !== undefined && !isRecommendationId(fromRecommendationId)) {
+    return { error: "Save failed" };
+  }
 
   const validationError = validateRestaurantInput(input);
   if (validationError) {
@@ -28,6 +36,33 @@ export async function createRestaurantAction(input: RestaurantInput): Promise<{ 
     await createRestaurant(input);
   } catch {
     return { error: "Save failed" };
+  }
+
+  // The recommendation has been dealt with. If removing it fails the
+  // restaurant is still saved; the rec just stays in the inbox to dismiss.
+  if (fromRecommendationId) {
+    try {
+      await deleteRecommendation(fromRecommendationId);
+    } catch (err) {
+      console.error("Couldn't remove the recommendation after adding it", err);
+    }
+  }
+
+  refresh();
+  return {};
+}
+
+export async function dismissRecommendationAction(id: string): Promise<{ error?: string }> {
+  await requireAdmin();
+
+  if (!isRecommendationId(id)) {
+    return { error: "Couldn't dismiss it" };
+  }
+
+  try {
+    await deleteRecommendation(id);
+  } catch {
+    return { error: "Couldn't dismiss it" };
   }
 
   refresh();

@@ -71,6 +71,13 @@ export function validateRecommendation(
   return null;
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Ids come back from the browser; check the shape before using one in a query.
+export function isRecommendationId(id: unknown): boolean {
+  return typeof id === "string" && UUID.test(id);
+}
+
 export function clientIp(headers: {
   get(name: string): string | null;
 }): string {

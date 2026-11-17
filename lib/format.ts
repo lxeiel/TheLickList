@@ -44,3 +44,17 @@ export function formatAdded(createdAt: string): string {
 export function spotCount(n: number): string {
   return n === 1 ? "1 spot" : `${n} spots`;
 }
+
+function plural(n: number, unit: string): string {
+  return `${n} ${unit}${n === 1 ? "" : "s"} ago`;
+}
+
+// "just now", "5 minutes ago", "3 hours ago", "2 days ago".
+export function timeAgo(createdAt: string, now: Date = new Date()): string {
+  const minutes = Math.floor((now.getTime() - new Date(createdAt).getTime()) / 60_000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return plural(minutes, "minute");
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return plural(hours, "hour");
+  return plural(Math.floor(hours / 24), "day");
+}

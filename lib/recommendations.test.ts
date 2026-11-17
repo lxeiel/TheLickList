@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   clientIp,
   hashIp,
+  isRecommendationId,
   NO_IP,
   normalizeRecommendation,
   validateRecommendation,
@@ -49,4 +50,16 @@ describe("recommendations", () => {
     expect(hashIp("1.2.3.4", "other")).not.toBe(a);
     expect(a).not.toContain("1.2.3.4");
   });
+});
+
+test("isRecommendationId accepts UUIDs in either case and nothing else", () => {
+  expect(isRecommendationId("11111111-1111-4111-8111-111111111111")).toBe(true);
+  expect(isRecommendationId("ABCDEF12-1111-4111-8111-111111111111")).toBe(true);
+  expect(isRecommendationId("rec-1")).toBe(false);
+  expect(isRecommendationId("11111111-1111-4111-8111-111111111111 ")).toBe(false);
+  expect(isRecommendationId("11111111-1111-4111-8111-111111111111,x")).toBe(false);
+  expect(isRecommendationId("1' or '1'='1")).toBe(false);
+  expect(isRecommendationId("")).toBe(false);
+  expect(isRecommendationId(42)).toBe(false);
+  expect(isRecommendationId(undefined)).toBe(false);
 });

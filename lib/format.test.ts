@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { formatAdded, formatMeta, formatScore, scoreLabel } from "./format";
+import { formatAdded, formatMeta, formatScore, scoreLabel, timeAgo } from "./format";
 
 test("formatScore handles every status/rating combination", () => {
   expect(formatScore({ status: "tried", rating: 9 })).toBe("9/10");
@@ -37,4 +37,12 @@ test("formatMeta lists area, cuisine, price, then Multiple locations, skipping b
 test("formatMeta can leave out cuisine and price", () => {
   const spot = { area: "Central", cuisine_tags: ["Cafe"], price_range: "$$", multiple_locations: true };
   expect(formatMeta(spot, { cuisine: false, price: false })).toEqual(["Central", "Multiple locations"]);
+});
+
+test("timeAgo", () => {
+  const now = new Date("2026-11-17T12:00:00Z");
+  expect(timeAgo("2026-11-17T11:59:30Z", now)).toBe("just now");
+  expect(timeAgo("2026-11-17T11:59:00Z", now)).toBe("1 minute ago");
+  expect(timeAgo("2026-11-17T09:00:00Z", now)).toBe("3 hours ago");
+  expect(timeAgo("2026-11-15T12:00:00Z", now)).toBe("2 days ago");
 });
