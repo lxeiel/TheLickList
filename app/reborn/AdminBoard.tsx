@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { CaretRight, MagnifyingGlass, Plus, X } from "@phosphor-icons/react";
 import { applyFilters, EMPTY_FILTERS } from "@/lib/filters";
 import { formatScore } from "@/lib/format";
@@ -29,6 +29,17 @@ export function AdminBoard({
   recommendations: Recommendation[];
 }) {
   const [editing, setEditing] = useState<Editing | null>(null);
+  const [tab, setTab] = useState<"restaurants" | "recs">("restaurants");
+  const tabsId = useId();
+  const tabs = ["restaurants", "recs"] as const;
+
+  function onTabKey(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const next = tabs[(tabs.indexOf(tab) + 1) % tabs.length];
+    setTab(next);
+    document.getElementById(`${tabsId}-tab-${next}`)?.focus();
+  }
 
   return (
     <>
@@ -42,11 +53,55 @@ export function AdminBoard({
         </button>
       </div>
 
-      <RecsSection recommendations={recommendations} onAdd={(fromRec) => setEditing({ mode: "new", fromRec })} />
+      <div className={styles.tabs} role="tablist" aria-label="Admin sections">
+        <button
+          type="button"
+          role="tab"
+          id={`${tabsId}-tab-restaurants`}
+          aria-selected={tab === "restaurants"}
+          aria-controls={`${tabsId}-panel-restaurants`}
+          tabIndex={tab === "restaurants" ? 0 : -1}
+          className={styles.tab}
+          onClick={() => setTab("restaurants")}
+          onKeyDown={onTabKey}
+        >
+          Restaurants <span className={styles.tabCount}>{restaurants.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id={`${tabsId}-tab-recs`}
+          aria-selected={tab === "recs"}
+          aria-controls={`${tabsId}-panel-recs`}
+          tabIndex={tab === "recs" ? 0 : -1}
+          className={styles.tab}
+          onClick={() => setTab("recs")}
+          onKeyDown={onTabKey}
+        >
+          Recs
+          {recommendations.length > 0 && <span className={styles.tabBadge}>{recommendations.length}</span>}
+        </button>
+      </div>
 
-      <div className={styles.columns}>
-        <Column status="tried" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
-        <Column status="wishlist" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+      <div
+        role="tabpanel"
+        id={`${tabsId}-panel-restaurants`}
+        aria-labelledby={`${tabsId}-tab-restaurants`}
+        hidden={tab !== "restaurants"}
+      >
+        <div className={styles.columns}>
+          <Column status="tried" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+          <Column status="wishlist" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+        </div>
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`${tabsId}-panel-recs`}
+        aria-labelledby={`${tabsId}-tab-recs`}
+        hidden={tab !== "recs"}
+      >
+        <RecsSection recommendations={recommendations} onAdd={(fromRec) => setEditing({ mode: "new", fromRec })} />
       </div>
 
       {editing && <EditDialog editing={editing} onClose={() => setEditing(null)} />}

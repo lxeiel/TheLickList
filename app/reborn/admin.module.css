@@ -117,37 +117,155 @@
   align-self: center;
 }
 
+/* Tabs under the header: Restaurants and Recs. */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin .tab {
+  display: inline-flex;
+  align-items: center;
+  align-self: auto;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: -1px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.admin .tab:hover {
+  color: var(--ink);
+}
+
+.admin .tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.tabCount {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.tabBadge {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* Recs tab: toolbar, batch bar, then compact rows. */
 .recs {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 32px;
+}
+
+.recsToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+.recsToolbar .search {
+  flex: 1 1 220px;
+}
+
+.admin .selectAll {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.admin .selectAll input,
+.admin .recCheck {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.batchBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--hover);
+  font-size: 14px;
+}
+
+.batchBar .deleteButton {
+  margin-left: 0;
 }
 
 .admin .recRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 16px;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  align-items: center;
+  gap: 4px 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.recText {
+.recCheck {
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.admin .recMain {
   display: flex;
-  flex: 1 1 260px;
+  flex: 1 1 0;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 2px;
   min-width: 0;
-  overflow-wrap: anywhere;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 400;
+  text-align: left;
 }
 
-.admin .recNotes {
-  margin: 0;
+.admin .recMain:hover {
+  background: var(--hover);
+}
+
+.recMeta,
+.recMetaOpen {
+  max-width: 100%;
+  color: var(--muted);
   font-size: 14px;
-  white-space: pre-wrap;
+}
+
+.recMeta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recMetaOpen {
   overflow-wrap: anywhere;
 }
 
@@ -158,9 +276,88 @@
   gap: 8px;
 }
 
+.admin .quietDismiss {
+  align-self: center;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin .quietDismiss:hover,
+.admin .quietDismiss:focus-visible {
+  color: var(--danger);
+}
+
 .recRow .formError {
   flex-basis: 100%;
   margin: 0;
+}
+
+.recDetails {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px 8px 12px 36px;
+  overflow-wrap: anywhere;
+}
+
+.recDetails[hidden] {
+  display: none;
+}
+
+.recLabel {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.admin .recNotes {
+  margin: 0;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.recNoLink {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 767px) {
+  .recMeta {
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .recMain {
+    flex-basis: calc(100% - 40px);
+  }
+
+  .recActions {
+    flex-basis: 100%;
+    padding-left: 36px;
+  }
+
+  .admin .lickButton,
+  .admin .quietDismiss,
+  .admin .selectAll,
+  .admin .batchBar button {
+    min-height: 44px;
+  }
+
+  .admin .recCheck,
+  .admin .selectAll input {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .columns {

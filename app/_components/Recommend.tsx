@@ -13,7 +13,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { CheckCircle, X } from "@phosphor-icons/react";
+import { Check, X } from "@phosphor-icons/react";
 import { submitRecommendationAction } from "@/app/_actions/recommend";
 import {
   MAX_REC_FROM,
@@ -86,11 +86,11 @@ function RecommendDialog({ onClose }: { onClose: () => void }) {
   // Changing the key remounts the form, so "Recommend another" starts empty.
   const [round, setRound] = useState(0);
   const [sent, setSent] = useState(false);
-  const anotherButton = useRef<HTMLButtonElement>(null);
+  const doneButton = useRef<HTMLButtonElement>(null);
 
   // Focus would otherwise drop to the body when the form unmounts.
   useEffect(() => {
-    if (sent) anotherButton.current?.focus();
+    if (sent) doneButton.current?.focus();
   }, [sent]);
 
   useEffect(() => {
@@ -128,20 +128,31 @@ function RecommendDialog({ onClose }: { onClose: () => void }) {
 
       {sent ? (
         <div className={styles.thanks} role="status">
-          <CheckCircle size={32} weight="fill" color="var(--accent)" aria-hidden />
+          <span className={styles.thanksIcon}>
+            <Check size={32} weight="bold" aria-hidden />
+          </span>
           <p className={styles.thanksTitle}>Thanks!</p>
           <p className={styles.thanksText}>I&apos;ll check it out.</p>
-          <button
-            ref={anotherButton}
-            type="button"
-            className={styles.secondary}
-            onClick={() => {
-              setRound((n) => n + 1);
-              setSent(false);
-            }}
-          >
-            Recommend another
-          </button>
+          <div className={styles.thanksActions}>
+            <button
+              type="button"
+              className={styles.secondary}
+              onClick={() => {
+                setRound((n) => n + 1);
+                setSent(false);
+              }}
+            >
+              Recommend another
+            </button>
+            <button
+              ref={doneButton}
+              type="button"
+              className={styles.submit}
+              onClick={() => dialog.current?.close()}
+            >
+              Done
+            </button>
+          </div>
         </div>
       ) : (
         <RecommendForm key={round} onSent={() => setSent(true)} />
