@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ChatCircleText } from "@phosphor-icons/react";
 import { applyFilters, deriveOptions, EMPTY_FILTERS, findSpot, mapHref } from "@/lib/filters";
 import type { Restaurant } from "@/lib/restaurants";
 import { sortRestaurants } from "@/lib/sort";
 import DetailHeader from "./DetailHeader";
 import EmptyState from "./EmptyState";
 import FilterBar from "./FilterBar";
+import { RecommendButton } from "./Recommend";
 import RestaurantDetail from "./RestaurantDetail";
 import RestaurantRow from "./RestaurantRow";
 import RestaurantTable from "./RestaurantTable";
@@ -41,6 +43,10 @@ export default function ListPage({ restaurants }: { restaurants: Restaurant[] })
         <span className={styles.count} aria-live="polite">
           {restaurantCount(sorted.length)}
         </span>
+        <RecommendButton className={styles.recommend}>
+          <ChatCircleText size={18} weight="bold" aria-hidden />
+          Recommend Licks
+        </RecommendButton>
       </header>
 
       <FilterBar

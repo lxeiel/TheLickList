@@ -13,6 +13,26 @@
   gap: 12px;
 }
 
+.recommend {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recommend:hover {
+  background: var(--hover);
+}
+
 .title {
   font-size: 24px;
   font-weight: 600;

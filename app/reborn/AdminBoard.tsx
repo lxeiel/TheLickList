@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { CaretRight, MagnifyingGlass, Plus, X } from "@phosphor-icons/react";
 import { applyFilters, EMPTY_FILTERS } from "@/lib/filters";
 import { formatScore } from "@/lib/format";
+import type { Recommendation } from "@/lib/recommendations";
 import type { Restaurant, RestaurantStatus } from "@/lib/restaurants";
 import StatusMark, { STATUS_LABEL } from "@/app/_components/StatusMark";
 import {
@@ -12,31 +13,101 @@ import {
   markLickedAction,
   updateRestaurantAction,
 } from "./(protected)/actions";
+import { RecsSection } from "./RecsSection";
 import { RestaurantForm } from "./RestaurantForm";
 import styles from "./admin.module.css";
 
-type Editing = { mode: "new" } | { mode: "edit"; restaurant: Restaurant };
+type Editing = { mode: "new"; fromRec?: Recommendation } | { mode: "edit"; restaurant: Restaurant };
 
 // The admin page: Licked and Gotta Lick side by side, each with its own
 // search, and one popup for adding and editing.
-export function AdminBoard({ restaurants }: { restaurants: Restaurant[] }) {
+export function AdminBoard({
+  restaurants,
+  recommendations,
+}: {
+  restaurants: Restaurant[];
+  recommendations: Recommendation[];
+}) {
   const [editing, setEditing] = useState<Editing | null>(null);
+  const [tab, setTab] = useState<"restaurants" | "recs">("restaurants");
+  const tabsId = useId();
+  const tabs = ["restaurants", "recs"] as const;
+
+  function onTabKey(event: KeyboardEvent<HTMLButtonElement>) {
+    const last = tabs.length - 1;
+    const index = tabs.indexOf(tab);
+    let target: number;
+    if (event.key === "ArrowRight") target = index === last ? 0 : index + 1;
+    else if (event.key === "ArrowLeft") target = index === 0 ? last : index - 1;
+    else if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = last;
+    else return;
+    event.preventDefault();
+    const next = tabs[target];
+    setTab(next);
+    document.getElementById(`${tabsId}-tab-${next}`)?.focus();
+  }
 
   return (
     <>
       <div className={styles.header}>
-        <h1>
-          Restaurants <span className={styles.count}>{restaurants.length}</span>
-        </h1>
+        <h1>Admin</h1>
         <button type="button" className={styles.addButton} onClick={() => setEditing({ mode: "new" })}>
           Add restaurant
           <Plus size={16} aria-hidden />
         </button>
       </div>
 
-      <div className={styles.columns}>
-        <Column status="tried" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
-        <Column status="wishlist" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+      <div className={styles.tabs} role="tablist" aria-label="Admin sections">
+        <button
+          type="button"
+          role="tab"
+          id={`${tabsId}-tab-restaurants`}
+          aria-selected={tab === "restaurants"}
+          aria-controls={`${tabsId}-panel-restaurants`}
+          tabIndex={tab === "restaurants" ? 0 : -1}
+          className={styles.tab}
+          onClick={() => setTab("restaurants")}
+          onKeyDown={onTabKey}
+        >
+          Restaurants <span className={styles.tabCount}>{restaurants.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id={`${tabsId}-tab-recs`}
+          aria-selected={tab === "recs"}
+          aria-controls={`${tabsId}-panel-recs`}
+          aria-label={recommendations.length > 0 ? `Recs, ${recommendations.length} waiting` : "Recs"}
+          tabIndex={tab === "recs" ? 0 : -1}
+          className={styles.tab}
+          onClick={() => setTab("recs")}
+          onKeyDown={onTabKey}
+        >
+          Recs
+          {recommendations.length > 0 && <span className={styles.tabBadge}>{recommendations.length}</span>}
+        </button>
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`${tabsId}-panel-restaurants`}
+        aria-labelledby={`${tabsId}-tab-restaurants`}
+        hidden={tab !== "restaurants"}
+      >
+        <div className={styles.columns}>
+          <Column status="tried" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+          <Column status="wishlist" restaurants={restaurants} onOpen={(r) => setEditing({ mode: "edit", restaurant: r })} />
+        </div>
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`${tabsId}-panel-recs`}
+        aria-labelledby={`${tabsId}-tab-recs`}
+        hidden={tab !== "recs"}
+      >
+        <RecsSection recommendations={recommendations} onAdd={(fromRec) => setEditing({ mode: "new", fromRec })} />
       </div>
 
       {editing && <EditDialog editing={editing} onClose={() => setEditing(null)} />}
@@ -161,7 +232,7 @@ function EditDialog({ editing, onClose }: { editing: Editing; onClose: () => voi
   async function save(input: Parameters<typeof createRestaurantAction>[0]) {
     const result = restaurant
       ? await updateRestaurantAction(restaurant.id, input)
-      : await createRestaurantAction(input);
+      : await createRestaurantAction(input, editing.mode === "new" ? editing.fromRec?.id : undefined);
     if (!result.error) close();
     return result;
   }
@@ -186,6 +257,7 @@ function EditDialog({ editing, onClose }: { editing: Editing; onClose: () => voi
 
       <RestaurantForm
         initial={restaurant}
+        prefill={editing.mode === "new" ? editing.fromRec : undefined}
         onSubmit={save}
         actions={
           <>

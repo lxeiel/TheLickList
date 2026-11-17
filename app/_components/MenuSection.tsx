@@ -5,6 +5,7 @@ import { buildMenuList, countByStatus } from "@/lib/menu";
 import type { Restaurant } from "@/lib/restaurants";
 import { CONTACT_LINKS } from "@/lib/site";
 import ScoreInfo from "./ScoreInfo";
+import { RecommendButton } from "./Recommend";
 import ScrollDownButton from "./ScrollDownButton";
 import StatusMark from "./StatusMark";
 import styles from "./MenuSection.module.css";
@@ -15,6 +16,14 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
   const list = buildMenuList(restaurants);
   const counts = countByStatus(restaurants);
   const contact = CONTACT_LINKS.filter((link) => link.href);
+  const renderContact = (link: (typeof contact)[number]) => (
+    <li key={link.label}>
+      {/* Web links open in a new tab; mailto: would leave a blank one behind. */}
+      <a href={link.href} {...(link.href.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}>
+        <span className={styles.contactLabel}>{link.label}</span> - {link.detail}
+      </a>
+    </li>
+  );
 
   return (
     <section id="menu" className={styles.section} aria-label="About The Lick List">
@@ -28,24 +37,18 @@ export default function MenuSection({ restaurants }: { restaurants: Restaurant[]
             the dishes I&apos;ve loved, and the ones next on my list.
             Singapore for now, the world next. Feel free to steal a few picks and catch me along the way!
           </p>
-          {contact.length > 0 && (
-            <div className={styles.contactBlock}>
-              <h2 className="visually-hidden">Contact</h2>
-              <ul className={styles.contact}>
-                {contact.map((link) => (
-                  <li key={link.label}>
-                    {/* Web links open in a new tab; mailto: would leave a blank one behind. */}
-                    <a
-                      href={link.href}
-                      {...(link.href.startsWith("http") && { target: "_blank", rel: "noopener noreferrer" })}
-                    >
-                      <span className={styles.contactLabel}>{link.label}</span> - {link.detail}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className={styles.contactBlock}>
+            <h2 className="visually-hidden">Contact</h2>
+            <ul className={styles.contact}>
+              {contact.slice(0, 1).map(renderContact)}
+              <li>
+                <RecommendButton className={styles.contactButton}>
+                  <span className={styles.contactLabel}>Recommend Licks</span>
+                </RecommendButton>
+              </li>
+              {contact.slice(1).map(renderContact)}
+            </ul>
+          </div>
         </div>
 
         <div className={styles.list}>

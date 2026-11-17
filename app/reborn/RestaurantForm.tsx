@@ -15,16 +15,19 @@ const SINGAPORE_AREAS = ["Central", "East", "North", "Northeast", "West"];
 
 export function RestaurantForm({
   initial,
+  prefill,
   onSubmit,
   actions,
 }: {
   initial?: Restaurant;
+  /** Starting name, Maps link and notes for a new restaurant (from a rec). */
+  prefill?: { name: string; maps_url: string | null; notes: string | null };
   onSubmit: (input: RestaurantInput) => Promise<{ error?: string }>;
   /** Extra buttons shown beside Save (the popup's Cancel and Delete). */
   actions?: ReactNode;
 }) {
-  const [name, setName] = useState(initial?.name ?? "");
-  const [mapsUrl, setMapsUrl] = useState(initial?.maps_url ?? "");
+  const [name, setName] = useState(initial?.name ?? prefill?.name ?? "");
+  const [mapsUrl, setMapsUrl] = useState(initial?.maps_url ?? prefill?.maps_url ?? "");
   const [links, setLinks] = useState<RestaurantLink[]>(initial?.links ?? []);
   const [cuisineTagsText, setCuisineTagsText] = useState(
     (initial?.cuisine_tags ?? []).join(", "),
@@ -32,7 +35,7 @@ export function RestaurantForm({
   const [priceRange, setPriceRange] = useState(initial?.price_range ?? "");
   const [status, setStatus] = useState<RestaurantStatus>(initial?.status ?? "wishlist");
   const [rating, setRating] = useState(initial?.rating != null ? String(initial.rating) : "");
-  const [notes, setNotes] = useState(initial?.notes ?? "");
+  const [notes, setNotes] = useState(initial?.notes ?? prefill?.notes ?? "");
   const initialAreaIsStandard =
     !!initial?.area && SINGAPORE_AREAS.includes(initial.area);
   const [areaSelect, setAreaSelect] = useState(
