@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withBotId } from "botid/next/config";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -6,4 +7,5 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
 };
 
-export default nextConfig;
+// withBotId adds BotID's challenge rewrites.
+export default withBotId(nextConfig);

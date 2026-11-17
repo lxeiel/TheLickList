@@ -134,13 +134,13 @@ test("hashIp is stable per key and hides the IP", () => {
 **Files:**
 - Create: `app/_actions/recommend.ts`, `app/_actions/recommend.test.ts`
 - Create: `instrumentation-client.ts` (repo root)
-- Modify: `package.json`, `package-lock.json` (`npm i botid`)
+- Modify: `next.config.ts`, `package.json`, `package-lock.json` (`npm i botid`)
 
 **Interfaces:**
 - Consumes: everything in Task 2's `lib/recommendations.ts`.
 - Produces: `submitRecommendationAction(input: RecommendationInput & { website?: string }): Promise<{ ok: true } | { error: string }>` in a `"use server"` file. `website` is the trap field.
 
-- [ ] **Step 1: Install** `npm i botid`. Write `instrumentation-client.ts`: `initBotId({ protect: [{ path: "/", method: "POST" }, { path: "/list", method: "POST" }] })` from `botid/client/core`, with a comment that these are the pages the Recommend Licks popup's server action posts from. No `next.config.ts` change (Vercel's current docs: the `withBotId` wrapper is no longer needed).
+- [ ] **Step 1: Install** `npm i botid`. Write `instrumentation-client.ts`: `initBotId({ protect: [{ path: "/", method: "POST" }, { path: "/list", method: "POST" }] })` from `botid/client/core`, with a comment that these are the pages the Recommend Licks popup's server action posts from. Wrap `next.config.ts` with `withBotId` from `botid/next/config` (the installed package's README asks for it; Vercel's docs say the rewrites are optional, so keeping them is harmless).
 
 - [ ] **Step 2: Write failing tests** in `app/_actions/recommend.test.ts`. Mock `botid/server` (`checkBotId`), `next/headers` (`headers()` returning an object whose `get` serves `x-forwarded-for: 1.2.3.4`), and `@/lib/recommendations` with `importOriginal`, replacing only `countRecentFromIp`, `countWaiting`, `insertRecommendation`. Set `process.env.SESSION_SECRET = "test-secret"`. Default per test: not a bot, 0 recent, 0 waiting.
 
