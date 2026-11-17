@@ -38,16 +38,14 @@ export default function RestaurantList({
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        {/* The count, then Recommend Licks beside it; the sort menu on the right. */}
-        <div className={styles.lead}>
-          <p className={styles.count} aria-live="polite">
-            {spotCount(restaurants.length)}
-          </p>
-          <RecommendButton className={styles.recommend}>
-            <ChatCircleText size={16} weight="bold" aria-hidden />
-            Recommend Licks
-          </RecommendButton>
-        </div>
+        {/* The count, Recommend Licks, then the sort menu on the right. */}
+        <p className={styles.count} aria-live="polite">
+          {spotCount(restaurants.length)}
+        </p>
+        <RecommendButton className={styles.recommend}>
+          <ChatCircleText size={16} weight="bold" aria-hidden />
+          Recommend Licks
+        </RecommendButton>
         {sort && onSortChange && restaurants.length > 1 && (
           <SortSelect sort={sort} onChange={onSortChange} nearest={nearest} onNearest={onNearest} />
         )}

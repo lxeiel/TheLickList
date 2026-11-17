@@ -9,27 +9,25 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   padding: 0 12px 8px;
 }
 
-/* When the panel is too narrow for both, the sort menu drops to its own
-   line on the right instead of running into Recommend Licks. */
+/* When the panel is too narrow for all three, the sort menu drops to its
+   own line on the right instead of running into Recommend Licks. */
 .header {
   flex-wrap: wrap;
   row-gap: 4px;
 }
 
-.header > :last-child:not(.lead) {
+/* With a sort menu, Recommend Licks is pushed to the right. In the desktop
+   map panel the sort menu wraps below it, so the button and the sort sit
+   right-aligned on two lines; if all three ever fit on one line, the spare
+   room splits evenly before each. Without a sort menu (the phone sheet,
+   where sort lives up top) the button stays beside the count. */
+.recommend:not(:last-child),
+.header > :last-child:not(.recommend) {
   margin-left: auto;
-}
-
-.lead {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: none;
 }
 
 .count {
