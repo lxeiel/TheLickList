@@ -61,7 +61,7 @@ Not in the top menu, not among the map's right-hand buttons, and no "Recommend" 
 - The four fields above, then a **Send it** button in the accent colour. While sending it reads "Sending…" and can't be pressed twice.
 - Clicking the backdrop doesn't close it, so a half-written rec isn't lost to a stray tap. Esc and ✕ do close it.
 - Closing and reopening the popup after a successful send shows a fresh, empty form.
-- **After a successful send**, the form is replaced by: a check icon, "Thanks!", "I'll check it out." and a **Recommend another** button that brings back an empty form.
+- **After a successful send**, the form is replaced by a centred thanks view (redesigned 2026-11-17 from Lex's approved mockup): a check icon in a soft accent-tinted circle (about 64px), "Thanks!", "I'll check it out." and two buttons side by side: **Recommend another** (outlined; brings back an empty form) and **Done** (accent-filled; closes the popup). The view keeps `role="status"`, and focus moves to **Done** when it appears.
 - **Errors** show inline above Send it, in `--danger`, and keep everything typed. Copy, verbatim:
 
 | Situation | Message |
@@ -127,14 +127,18 @@ export type RecommendationInput = { name: string; maps_url: string; notes: strin
 
 On `/reborn` (`app/reborn/(protected)/page.tsx` loads recs alongside restaurants; `AdminBoard.tsx` renders them):
 
-- A **Recs** section between the header ("Restaurants N", Add restaurant) and the Licked / Gotta Lick columns, with the waiting count beside the heading. It's only there when at least one rec is waiting. On a phone it stacks above the columns.
-- Recs are listed newest first, all of them (at most 200). Each one shows:
-  - the shop name;
-  - how long ago it came in ("2 days ago") and, when given, "from {name}";
-  - "Google Maps link", opening in a new tab, when given;
-  - the notes, with line breaks kept, when given;
-  - **Add to Gotta Lick** and **Dismiss** buttons.
-- Plain bordered rows in the admin's existing style (`admin.module.css`), not the public design.
+Redesigned 2026-11-17 (Lex's approved mockup) so 200 waiting recs don't bury the restaurant lists:
+
+- **Two tabs** under the header ("Admin"-page title row with **Add restaurant** unchanged): **Restaurants** with its count in muted text, and **Recs** with a small accent badge showing the waiting count (no badge at 0). The page opens on Restaurants. The Restaurants tab is today's Licked / Gotta Lick columns, unchanged. Tabs are real tab semantics (`role="tablist"`/`tab`/`tabpanel`, arrow keys move between tabs). The chosen tab is plain React state; after Add to Gotta Lick or a dismiss, the page stays on the Recs tab.
+- **Recs tab toolbar:** a **Select all** checkbox and a **Search recs** box. Search matches shop name, notes and from-name, case-insensitive, trimmed. Select all selects every rec the search is currently showing, and shows as indeterminate when only some are selected.
+- **Compact rows**, newest first, all of them (at most 200), no paging:
+  - a checkbox (aria-label "Select {name}");
+  - the shop name (bold) over one muted line: "{time ago} · from {name} · {notes}", each part only when present, cut off with an ellipsis on one line (wrapping on phones);
+  - **Add to Gotta Lick** (accent outline, unchanged behaviour) and **Dismiss** as quiet muted text that turns `--danger` on hover. Dismiss keeps its two-step confirm ("Dismiss {name}? Yes, dismiss / Keep") and "Couldn't dismiss it" on failure.
+  - Clicking the name area expands the row (`aria-expanded`) to show the full notes under a small "NOTES" label (line breaks kept, long words wrap), then the link shown as "{host} ↗" (new tab, `rel="noopener noreferrer"`), or "No Maps link" in muted text.
+- **Batch dismiss:** when any row is ticked, a bar shows "{n} selected" and **Dismiss selected**, which turns into "Dismiss {n} recs? **Yes, dismiss** / **Keep**" ("rec" when n is 1). On yes, all selected recs are deleted in one action, the selection clears and the list refreshes. On failure: "Couldn't dismiss them", selection kept.
+- **Empty Recs tab:** "No recs waiting." (and an empty search shows "No recs match.").
+- Admin styles (`admin.module.css`, site tokens only); 44px tap targets on phones.
 
 ### Add to Gotta Lick
 
@@ -149,6 +153,7 @@ On `/reborn` (`app/reborn/(protected)/page.tsx` loads recs alongside restaurants
 
 - Two-step, the same pattern as Delete in the edit popup: **Dismiss** turns into "Dismiss {name}? **Yes, dismiss** / **Keep**". On yes, the rec is deleted for good.
 - An admin-only server action (`requireAdmin()` first) deletes it and refreshes the page. On failure, an inline "Couldn't dismiss it" shows on that rec.
+- **Batch:** `dismissRecommendationsAction(ids: string[])`, admin-only, `requireAdmin()` first. It refuses (returns "Couldn't dismiss them", deletes nothing) unless `ids` is a non-empty array of at most 200 ids that all pass `isRecommendationId`. Duplicates are dropped. It deletes them in one query (`.delete().in("id", ids)`, parameterised) and refreshes.
 
 ## Server actions
 
