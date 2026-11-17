@@ -12,3 +12,13 @@ export function matchesRecSearch(
   if (!q) return true;
   return [rec.name, rec.notes, rec.from_name].some((field) => field?.toLowerCase().includes(q));
 }
+
+// The ids that count as selected: ticked AND currently shown by the search,
+// so nothing hidden is ever dismissed unseen.
+export function visibleSelection(
+  recs: Pick<Recommendation, "id" | "name" | "notes" | "from_name">[],
+  query: string,
+  ticked: ReadonlySet<string>,
+): string[] {
+  return recs.filter((rec) => ticked.has(rec.id) && matchesRecSearch(rec, query)).map((rec) => rec.id);
+}

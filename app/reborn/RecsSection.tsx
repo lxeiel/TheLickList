@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { linkHost, timeAgo } from "@/lib/format";
 import type { Recommendation } from "@/lib/recommendations";
-import { matchesRecSearch } from "@/lib/recommendationSearch";
+import { matchesRecSearch, visibleSelection } from "@/lib/recommendationSearch";
 import { dismissRecommendationAction, dismissRecommendationsAction } from "./(protected)/actions";
 import styles from "./admin.module.css";
 
@@ -19,25 +19,25 @@ export function RecsSection({
 }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [confirming, setConfirming] = useState(false);
+  const [confirmingFor, setConfirmingFor] = useState<number | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [dismissing, startDismiss] = useTransition();
   const selectAll = useRef<HTMLInputElement>(null);
 
+  const selectedIds = visibleSelection(recommendations, query, selected);
   const shown = recommendations.filter((rec) => matchesRecSearch(rec, query));
   // Ticks for recs that are gone (dismissed, or added as restaurants) simply
   // stop counting: everything below reads the selection through the live list.
-  const shownSelected = shown.filter((rec) => selected.has(rec.id)).length;
+  const shownSelected = selectedIds.length;
   const allShown = shown.length > 0 && shownSelected === shown.length;
   const someShown = shownSelected > 0 && !allShown;
-  const selectedIds = recommendations.filter((rec) => selected.has(rec.id)).map((rec) => rec.id);
 
   useEffect(() => {
     if (selectAll.current) selectAll.current.indeterminate = someShown;
   }, [someShown]);
 
   function toggle(id: string) {
-    setConfirming(false);
+    setConfirmingFor(null);
     setSelected((current) => {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
@@ -47,7 +47,7 @@ export function RecsSection({
   }
 
   function toggleAll() {
-    setConfirming(false);
+    setConfirmingFor(null);
     setSelected((current) => {
       const next = new Set(current);
       for (const rec of shown) {
@@ -66,13 +66,14 @@ export function RecsSection({
         setError(result.error);
       } else {
         setSelected(new Set());
-        setConfirming(false);
+        setConfirmingFor(null);
       }
     });
   }
 
   const n = selectedIds.length;
-  const confirmingBatch = confirming && n > 0;
+  // Armed for one specific count: if it changes, back to "Dismiss selected".
+  const confirmingBatch = n > 0 && confirmingFor === n;
 
   return (
     <section className={styles.recs} aria-label="Recs">
@@ -92,7 +93,10 @@ export function RecsSection({
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setConfirmingFor(null);
+            }}
             placeholder="Search recs"
             aria-label="Search recs"
           />
@@ -108,12 +112,12 @@ export function RecsSection({
               <button type="button" className={styles.deleteButton} onClick={dismissSelected} disabled={dismissing}>
                 {dismissing ? "Dismissing…" : "Yes, dismiss"}
               </button>
-              <button type="button" onClick={() => setConfirming(false)}>
+              <button type="button" onClick={() => setConfirmingFor(null)}>
                 Keep
               </button>
             </span>
           ) : (
-            <button type="button" className={styles.deleteButton} onClick={() => setConfirming(true)}>
+            <button type="button" className={styles.deleteButton} onClick={() => setConfirmingFor(n)}>
               Dismiss selected
             </button>
           )}
