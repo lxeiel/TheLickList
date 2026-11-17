@@ -3,5 +3,5 @@
 // only shows when at least one link is filled in.
 export const CONTACT_LINKS: { label: string; detail: string; href: string }[] = [
   { label: "Email", detail: "thelicklist17@gmail.com", href: "mailto:thelicklist17@gmail.com" },
-  { label: "Instagram", detail: "lexlies", href: "https://www.instagram.com/lexlies/" },
+  { label: "Instagram", detail: "lexlies", href: "" }, // hidden for now; restore "https://www.instagram.com/lexlies/" to show
 ];
