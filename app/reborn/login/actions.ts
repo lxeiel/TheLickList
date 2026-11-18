@@ -3,7 +3,7 @@
 import { checkBotId } from "botid/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { login } from "@/lib/auth";
+import { login, loginKeyMatches } from "@/lib/auth";
 import { clientIp, hashIp } from "@/lib/recommendations";
 import { LOGIN_ATTEMPT_LIMIT, clearLoginAttempts, recordLoginAttempt } from "@/lib/loginAttempts";
 
@@ -12,6 +12,10 @@ const GENERIC_ERROR = "Couldn't log in. Try again.";
 
 export async function loginAction(formData: FormData): Promise<{ error?: string }> {
   const password = String(formData.get("password") ?? "");
+
+  // Checked here as well as in the proxy: an action can be called directly,
+  // without ever loading the page. A wrong key isn't logged as a try.
+  if (!loginKeyMatches(formData.get("key"))) return { error: GENERIC_ERROR };
 
   // Every check fails closed: if the limit can't be checked, no guess is.
   try {

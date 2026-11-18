@@ -11,6 +11,9 @@ export default function LoginPage() {
     <main>
       <form
         action={(formData: FormData) => {
+          // The login action checks the key from the page's own link too.
+          // Read on submit, so the page itself stays static.
+          formData.set("key", new URLSearchParams(window.location.search).get("key") ?? "");
           startTransition(async () => {
             const result = await loginAction(formData);
             setError(result?.error);

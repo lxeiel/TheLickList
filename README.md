@@ -5,7 +5,7 @@ Lex's Nomz Adventure: a map and list of every place Lex has eaten, and every pla
 - **Home** (`/`): the intro, About Me and the map.
 - **Lick List** (`/list`): every spot in a table you can sort and filter.
 - **About** (`/about`): what the marks and scores mean.
-- **Admin** (`/reborn`): Lex's password-protected page for adding and editing spots and photos.
+- **Admin** (`/reborn`): Lex's password-protected page for adding and editing spots and photos. Log in at `/reborn/login?key=<LOGIN_KEY>`; without the key, every admin page is a 404.
 
 Built with Next.js 16 (App Router), Supabase (database and photo storage), Mapbox, iron-session for the admin login, and Vercel Analytics. Hosted on Vercel.
 
@@ -27,6 +27,7 @@ Built with Next.js 16 (App Router), Supabase (database and photo storage), Mapbo
    | `ADMIN_PASSWORD` | The password for `/reborn` |
    | `SESSION_SECRET` | A random string of at least 32 characters that signs the admin login cookie |
    | `NEXT_PUBLIC_MAPBOX_TOKEN` | Mapbox public access token |
+   | `LOGIN_KEY` | A long random string that opens the login page, which only exists at `/reborn/login?key=<LOGIN_KEY>`. Make one with `openssl rand -hex 24`. |
 
 3. Set up the database: run the files in `supabase/migrations/` in order, in the Supabase SQL editor. They create the tables, the access rules and the public `restaurant-photos` storage bucket.
 
@@ -48,7 +49,7 @@ Built with Next.js 16 (App Router), Supabase (database and photo storage), Mapbo
 
 - `app/`: pages and routes. Shared UI lives in `app/_components/`, and the admin page lives in `app/reborn/`.
 - `lib/`: data access, validation, filters and sorting, each with its own `*.test.ts`.
-- `proxy.ts`: checks the admin login cookie before `/reborn` pages load.
+- `proxy.ts`: before `/reborn` pages load, checks the login key (login page) or the admin login cookie (everything else), and shows a 404 without them.
 - `supabase/migrations/`: the database schema.
 - `docs/superpowers/`: design specs and build plans for each feature.
 
