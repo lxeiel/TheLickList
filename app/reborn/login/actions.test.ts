@@ -3,7 +3,10 @@ import { beforeEach, expect, test, vi } from "vitest";
 vi.mock("botid/server", () => ({ checkBotId: vi.fn() }));
 vi.mock("next/headers", () => ({ headers: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-vi.mock("@/lib/auth", () => ({ login: vi.fn() }));
+vi.mock("@/lib/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/auth")>()),
+  login: vi.fn(),
+}));
 vi.mock("@/lib/loginAttempts", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/loginAttempts")>()),
   recordLoginAttempt: vi.fn(),
@@ -20,15 +23,19 @@ const { loginAction } = await import("./actions");
 
 const generic = { error: "Couldn't log in. Try again." };
 
-function form(password: string): FormData {
+const KEY = "test-login-key";
+
+function form(password: string, key: string | null = KEY): FormData {
   const data = new FormData();
   data.set("password", password);
+  if (key !== null) data.set("key", key);
   return data;
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
   process.env.SESSION_SECRET = "test-secret";
+  process.env.LOGIN_KEY = KEY;
   vi.mocked(checkBotId).mockResolvedValue({ isBot: false } as never);
   vi.mocked(headers).mockResolvedValue({
     get: (name: string) => (name === "x-forwarded-for" ? "1.2.3.4" : null),
@@ -94,4 +101,22 @@ test("a failure to clear the tries doesn't block the login", async () => {
   vi.spyOn(console, "error").mockImplementation(() => {});
   await loginAction(form("pw"));
   expect(redirect).toHaveBeenCalledWith("/reborn");
+});
+
+test.each([["a wrong key", "nope"], ["no key", null]])(
+  "%s is refused before anything is logged or checked",
+  async (_, key) => {
+    vi.mocked(login).mockResolvedValue(true);
+    expect(await loginAction(form("pw", key))).toEqual(generic);
+    expect(checkBotId).not.toHaveBeenCalled();
+    expect(recordLoginAttempt).not.toHaveBeenCalled();
+    expect(login).not.toHaveBeenCalled();
+  },
+);
+
+test("with LOGIN_KEY unset, even a blank key is refused", async () => {
+  delete process.env.LOGIN_KEY;
+  vi.mocked(login).mockResolvedValue(true);
+  expect(await loginAction(form("pw", ""))).toEqual(generic);
+  expect(login).not.toHaveBeenCalled();
 });

@@ -60,13 +60,13 @@ const validInput: RestaurantInput = {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  // Not logged in unless a test says otherwise: requireAdmin redirects, which
+  // Not logged in unless a test says otherwise: requireAdmin shows a 404, which
   // Next implements as a throw.
-  vi.mocked(requireAdmin).mockRejectedValue(new Error("NEXT_REDIRECT"));
+  vi.mocked(requireAdmin).mockRejectedValue(new Error("NEXT_NOT_FOUND"));
 });
 
 test("createPhotoUploadAction refuses without an admin session", async () => {
-  await expect(createPhotoUploadAction(null)).rejects.toThrow("NEXT_REDIRECT");
+  await expect(createPhotoUploadAction(null)).rejects.toThrow("NEXT_NOT_FOUND");
   expect(createPhotoUpload).not.toHaveBeenCalled();
 });
 
@@ -92,7 +92,7 @@ test("createPhotoUploadAction reports a storage failure without throwing", async
 });
 
 test("dismissRecommendationAction refuses without an admin session", async () => {
-  await expect(dismissRecommendationAction(REC_ID)).rejects.toThrow("NEXT_REDIRECT");
+  await expect(dismissRecommendationAction(REC_ID)).rejects.toThrow("NEXT_NOT_FOUND");
   expect(deleteRecommendation).not.toHaveBeenCalled();
 });
 
@@ -115,7 +115,7 @@ test("dismissRecommendationAction reports a failure", async () => {
 });
 
 test("dismissRecommendationsAction refuses without an admin session", async () => {
-  await expect(dismissRecommendationsAction([REC_ID])).rejects.toThrow("NEXT_REDIRECT");
+  await expect(dismissRecommendationsAction([REC_ID])).rejects.toThrow("NEXT_NOT_FOUND");
   expect(deleteRecommendations).not.toHaveBeenCalled();
 });
 
@@ -180,7 +180,7 @@ test("dismissRecommendationsAction reports a failed delete", async () => {
 });
 
 test("adding from a rec refuses without an admin session", async () => {
-  await expect(createRestaurantAction(validInput, REC_ID)).rejects.toThrow("NEXT_REDIRECT");
+  await expect(createRestaurantAction(validInput, REC_ID)).rejects.toThrow("NEXT_NOT_FOUND");
   expect(createRestaurant).not.toHaveBeenCalled();
   expect(deleteRecommendation).not.toHaveBeenCalled();
 });

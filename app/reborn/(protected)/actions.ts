@@ -154,7 +154,8 @@ export async function createPhotoUploadAction(
   }
 }
 
+// Home, not the login page: without the key in its link, that's a 404.
 export async function logoutAction(): Promise<void> {
   await logout();
-  redirect("/reborn/login");
+  redirect("/");
 }

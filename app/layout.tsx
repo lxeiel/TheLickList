@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Geist_Mono, Homemade_Apple } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import SiteAnalytics from "@/app/_components/SiteAnalytics";
 import { RecommendProvider } from "@/app/_components/Recommend";
 import InlineScript from "@/app/_components/InlineScript";
 import SiteNav, { SiteNavFallback } from "@/app/_components/SiteNav";
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Suspense>
           {children}
         </RecommendProvider>
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   );
