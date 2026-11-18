@@ -11,9 +11,9 @@ function coordsIn(url: string): { lat: number; lng: number } | null {
   return match ? { lat: Number(match[1]), lng: Number(match[2]) } : null;
 }
 
-// Only follow redirects on Google's own domains, and only http(s) — otherwise
-// a pasted maps_url could make the server fetch an arbitrary internal/private
-// address (SSRF) via a non-Maps link.
+// Only fetch Google's own domains, and only http(s), at every hop of a
+// redirect chain — otherwise a pasted maps_url could make the server fetch an
+// arbitrary internal/private address (SSRF), directly or via a redirect.
 const ALLOWED_REDIRECT_HOSTS = [/^maps\.app\.goo\.gl$/, /^goo\.gl$/, /(^|\.)google\.com$/];
 
 function isAllowedRedirectTarget(url: string): boolean {
@@ -36,15 +36,29 @@ export async function parseMapsUrl(
     return direct;
   }
 
-  if (!isAllowedRedirectTarget(url)) {
-    return null;
-  }
-
+  // Redirects are followed by hand: fetch's own following would go wherever
+  // the Location header points, past the host check.
+  const signal = AbortSignal.timeout(5000);
+  let current = url;
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    const resolved = coordsIn(res.url);
-    if (resolved) {
-      return resolved;
+    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+      if (!isAllowedRedirectTarget(current)) {
+        return null;
+      }
+
+      const res = await fetch(current, { redirect: "manual", signal });
+      // Only the Location header is needed, never the page.
+      await res.body?.cancel();
+      const location = res.headers.get("location");
+      if (res.status < 300 || res.status >= 400 || !location) {
+        return null;
+      }
+
+      current = new URL(location, current).toString();
+      const resolved = coordsIn(current);
+      if (resolved) {
+        return resolved;
+      }
     }
   } catch {
     return null;
@@ -52,3 +66,6 @@ export async function parseMapsUrl(
 
   return null;
 }
+
+// A short link takes a hop or two to reach the place page.
+const MAX_REDIRECTS = 5;
